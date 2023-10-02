@@ -74,7 +74,7 @@ class MainApp extends StatelessWidget {
               fontFamily: 'PlusJakartaSans',
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary500,
+                  foregroundColor: AppColors.primary,
                   textStyle: TextStyle(
                     fontSize: 14.w,
                     fontWeight: FontWeight.w600,
@@ -84,14 +84,14 @@ class MainApp extends StatelessWidget {
               dropdownMenuTheme: DropdownMenuThemeData(
                 inputDecorationTheme: InputDecorationTheme(
                   labelStyle: TextStyle(
-                    color: AppColors.text300,
+                    color: AppColors.textPrimary,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                   ),
                   hintStyle: TextStyle(
                     fontSize: 14.w,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.text300,
+                    color: AppColors.textPrimary,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
@@ -121,14 +121,14 @@ class MainApp extends StatelessWidget {
               ),
               inputDecorationTheme: InputDecorationTheme(
                 labelStyle: TextStyle(
-                  color: AppColors.text300,
+                  color: AppColors.textPrimary,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                 ),
                 hintStyle: TextStyle(
                   fontSize: 14.w,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.text300,
+                  color: AppColors.textPrimary,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
@@ -151,7 +151,7 @@ class MainApp extends StatelessWidget {
               ),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary500,
+                  backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4.r),
                   ),

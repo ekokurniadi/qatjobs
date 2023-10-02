@@ -108,7 +108,7 @@ class InstaTexts {
       style: TextStyle(
         fontSize: size,
         fontWeight: style,
-        color: color ?? AppColors.text500,
+        color: color ?? AppColors.textPrimary,
       ),
     );
   }
