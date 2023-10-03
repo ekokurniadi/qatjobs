@@ -71,7 +71,7 @@ class MainApp extends StatelessWidget {
                 },
               ),
               shadowColor: AppColors.neutral100,
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: 'Poppins',
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.primary,

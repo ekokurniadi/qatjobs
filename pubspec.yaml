@@ -55,9 +55,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: PlusJakartaSans
+    - family: Poppins
       fonts:
-        - asset: assets/fonts/PlusJakartaSans.ttf
+        - asset: assets/fonts/Poppins.ttf
   assets:
     - assets/images/
     - assets/svgs/
+    - assets/svgs/icon/
+    - assets/svgs/bottom_nav/
+    - assets/svgs/illustrations/

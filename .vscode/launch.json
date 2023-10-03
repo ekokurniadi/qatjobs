@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "instapos",
+            "name": "qatjobs",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "instapos (profile mode)",
+            "name": "qatjobs (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "instapos (release mode)",
+            "name": "qatjobs (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
