@@ -7,7 +7,8 @@ abstract class Failures extends Equatable {
 }
 
 class ServerFailure extends Failures {
-	final String errorMessage;
+	@override
+   final String errorMessage;
 
 	ServerFailure({required this.errorMessage});
 
@@ -16,7 +17,8 @@ class ServerFailure extends Failures {
 }
 
 class DatabaseFailure extends Failures {
-	final String errorMessage;
+	@override
+   final String errorMessage;
 
 	DatabaseFailure({required this.errorMessage});
 

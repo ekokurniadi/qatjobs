@@ -25,7 +25,7 @@ class DioHelper {
           return responseInterceptorHandler.next(response);
         },
         onRequest: (request, requestInterceptorHandler) {
-          log('${request.method} - ${request.path} - ${request.data}');
+          log('${request.method} - ${request.path} - ${request.data} - ${request.queryParameters}');
           return requestInterceptorHandler.next(request);
         },
         onError: (DioError error, errorInterceptor) {
@@ -39,5 +39,22 @@ class DioHelper {
   static setDioHeader(String? token) {
     dio!.options.headers = {HttpHeaders.authorizationHeader: 'Bearer $token'};
     log('token user: $token');
+  }
+
+  static String formatException(DioError e) {
+    String message = "Failed to process your request";
+    // Handle DioError type-specific errors
+    if (e.response != null) {
+      log('DioError response status: ${e.response?.statusCode}');
+      log('DioError response data: ${e.response?.data}');
+      log('DioError response headers: ${e.response?.headers}');
+      if (e.response?.data != null) {
+        message = e.response?.data['message'] ?? 'Something went wrong';
+      }
+    } else {
+      log('DioError: ${e.message}');
+      message = e.message;
+    }
+    return message;
   }
 }

@@ -4,6 +4,7 @@ targets:
       - $package$
       - lib/$lib$
       - lib/**.dart
+      - core/**.dart
       - test/**.dart
     builders:
       source_gen|combining_builder:
@@ -13,12 +14,16 @@ targets:
       json_serializable:
         generate_for:
             - lib/**.codegen.dart
+            - core/**.codegen.dart
         options:
           field_rename: snake
       freezed:freezed:
+        options:
+          make_collections_unmodifiable: false
         generate_for:
             - lib/**/bloc/**.dart
             - lib/**.codegen.dart
+            - core/**.codegen.dart
       injectable_generator:injectable_config_builder:
         generate_for:
           - lib/injector.dart
