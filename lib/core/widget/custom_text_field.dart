@@ -60,7 +60,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           child: Padding(
             padding: EdgeInsets.only(bottom: 16.h),
             child: Container(
-              padding: const EdgeInsets.all(4),
+              // padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: AppColors.bg200,
                 borderRadius: BorderRadius.circular(

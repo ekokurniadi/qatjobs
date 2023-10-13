@@ -83,7 +83,7 @@ class WelcomeScreenPage extends StatelessWidget {
                       'Explore all the most exciting job roles based\non your interest and study major.',
                   textAlign: TextAlign.left,
                   styleName: TextStyleName.regular,
-                  typeName: TextTypeName.body2,
+                  typeName: TextTypeName.caption1,
                   color: AppColors.textPrimary100,
                 ),
               ),
@@ -92,7 +92,7 @@ class WelcomeScreenPage extends StatelessWidget {
                 width: double.infinity,
                 child: ZoomTapAnimation(
                   onTap: () {
-                    AutoRouter.of(context).push(const LoginRoute());
+                    AutoRouter.of(context).push(const LayoutsRoute());
                   },
                   child: Container(
                     width: 60.w,

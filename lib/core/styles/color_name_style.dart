@@ -17,7 +17,7 @@ class AppColors {
 
   // Success
   static const Color success = Color(0xffAFECFE);
-  
+
   // Danger
   static const Color danger50 = Color(0xffFFB2B2);
   static const Color danger100 = Color(0xffFC4646);
@@ -33,4 +33,18 @@ class AppColors {
   // Background
   static const Color bg100 = Color(0xffE5E5E5);
   static const Color bg200 = Color(0xffFFFFFF);
+  static const Color bg300 = Color(0xffF9F9F9);
+
+  static List<BoxShadow> defaultShadow = [
+    const BoxShadow(
+      color: AppColors.neutral,
+      spreadRadius: 0.1,
+      blurRadius: 0.1,
+    ),
+    const BoxShadow(
+      color: AppColors.neutral,
+      spreadRadius: 0.1,
+      blurRadius: 0.1,
+    )
+  ];
 }

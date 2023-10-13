@@ -22,6 +22,7 @@ targets:
           make_collections_unmodifiable: false
         generate_for:
             - lib/**/bloc/**.dart
+            - lib/**/cubit/**.dart
             - lib/**.codegen.dart
             - core/**.codegen.dart
       injectable_generator:injectable_config_builder:

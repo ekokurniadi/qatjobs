@@ -1,5 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:qatjobs/features/auth/login/presentations/pages/login_page.dart';
+import 'package:qatjobs/features/layouts/presentations/pages/layouts_page.dart';
 import 'package:qatjobs/features/splash_screen/presentations/pages/splash_screen_page.dart';
 import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_screen_page.dart';
 
@@ -15,6 +16,9 @@ import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_scre
     ),
     AutoRoute(
       page: LoginPage,
+    ),
+    AutoRoute(
+      page: LayoutsPage,
     ),
   ],
 )

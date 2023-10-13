@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                           text:
                               'Explore all the most exciting job roles based on your interest and study major.',
                           styleName: TextStyleName.regular,
-                          typeName: TextTypeName.body2,
+                          typeName: TextTypeName.caption1,
                           textAlign: TextAlign.center,
                           color: AppColors.textPrimary100,
                           lineHeight: 0,
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: IText.set(
                                       text: 'Candidate',
                                       styleName: TextStyleName.bold,
-                                      typeName: TextTypeName.body2,
+                                      typeName: TextTypeName.caption1,
                                       textAlign: TextAlign.center,
                                       color: AppColors.textPrimary,
                                     ),
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: IText.set(
                                       text: 'Employer',
                                       styleName: TextStyleName.bold,
-                                      typeName: TextTypeName.body2,
+                                      typeName: TextTypeName.caption1,
                                       textAlign: TextAlign.center,
                                       color: AppColors.textPrimary,
                                     ),
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                       IText.set(
                         text: 'Email',
                         styleName: TextStyleName.bold,
-                        typeName: TextTypeName.body2,
+                        typeName: TextTypeName.caption1,
                       ),
                       SizedBox(height: 16.h),
                       SizedBox(
@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                       IText.set(
                         text: 'Password',
                         styleName: TextStyleName.bold,
-                        typeName: TextTypeName.body2,
+                        typeName: TextTypeName.caption1,
                       ),
                       SizedBox(height: 16.h),
                       SizedBox(
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                               IText.set(
                                 text: 'Remember me',
                                 styleName: TextStyleName.regular,
-                                typeName: TextTypeName.body2,
+                                typeName: TextTypeName.caption1,
                                 color: AppColors.textPrimary100,
                               ),
                             ],
@@ -232,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: IText.set(
                               text: 'Forgot Password ?',
                               styleName: TextStyleName.bold,
-                              typeName: TextTypeName.body2,
+                              typeName: TextTypeName.caption1,
                               color: AppColors.primary,
                             ),
                           )
@@ -262,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               child: IText.set(
                                 text: 'Login',
-                                typeName: TextTypeName.buttonLarge,
+                                typeName: TextTypeName.headline3,
                                 color: AppColors.bg100,
                               ),
                             );
@@ -278,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                             IText.set(
                               text: 'You don\'t have an account yet?',
                               styleName: TextStyleName.regular,
-                              typeName: TextTypeName.body2,
+                              typeName: TextTypeName.caption1,
                               color: AppColors.textPrimary100,
                             ),
                             TextButton(
@@ -286,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: IText.set(
                                 text: 'Sign up',
                                 styleName: TextStyleName.bold,
-                                typeName: TextTypeName.body2,
+                                typeName: TextTypeName.caption1,
                                 color: AppColors.warning,
                                 textDecoration: TextDecoration.underline,
                               ),

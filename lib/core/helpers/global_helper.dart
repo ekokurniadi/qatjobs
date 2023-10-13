@@ -7,6 +7,16 @@ class GlobalHelper {
     }
   }
 
+  static bool isEmptyList(Iterable<dynamic>? list) {
+    if (list == null) {
+      return true;
+    } else if (list.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   static bool isBoolean(bool? value) {
     bool result = false;
     if (!isEmpty(value.toString())) {

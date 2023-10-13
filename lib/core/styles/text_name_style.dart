@@ -60,8 +60,6 @@ enum TextStyleName {
 enum TextTypeName {
   display1,
   display2,
-  body1,
-  body2,
   caption1,
   caption2,
   caption3,
@@ -69,9 +67,7 @@ enum TextTypeName {
   headline2,
   headline3,
   headline4,
-  buttonLarge,
-  buttonMedium,
-  buttonSmall,
+
   large,
   extraLarge,
 }
@@ -91,21 +87,6 @@ class IText {
     double size = 14.w;
 
     switch (typeName) {
-      case TextTypeName.body1:
-        size = 16.w;
-        break;
-      case TextTypeName.body2:
-        size = 14.w;
-        break;
-      case TextTypeName.buttonLarge:
-        size = 16.w;
-        break;
-      case TextTypeName.buttonMedium:
-        size = 14.w;
-        break;
-      case TextTypeName.buttonSmall:
-        size = 12.w;
-        break;
       case TextTypeName.caption1:
         size = 14.w;
         break;

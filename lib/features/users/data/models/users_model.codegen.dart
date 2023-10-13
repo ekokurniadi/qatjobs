@@ -10,30 +10,30 @@ class UserModel with _$UserModel {
     required int id,
     required String firstName,
     String? lastName,
-    required String email,
+    String? email,
     String? phone,
     String? emailVerifiedAt,
     String? dob,
     int? gender,
-    required bool isActive,
-    required bool isVerified,
-    required int ownerId,
-    required String ownerType,
-    required String language,
-    required String profileViews,
-    required String themeMode,
+    bool? isActive,
+    bool? isVerified,
+    int? ownerId,
+    String? ownerType,
+    String? language,
+    String? profileViews,
+    String? themeMode,
     String? facebookUrl,
     String? twitterUrl,
     String? linkedinUrl,
     String? googlePlusUrl,
     String? pinterestUrl,
-    required bool isDefault,
+    bool? isDefault,
     int? stripeId,
-    required String regionCode,
-    required String fullName,
-    required String avatar,
-    List<String>? media,
-    required List<RoleModel> roles,
+    String? regionCode,
+    String? fullName,
+    String? avatar,
+    List<Map<String, dynamic>>? media,
+    List<RoleModel>? roles,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -78,10 +78,12 @@ extension UserModelX on UserModel {
         regionCode: regionCode,
         fullName: fullName,
         avatar: avatar,
-        roles: List.from(
-          roles.map(
-            (e) => e.toDomain(),
-          ),
-        ),
+        roles: roles != null
+            ? List.from(
+                roles!.map(
+                  (e) => e.toDomain(),
+                ),
+              )
+            : [],
       );
 }

@@ -34,10 +34,12 @@ dependencies:
   oktoast: ^3.3.1
   path: ^1.8.1
   path_provider: ^2.0.15
+  persistent_bottom_nav_bar: ^5.0.2
   responsive_builder: ^0.7.0
   responsive_framework: ^0.1.9
   rxdart: ^0.27.7
   shared_preferences: ^2.0.17
+  timeago: ^3.5.0
   zoom_tap_animation: ^1.1.0
   build_runner_core: ^7.2.7+1
 
