@@ -9,6 +9,8 @@ class AssetsConstant {
       'assets/svgs/illustrations/illus-welcome-screen.svg';
   static const String illusJobEmpty =
       'assets/svgs/illustrations/illus-job-empty.svg';
+  static const String illusNotificationEmpty =
+      'assets/svgs/illustrations/illus-job-empty.svg';
 
   // SVG icon
   static const String svgAssetsBottomNavHome =

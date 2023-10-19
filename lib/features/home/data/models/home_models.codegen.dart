@@ -16,7 +16,8 @@ class HomeModels with _$HomeModels {
     @JsonKey(name: 'jobCategories')
     required Map<String, JobCategoryModel> jobCategories,
     @JsonKey(name: 'allCompanies') required List<CompanyModel> allCompanies,
-    required Map<String, PlanModel> plans,
+    required List<PlanModel> plans,
+     @JsonKey(name: 'plansEnable') required bool plansEnable,
     @JsonKey(name: 'recentBlog') required List<ArticleModel> recentBlog,
   }) = _HomeModels;
 

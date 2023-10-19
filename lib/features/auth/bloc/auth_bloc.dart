@@ -7,6 +7,8 @@ import 'package:qatjobs/features/auth/data/models/login_model.codegen.dart';
 import 'package:qatjobs/features/auth/domain/entities/login_entity.codegen.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
 import 'package:qatjobs/features/users/domain/entitites/users_entity.codegen.dart';
+import 'package:qatjobs/injector.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -35,13 +37,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           message: l.errorMessage,
         ),
       ),
-      (r) => emit(
-        state.copyWith(
-          status: LoginStatus.success,
-          loginEntity: r.toDomain(),
-          message: 'Login Success',
-        ),
-      ),
+      (r) async {
+        emit(
+          state.copyWith(
+            status: LoginStatus.success,
+            loginEntity: r.toDomain(),
+            message: 'Login Success',
+          ),
+        );
+      },
     );
   }
 }

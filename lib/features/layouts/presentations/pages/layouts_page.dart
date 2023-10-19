@@ -1,12 +1,15 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/features/home/presentations/pages/home_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/job_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
+import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
 
 class LayoutsPage extends StatefulWidget {
   const LayoutsPage({super.key});
@@ -37,12 +40,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
               case 2:
                 return const JobPage();
               case 3:
-                return Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.yellow,
-                );
-
+                return const NotificationPage();
               default:
                 return Container(
                   width: double.infinity,
@@ -65,7 +63,11 @@ class _LayoutsPageState extends State<LayoutsPage> {
             selectedFontSize: 12.sp,
             unselectedFontSize: 12.sp,
             onTap: (index) {
-              context.read<BottomNavCubit>().setSelectedMenuIndex(index);
+              if (index > 2 && state.user == null) {
+                AutoRouter.of(context).push(const LoginRoute());
+              } else {
+                context.read<BottomNavCubit>().setSelectedMenuIndex(index);
+              }
             },
             items: [
               BottomNavigationBarItem(

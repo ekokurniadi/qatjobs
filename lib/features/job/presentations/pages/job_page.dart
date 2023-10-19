@@ -80,6 +80,7 @@ class _JobPageState extends State<JobPage> {
                 ],
               ),
             ),
+            const SpaceWidget(),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: 16.w,

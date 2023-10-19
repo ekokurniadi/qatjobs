@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/url_constant.dart';
 import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/features/auth/data/models/login_model.codegen.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
+import 'package:qatjobs/injector.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Either<Failures, LoginModel>> login(LoginRequestParams params);
@@ -21,13 +26,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failures, LoginModel>> login(LoginRequestParams params) async {
     try {
+      final formData = FormData.fromMap(params.toJson());
       final response = await _dio.post(
         URLConstant.login,
-        data: params.toJson(),
+        data: formData,
       );
 
       if (response.isOk) {
-        return right(LoginModel.fromJson(response.data));
+        final result = LoginModel.fromJson(response.data);
+        await getIt<SharedPreferences>().setString(
+          AppConstant.prefKeyUserLogin,
+          jsonEncode(result.user.toJson()),
+        );
+
+        return right(result);
       }
 
       return left(
@@ -35,7 +47,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     } on DioError catch (e) {
       return left(
-        ServerFailure(errorMessage: DioHelper.formatException(e)),
+        ServerFailure(errorMessage: e.message),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
       );
     }
   }

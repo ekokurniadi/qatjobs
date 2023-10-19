@@ -8,6 +8,7 @@ import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
+import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/injector.dart';
 
 class LoginPage extends StatefulWidget {
@@ -39,6 +40,10 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state.status == LoginStatus.failure) {
             showToast(state.message);
+          } else if (state.status == LoginStatus.success) {
+            context.read<BottomNavCubit>().setSelectedMenuIndex(0);
+            showToast(state.message);
+            Navigator.pop(context);
           }
         },
         child: SafeArea(
@@ -245,26 +250,38 @@ class _LoginPageState extends State<LoginPage> {
                         child: ValueListenableBuilder(
                           valueListenable: selectedRole,
                           builder: (context, role, _) {
-                            return ElevatedButton(
-                              onPressed: () {
-                                if (!_formKey.currentState!.validate()) {
-                                  return;
-                                }
-                                context.read<AuthBloc>().add(
-                                      LoginEvent(
-                                        LoginRequestParams(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          deviceName: 'mobile',
+                            return BlocBuilder<AuthBloc, AuthState>(
+                              builder: (context, state) {
+                                return ElevatedButton(
+                                  onPressed: state.status == LoginStatus.loading
+                                      ? () {}
+                                      : () {
+                                          if (!_formKey.currentState!
+                                              .validate()) {
+                                            return;
+                                          }
+                                          context.read<AuthBloc>().add(
+                                                LoginEvent(
+                                                  LoginRequestParams(
+                                                    email: emailController.text,
+                                                    password:
+                                                        passwordController.text,
+                                                    deviceName: 'mobile',
+                                                  ),
+                                                ),
+                                              );
+                                        },
+                                  child: state.status == LoginStatus.loading
+                                      ? const CircularProgressIndicator(
+                                          color: AppColors.bg200,
+                                        )
+                                      : IText.set(
+                                          text: 'Login',
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.bg100,
                                         ),
-                                      ),
-                                    );
+                                );
                               },
-                              child: IText.set(
-                                text: 'Login',
-                                typeName: TextTypeName.headline3,
-                                color: AppColors.bg100,
-                              ),
                             );
                           },
                         ),

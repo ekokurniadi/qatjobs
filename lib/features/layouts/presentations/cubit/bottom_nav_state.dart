@@ -4,9 +4,11 @@ part of 'bottom_nav_cubit.dart';
 class BottomNavState with _$BottomNavState {
   const factory BottomNavState({
     required int selectedMenuIndex,
-  })= _BottomNavState;
+    UserModel? user,
+  }) = _BottomNavState;
 
   factory BottomNavState.initial() => const BottomNavState(
-    selectedMenuIndex:0,
-  );
+        selectedMenuIndex: 0,
+        user: null,
+      );
 }

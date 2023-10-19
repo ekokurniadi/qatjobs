@@ -166,7 +166,7 @@ class HomePage extends StatelessWidget {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {},
-                                      child: Text('Read More'),
+                                      child: const Text('Read More'),
                                     ),
                                   ],
                                 )
@@ -176,11 +176,13 @@ class HomePage extends StatelessWidget {
                         },
                       ),
                     ),
-                    const SpaceWidget(),
-                    const SectionTitleWidget(
-                      title: 'Pricing Plan',
-                    ),
-                    _SectionPlan(state.data?.plans)
+                    if (state.data?.plansEnable ?? false) ...[
+                      const SpaceWidget(),
+                      const SectionTitleWidget(
+                        title: 'Pricing Plan',
+                      ),
+                      _SectionPlan(state.data?.plans)
+                    ]
                   ],
                 ),
               ),
@@ -196,7 +198,7 @@ class _SectionPlan extends StatelessWidget {
   const _SectionPlan(
     this.plans,
   );
-  final Map<String, PlanModel>? plans;
+  final List<PlanModel>? plans;
 
   @override
   Widget build(BuildContext context) {
@@ -207,9 +209,9 @@ class _SectionPlan extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         children: List.generate(
-          (plans ?? {}).length,
+          (plans ?? []).length,
           (index) {
-            final data = plans?.entries.elementAt(index);
+            final data = plans?[index];
             return Container(
               width: MediaQuery.sizeOf(context).width / 2 - 18.w,
               // padding: const EdgeInsets.all(16),
@@ -240,7 +242,7 @@ class _SectionPlan extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IText.set(
-                        text: data?.value.name ?? '',
+                        text: data?.name ?? '',
                         styleName: TextStyleName.bold,
                         typeName: TextTypeName.headline1,
                         color: AppColors.textPrimary,
@@ -251,13 +253,13 @@ class _SectionPlan extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IText.set(
-                            text: (data?.value.amount ?? 0).toString(),
+                            text: (data?.amount ?? 0).toString(),
                             styleName: TextStyleName.bold,
                             typeName: TextTypeName.headline1,
                             color: AppColors.danger100,
                           ),
                           IText.set(
-                            text: data?.value.salaryCurrency.currencyIcon ?? '',
+                            text: data?.salaryCurrency.currencyIcon ?? '',
                             styleName: TextStyleName.bold,
                             typeName: TextTypeName.headline1,
                             color: AppColors.danger100,
@@ -281,7 +283,7 @@ class _SectionPlan extends StatelessWidget {
                           ),
                           SizedBox(width: 2.w),
                           IText.set(
-                            text: (data?.value.allowedJobs ?? 0).toString(),
+                            text: (data?.allowedJobs ?? 0).toString(),
                             styleName: TextStyleName.regular,
                             typeName: TextTypeName.headline3,
                             color: AppColors.textPrimary100,
