@@ -1,10 +1,12 @@
 import "package:dartz/dartz.dart";
+import "package:injectable/injectable.dart";
 import "package:qatjobs/core/error/failures.dart";
 import "package:qatjobs/core/usecases/usecases.dart";
 import "package:qatjobs/features/job_category/domain/repositories/job_category_repository.dart";
 import "package:qatjobs/features/job_category/data/datasources/remote/job_category_remote_datasource.dart";
 import "package:qatjobs/features/job_category/data/models/job_category_model.codegen.dart";
 
+@LazySingleton(as:JobCategoryRepository)
 class JobCategoryRepositoryImpl implements JobCategoryRepository {
   final JobCategoryRemoteDataSource _jobCategoryRemoteDataSource;
 

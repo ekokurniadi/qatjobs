@@ -1,5 +1,5 @@
 import "package:freezed_annotation/freezed_annotation.dart";
-
+import 'package:qatjobs/features/jobs_skill/domain/entities/jobs_skill_entity.codegen.dart';
 part "jobs_skill_model.codegen.freezed.dart";
 part "jobs_skill_model.codegen.g.dart";
 
@@ -13,4 +13,12 @@ class JobsSkillModel with _$JobsSkillModel {
 
   factory JobsSkillModel.fromJson(Map<String, dynamic> json) =>
       _$JobsSkillModelFromJson(json);
+}
+
+extension JobsSkillModelX on JobsSkillModel {
+  JobsSkillEntity toDomain() => JobsSkillEntity(
+        id: id,
+        name: name,
+        description: description,
+      );
 }

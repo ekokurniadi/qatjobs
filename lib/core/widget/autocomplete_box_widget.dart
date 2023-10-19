@@ -1,12 +1,15 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/constant/url_constant.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:qatjobs/features/job/presentations/widgets/job_filter.dart';
 
 class AutoCompleteBoxWidget extends StatefulWidget {
   const AutoCompleteBoxWidget({
@@ -95,7 +98,9 @@ class _AutoCompleteBoxWidgetState extends State<AutoCompleteBoxWidget> {
                   ),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () async{
+               AutoRouter.of(context).push(const JobFilterRoute());
+              },
               child: SvgPicture.asset(AssetsConstant.svgAssetsIconFilter),
             ),
           )

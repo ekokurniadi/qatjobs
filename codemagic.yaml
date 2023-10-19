@@ -1,0 +1,45 @@
+# INFO: Please avoid modifying and running workflows directly on the dashboard, unless absolutely necessary.
+
+definitions:
+  env_versions_android: &env_versions_android
+    flutter: 3.10.5
+  scripts:
+    - &build_runner
+      name: Running build runner and build
+      script: |
+        set -ex
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
+  email_release: &email_release
+    email:
+      recipients:
+        - ekokurniadi.02@gmail.com
+      notify:
+        success: true
+        failure: true
+  artifacts:
+    - &apk build/**/outputs/apk/**/*.apk
+
+workflows:
+  # ANDROID WORKFLOW
+  android-distribution-release:
+    name: Android Distribution - Release
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    environment:
+      <<: *env_versions_android
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "build/*"
+          include: true
+    scripts:
+      - *build_runner
+      - name: Build apk for distribution
+        script: |
+          flutter build apk --release
+    artifacts:
+      - *apk
+    publishing:
+      <<: *email_release

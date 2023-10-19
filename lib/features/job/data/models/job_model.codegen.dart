@@ -1,6 +1,6 @@
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:qatjobs/features/active_featured/data/models/active_featured_model.codegen.dart";
-import "package:qatjobs/features/carrier_level/data/models/carrier_level_model.codegen.dart";
+import "package:qatjobs/features/carrier_level/data/models/career_level_model.codegen.dart";
 import "package:qatjobs/features/company/data/models/company_model.codegen.dart";
 import "package:qatjobs/features/currency/data/models/currency_model.codegen.dart";
 import "package:qatjobs/features/degree_level/data/models/degree_level_model.codegen.dart";
@@ -45,7 +45,6 @@ class JobModel with _$JobModel {
     String? createdAt,
     String? updatedAt,
     int? experience,
-    String? isDefault,
     int? isCreatedByAdmin,
     ActiveFeaturedModel? activeFeatured,
     CompanyModel? company,
@@ -56,7 +55,7 @@ class JobModel with _$JobModel {
     SalaryPeriod? salaryPeriod,
     SubmissionStatus? submissionStatus,
     DegreeLevelModel? degreeLevel,
-    CarrierLevelModel? careerLevel,
+    CareerLevelModel? careerLevel,
   }) = _JobModel;
 
   factory JobModel.fromJson(Map<String, dynamic> json) =>

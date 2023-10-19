@@ -67,10 +67,12 @@ class MainApp extends StatelessWidget {
                       name: MOBILE,
                       scaleFactor: scale,
                     ),
+                    ResponsiveBreakpoint.autoScale(450,
+                        name: MOBILE, scaleFactor: scale),
+                    const ResponsiveBreakpoint.autoScale(600),
                     const ResponsiveBreakpoint.autoScale(
                       800,
                       name: TABLET,
-                      scaleFactor: 0.5,
                     ),
                     const ResponsiveBreakpoint.autoScale(1000, name: TABLET),
                     const ResponsiveBreakpoint.autoScale(1200, name: DESKTOP),
