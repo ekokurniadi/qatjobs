@@ -7,6 +7,7 @@ import "package:qatjobs/core/extensions/dio_response_extension.dart";
 import "package:qatjobs/core/helpers/dio_helper.dart";
 import "package:qatjobs/core/helpers/global_helper.dart";
 import "package:qatjobs/core/usecases/usecases.dart";
+import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
 
@@ -16,9 +17,13 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
 
   final Dio _dio;
   @override
-  Future<Either<Failures, List<JobModel>>> getAJob(NoParams params) async {
+  Future<Either<Failures, List<JobModel>>> getAJob(
+      JobFilterModel params) async {
     try {
-      final response = await _dio.post(URLConstant.jobSearch);
+      final response = await _dio.post(
+        URLConstant.jobSearch,
+        data: params.toJson(),
+      );
 
       if (response.isOk) {
         if (!GlobalHelper.isEmpty(response.data['data'])) {
@@ -40,6 +45,12 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
       return left(
         ServerFailure(
           errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
         ),
       );
     }

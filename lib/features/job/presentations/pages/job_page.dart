@@ -1,19 +1,26 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
+import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/autocomplete_box_widget.dart';
+import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class JobPage extends StatefulWidget {
   const JobPage({super.key});
@@ -28,7 +35,9 @@ class _JobPageState extends State<JobPage> {
   @override
   void initState() {
     jobsBloc = getIt<JobsBloc>();
-    jobsBloc.add(const JobsEvent.getJobs());
+    jobsBloc.add(
+      JobsEvent.getJobs(JobFilterModel(), false),
+    );
     super.initState();
   }
 
@@ -69,10 +78,10 @@ class _JobPageState extends State<JobPage> {
                               lineHeight: 1.2.h,
                             ),
                           ),
-                          SpaceWidget(
-                            space: 16.h,
+                          const SpaceWidget(),
+                          AutoCompleteBoxWidget(
+                            jobsBloc: jobsBloc,
                           ),
-                          const AutoCompleteBoxWidget(),
                         ],
                       ),
                     ),
@@ -81,46 +90,95 @@ class _JobPageState extends State<JobPage> {
               ),
             ),
             const SpaceWidget(),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-              ),
-              child: const SectionTitleWidget(
-                title: 'Job List',
-              ),
+            BlocBuilder(
+              bloc: jobsBloc,
+              builder: (context, JobsState state) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                  ),
+                  child: SectionTitleWidget(
+                    title: jobsBloc.isJobFilterNotEmpty(state.jobFilter)
+                        ? 'Job List (Filtered)'
+                        : 'Job List ',
+                  ),
+                );
+              },
             ),
             Flexible(
               child: BlocBuilder(
                 bloc: jobsBloc,
                 builder: (context, JobsState state) {
-                  if (state.status == JobStatus.loading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                  if (state.status == JobStatus.loading && state.jobs.isEmpty) {
+                    return ListView.builder(
+                        itemCount: 3,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            width: double.infinity,
+                            padding: defaultPadding,
+                            margin: EdgeInsets.only(bottom: 16.h),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.r),
+                              color: AppColors.bg200,
+                              boxShadow: AppColors.defaultShadow,
+                            ),
+                            child: ShimmerBoxWidget(
+                              width: double.infinity,
+                              height: 200.h,
+                            ),
+                          );
+                        });
+                  } else if (state.jobs.isEmpty) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(AssetsConstant.illusJobEmpty),
+                        const SpaceWidget(),
+                        IText.set(
+                          text: 'Job is empty',
+                          textAlign: TextAlign.left,
+                          styleName: TextStyleName.bold,
+                          typeName: TextTypeName.large,
+                          color: AppColors.bg100,
+                          lineHeight: 1.2.h,
+                        )
+                      ],
                     );
                   }
-                  return state.jobs.isEmpty || state.status == JobStatus.failure
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(AssetsConstant.illusJobEmpty),
-                            const SpaceWidget(),
-                            IText.set(
-                              text: 'Job is empty',
-                              textAlign: TextAlign.left,
-                              styleName: TextStyleName.bold,
-                              typeName: TextTypeName.large,
-                              color: AppColors.bg100,
-                              lineHeight: 1.2.h,
-                            )
-                          ],
-                        )
-                      : ListView.builder(
-                          padding: defaultPadding,
-                          shrinkWrap: true,
-                          itemCount: state.jobs.length,
-                          itemBuilder: (context, index) {
-                            final data = state.jobs[index];
-                            return Container(
+                  return LazyLoadScrollView(
+                    onEndOfPage: () {
+                      if (!state.hasMaxReached) {
+                        jobsBloc.add(
+                          JobsEvent.getJobs(
+                            JobFilterModel(page: state.currentPage + 1),
+                            state.isFilterActive,
+                          ),
+                        );
+                      }
+                    },
+                    child: PullToRefreshWidget(
+                      onRefresh: () async {
+                        jobsBloc.add(
+                          JobsEvent.getJobs(
+                            JobFilterModel(),
+                            state.isFilterActive,
+                          ),
+                        );
+                      },
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: defaultPadding,
+                        shrinkWrap: true,
+                        itemCount: state.jobs.isEmpty ? 3 : state.jobs.length,
+                        itemBuilder: (context, index) {
+                          final data = state.jobs[index];
+                          return ZoomTapAnimation(
+                            onTap: () {
+                              AutoRouter.of(context)
+                                  .push(JobDetailRoute(jobModel: data));
+                            },
+                            child: Container(
                               width: double.infinity,
                               padding: defaultPadding,
                               margin: EdgeInsets.only(bottom: 16.h),
@@ -331,14 +389,32 @@ class _JobPageState extends State<JobPage> {
                                   )
                                 ],
                               ),
-                            );
-                          },
-                        );
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
                 },
               ),
             )
           ],
         ),
+      ),
+      floatingActionButton: BlocBuilder(
+        bloc: jobsBloc,
+        builder: (context, JobsState state) {
+          return Visibility(
+            visible: jobsBloc.isJobFilterNotEmpty(state.jobFilter),
+            child: FloatingActionButton.extended(
+              backgroundColor: AppColors.warning,
+              onPressed: () {
+                jobsBloc.add(JobsEvent.getJobs(JobFilterModel(), false));
+              },
+              label: const Text('Reset Filter'),
+            ),
+          );
+        },
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
+import 'package:qatjobs/features/article/presentations/pages/article_list_page.dart';
 import 'package:qatjobs/features/home/presentations/pages/home_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/job_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
@@ -32,11 +33,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
               case 0:
                 return const HomePage();
               case 1:
-                return Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.blue,
-                );
+                return const ArticleListPage();
               case 2:
                 return const JobPage();
               case 3:
@@ -81,7 +78,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
                 ),
               ),
               BottomNavigationBarItem(
-                label: 'Feeds',
+                label: 'Articles',
                 icon: SvgPicture.asset(
                   AssetsConstant.svgAssetsBottomNavFeeds,
                   width: 28.w,

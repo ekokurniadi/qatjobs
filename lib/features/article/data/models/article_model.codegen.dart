@@ -6,13 +6,13 @@ part "article_model.codegen.g.dart";
 
 @freezed
 class ArticleModel with _$ArticleModel {
-  const factory ArticleModel({
+  factory ArticleModel({
     required int id,
     required String title,
     required String description,
     required String createdAt,
     required bool isDefault,
-    required String commentsCount,
+    required dynamic commentsCount,
     required String blogImageUrl,
     required List<Map<String, dynamic>> postAssignCategories,
     required UserModel user,

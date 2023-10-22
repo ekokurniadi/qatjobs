@@ -14,7 +14,7 @@ class JobCategoryModel with _$JobCategoryModel {
     String? imageUrl,
     bool? isDefault,
     String? isFeaturedLabel,
-    String? jobsCount,
+    dynamic jobsCount,
   }) = _JobCategoryModel;
 
   factory JobCategoryModel.fromJson(Map<String, dynamic> json) =>
@@ -30,5 +30,6 @@ extension JobCategoryModelX on JobCategoryModel {
         imageUrl: imageUrl,
         isDefault: isDefault,
         isFeaturedLabel: isFeaturedLabel,
+        jobsCount: jobsCount,
       );
 }

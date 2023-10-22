@@ -41,20 +41,53 @@ class DioHelper {
     log('token user: $token');
   }
 
-  static String formatException(DioError e) {
-    String message = "Failed to process your request";
-    // Handle DioError type-specific errors
-    if (e.response != null) {
-      log('DioError response status: ${e.response?.statusCode}');
-      log('DioError response data: ${e.response?.data}');
-      log('DioError response headers: ${e.response?.headers}');
-      if (e.response?.data != null) {
-        message = e.response?.data['message'] ?? 'Something went wrong';
-      }
-    } else {
-      log('DioError: ${e.message}');
-      message = e.message;
+  static String _handleError(int? statusCode, Response? error) {
+    switch (statusCode) {
+      case 400:
+        return 'Bad request';
+      case 401:
+        return 'Unauthorized';
+      case 403:
+        return 'Forbidden';
+      case 404:
+        return error?.statusMessage ?? 'Not Found';
+      case 500:
+        return 'Internal server error';
+      case 502:
+        return 'Bad gateway';
+      default:
+        return 'Oops something went wrong';
     }
-    return message;
+  }
+
+  static String formatException(DioError dioError) {
+    switch (dioError.type) {
+      case DioErrorType.cancel:
+        return "Request to API server was cancelled";
+
+      case DioErrorType.connectTimeout:
+        return "Connection timeout with API server";
+
+      case DioErrorType.receiveTimeout:
+        return "Receive timeout in connection with API server";
+
+      case DioErrorType.response:
+        return _handleError(
+          dioError.response?.statusCode,
+          dioError.response,
+        );
+
+      case DioErrorType.sendTimeout:
+        return "Send timeout in connection with API server";
+
+      case DioErrorType.other:
+        if (dioError.message.contains("SocketException")) {
+          return 'No Internet';
+        }
+        return "Unexpected error occurred";
+
+      default:
+        return "Something went wrong";
+    }
   }
 }

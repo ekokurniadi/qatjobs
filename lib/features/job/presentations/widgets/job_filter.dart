@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,7 @@ import 'package:qatjobs/features/carrier_level/presentations/bloc/career_level_b
 import 'package:qatjobs/features/functional_area/domain/entities/functional_area_entity.codegen.dart';
 import 'package:qatjobs/features/functional_area/presentations/bloc/functional_area_bloc.dart';
 import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
+import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job_category/domain/entities/job_category_entity.codegen.dart';
 import 'package:qatjobs/features/job_category/presentations/bloc/job_category_bloc.dart';
 import 'package:qatjobs/features/job_type/presentations/bloc/job_type_bloc.dart';
@@ -21,7 +23,11 @@ import 'package:qatjobs/features/jobs_skill/presentations/bloc/job_skill_bloc.da
 import 'package:qatjobs/injector.dart';
 
 class JobFilterPage extends StatefulWidget {
-  const JobFilterPage({super.key});
+  const JobFilterPage({
+    super.key,
+    required this.jobsBloc,
+  });
+  final JobsBloc jobsBloc;
 
   @override
   State<JobFilterPage> createState() => _JobFilterPageState();
@@ -30,11 +36,17 @@ class JobFilterPage extends StatefulWidget {
 class _JobFilterPageState extends State<JobFilterPage> {
   final ValueNotifier<JobFilterModel> jobFilterModel = ValueNotifier(
     JobFilterModel(
-      perPage: 99,
-      salaryFrom: 0,
-      salaryTo: 0,
+      perPage: 999,
     ),
   );
+
+  @override
+  void initState() {
+    if (widget.jobsBloc.state.isFilterActive) {
+      jobFilterModel.value = widget.jobsBloc.state.jobFilter;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +93,16 @@ class _JobFilterPageState extends State<JobFilterPage> {
                         borderRadius: defaultRadius,
                       ),
                       child: DropdownSearchWidget<JobCategoryEntity>(
+                        selectedItem: state.categories.firstWhereOrNull(
+                          (element) =>
+                              element.id == jobFilterModel.value.jobCategoryId,
+                        ),
                         items: state.categories,
                         hintText: 'Select Job Category',
                         itemAsString: (val) => val.name,
                         onChanged: (cat) {
                           jobFilterModel.value.jobCategoryId = cat?.id;
+                          setState(() {});
                         },
                       ),
                     );
@@ -116,11 +133,16 @@ class _JobFilterPageState extends State<JobFilterPage> {
                         borderRadius: defaultRadius,
                       ),
                       child: DropdownSearchWidget<JobsSkillEntity>(
+                        selectedItem: state.skills.firstWhereOrNull(
+                          (element) =>
+                              element.id == jobFilterModel.value.skillId,
+                        ),
                         items: state.skills,
                         hintText: 'Select Job Skill',
                         itemAsString: (val) => val.name,
                         onChanged: (skill) {
                           jobFilterModel.value.skillId = skill?.id;
+                          setState(() {});
                         },
                       ),
                     );
@@ -181,11 +203,16 @@ class _JobFilterPageState extends State<JobFilterPage> {
                         borderRadius: defaultRadius,
                       ),
                       child: DropdownSearchWidget<CareerLevelEntity>(
+                        selectedItem: state.careerLevels.firstWhereOrNull(
+                          (element) =>
+                              element.id == jobFilterModel.value.careerLevelId,
+                        ),
                         items: state.careerLevels,
                         hintText: 'Select Career Level',
                         itemAsString: (val) => val.levelName,
                         onChanged: (career) {
                           jobFilterModel.value.careerLevelId = career?.id;
+                          setState(() {});
                         },
                       ),
                     );
@@ -216,11 +243,17 @@ class _JobFilterPageState extends State<JobFilterPage> {
                         borderRadius: defaultRadius,
                       ),
                       child: DropdownSearchWidget<FunctionalAreaEntity>(
+                        selectedItem: state.functionalAreas.firstWhereOrNull(
+                          (element) =>
+                              element.id ==
+                              jobFilterModel.value.functionalAreaId,
+                        ),
                         items: state.functionalAreas,
                         hintText: 'Select Functional Area',
                         itemAsString: (val) => val.name,
                         onChanged: (func) {
                           jobFilterModel.value.functionalAreaId = func?.id;
+                          setState(() {});
                         },
                       ),
                     );
@@ -298,14 +331,15 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IText.set(
-                    text: 'From ${jobFilterModel.value.salaryFrom! / 1000}K',
+                    text:
+                        'From ${(jobFilterModel.value.salaryFrom ?? 0) / 1000}K',
                     textAlign: TextAlign.left,
                     styleName: TextStyleName.regular,
                     typeName: TextTypeName.caption2,
                     color: AppColors.textPrimary,
                   ),
                   IText.set(
-                    text: 'To ${jobFilterModel.value.salaryTo! / 1000}K',
+                    text: 'To ${(jobFilterModel.value.salaryTo ?? 0) / 1000}K',
                     textAlign: TextAlign.left,
                     styleName: TextStyleName.regular,
                     typeName: TextTypeName.caption2,
@@ -361,19 +395,70 @@ class _JobFilterPageState extends State<JobFilterPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: AppColors.neutral,
-            ),
-          ),
-        ),
-        padding: defaultPadding,
-        child: ElevatedButton(
-          child: const Text('Apply Filter'),
-          onPressed: () {},
-        ),
+      bottomNavigationBar: BlocListener(
+        bloc: widget.jobsBloc,
+        listener: (context, JobsState state) {
+          if (state.status == JobStatus.success) {
+            Navigator.pop(context);
+          } else if (state.status == JobStatus.failure) {
+            showToast(state.message);
+          }
+        },
+        child: ValueListenableBuilder(
+            valueListenable: jobFilterModel,
+            builder: (context, filter, _) {
+              return Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: AppColors.neutral,
+                    ),
+                  ),
+                ),
+                padding: defaultPadding,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: !widget.jobsBloc.isJobFilterNotEmpty(filter)
+                            ? null
+                            : () {
+                                widget.jobsBloc.add(
+                                  JobsEvent.getJobs(
+                                    filter,
+                                    widget.jobsBloc.isJobFilterNotEmpty(filter),
+                                  ),
+                                );
+                              },
+                        child: const Text('Apply Filter'),
+                      ),
+                    ),
+                    if (widget.jobsBloc.isJobFilterNotEmpty(filter)) ...[
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.danger100,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              jobFilterModel.value = JobFilterModel();
+                            });
+                            widget.jobsBloc.add(
+                              JobsEvent.getJobs(
+                                JobFilterModel(),
+                                false,
+                              ),
+                            );
+                          },
+                          child: const Text('Reset Filter'),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }),
       ),
     );
   }

@@ -10,16 +10,19 @@ class DropdownSearchWidget<T> extends StatelessWidget {
     required this.hintText,
     this.itemAsString,
     this.onChanged,
+    this.selectedItem,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
   final void Function(T?)? onChanged;
   final String hintText;
+  final T? selectedItem;
 
   @override
   Widget build(BuildContext context) {
     return DropdownSearch<T>(
       items: items,
+      selectedItem: selectedItem,
       onChanged: onChanged,
       autoValidateMode: AutovalidateMode.onUserInteraction,
       popupProps: const PopupPropsMultiSelection.menu(

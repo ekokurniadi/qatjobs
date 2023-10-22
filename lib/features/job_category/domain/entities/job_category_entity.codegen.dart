@@ -12,5 +12,6 @@ class JobCategoryEntity with _$JobCategoryEntity {
     String? imageUrl,
     bool? isDefault,
     String? isFeaturedLabel,
+    dynamic jobsCount,
   }) = _JobCategoryEntity;
 }

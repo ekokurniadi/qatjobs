@@ -1,6 +1,7 @@
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:qatjobs/features/active_featured/domain/entities/active_featured_entity.codegen.dart";
 import "package:qatjobs/features/company/domain/entities/company_entity.codegen.dart";
+import "package:qatjobs/features/functional_area/domain/entities/functional_area_entity.codegen.dart";
 import "package:qatjobs/features/job_category/domain/entities/job_category_entity.codegen.dart";
 import "package:qatjobs/features/job_shift/domain/entities/job_shift_entity.codegen.dart";
 import "package:qatjobs/features/jobs_skill/domain/entities/jobs_skill_entity.codegen.dart";
@@ -33,7 +34,7 @@ class JobEntity with _$JobEntity {
     bool? isFreelance,
     bool? isSuspended,
     int? status,
-    String? submissionStatusId,
+    dynamic submissionStatusId,
     String? createdAt,
     String? updatedAt,
     int? experience,
@@ -43,5 +44,6 @@ class JobEntity with _$JobEntity {
     CompanyEntity? company,
     JobsSkillEntity? jobsSkill,
     JobCategoryEntity? jobCategory,
+    FunctionalAreaEntity? functionalArea,
   }) = _JobEntity;
 }

@@ -1,0 +1,6 @@
+Release Note :
+1. Change circular progress indicator to shimmer
+2. Article page, article list, article detail, get article by category, lazy load get article
+3. Job page, job filter, job search autocomplete, reset filter, lazy load get jobs, detail jobs
+4. Browse all latest jobs
+5. Pull to refresh

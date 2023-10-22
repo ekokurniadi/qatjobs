@@ -5,6 +5,7 @@ part "job_filter.codegen.g.dart";
 
 @unfreezed
 class JobFilterModel with _$JobFilterModel {
+  @JsonSerializable(includeIfNull: false)
   factory JobFilterModel({
     String? title,
     String? location,
@@ -17,8 +18,8 @@ class JobFilterModel with _$JobFilterModel {
     int? skillId,
     int? companyId,
     int? experience,
-    @JsonKey(name: 'perPage', defaultValue: 10) int? perPage,
-    @JsonKey(defaultValue: 1) int? page,
+    @JsonKey(name: 'perPage') @Default(10) int? perPage,
+    @Default(1) int? page,
   }) = _JobFilterModel;
 
   factory JobFilterModel.fromJson(Map<String, dynamic> json) =>

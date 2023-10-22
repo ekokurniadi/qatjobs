@@ -10,4 +10,8 @@ class URLConstant {
   static const String careerLevel = '/jobs/career-levels';
   static const String functionalArea = '/jobs/functional-areas';
   static const String jobTypes = '/jobs/types';
+  static const String article = '/articles';
+  static const String articleDetail = '/articles/detail/';
+  static const String articleCategory = '/articles/categories';
+  static const String articleByCategoryId = '/articles/by-category/';
 }

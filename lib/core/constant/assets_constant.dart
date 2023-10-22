@@ -23,4 +23,5 @@ class AssetsConstant {
       'assets/svgs/icon/ic-notification.svg';
   static const String svgAssetsIconFilter = 'assets/svgs/icon/ic-filter.svg';
   static const String svgAssetsJobs = 'assets/svgs/icon/ic-work-experience.svg';
+  static const String svgAssetsSaveJobs = 'assets/svgs/icon/ic-save-job.svg';
 }
