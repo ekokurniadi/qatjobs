@@ -138,10 +138,18 @@ class _JobPageState extends State<JobPage> {
                         IText.set(
                           text: 'Job is empty',
                           textAlign: TextAlign.left,
-                          styleName: TextStyleName.bold,
+                          styleName: TextStyleName.medium,
                           typeName: TextTypeName.large,
-                          color: AppColors.bg100,
+                          color: AppColors.textPrimary,
                           lineHeight: 1.2.h,
+                        ),
+                        const SpaceWidget(),
+                        IText.set(
+                          text: 'Please check your keyword or filters',
+                          textAlign: TextAlign.left,
+                          styleName: TextStyleName.regular,
+                          typeName: TextTypeName.caption1,
+                          color: AppColors.textPrimary100,
                         )
                       ],
                     );
@@ -170,7 +178,7 @@ class _JobPageState extends State<JobPage> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: defaultPadding,
                         shrinkWrap: true,
-                        itemCount: state.jobs.isEmpty ? 3 : state.jobs.length,
+                        itemCount: state.jobs.length,
                         itemBuilder: (context, index) {
                           final data = state.jobs[index];
                           return ZoomTapAnimation(

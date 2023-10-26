@@ -6,5 +6,6 @@ import "package:qatjobs/features/article/data/models/article_model.codegen.dart"
 
 abstract class ArticleRemoteDataSource {
   Future<Either<Failures, List<ArticleModel>>> getArticle(PagingRequestParams params);
+  Future<Either<Failures, List<ArticleModel>>> getArticleByCategory(PagingRequestParams params);
    Future<Either<Failures, ArticleDetailModel>> getArticleDetail(int params);
 }

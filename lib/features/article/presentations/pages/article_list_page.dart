@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,6 +43,24 @@ class _ArticleListPageState extends State<ArticleListPage> {
     );
     articleBloc.add(ArticleEvent.getArticle(PagingRequestParams()));
     super.initState();
+  }
+
+  void getArticle() {
+    if (selectedCategory.value == 0) {
+      articleBloc.add(
+        ArticleEvent.getArticle(
+          PagingRequestParams(),
+        ),
+      );
+    } else {
+      articleBloc.add(
+        ArticleEvent.getArticleByCategory(
+          PagingRequestParams(
+            id: selectedCategory.value == 0 ? null : selectedCategory.value,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -91,15 +110,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               articleCategoryBloc.add(
                 const ArticleCategoryEvent.started(),
               );
-              articleBloc.add(
-                ArticleEvent.getArticle(
-                  PagingRequestParams(
-                    id: selectedCategory.value == 0
-                        ? null
-                        : selectedCategory.value,
-                  ),
-                ),
-              );
+              getArticle();
             },
             child: SingleChildScrollView(
               child: SizedBox(
@@ -147,16 +158,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                                     onTap: () {
                                       selectedCategory.value =
                                           state.articleCategories[index].id;
-
-                                      articleBloc.add(
-                                        ArticleEvent.getArticle(
-                                          PagingRequestParams(
-                                            id: selectedCategory.value == 0
-                                                ? null
-                                                : selectedCategory.value,
-                                          ),
-                                        ),
-                                      );
+                                      getArticle();
                                     },
                                     child: ValueListenableBuilder(
                                         valueListenable: selectedCategory,
@@ -207,67 +209,178 @@ class _ArticleListPageState extends State<ArticleListPage> {
                         ),
                       ),
                       const SpaceWidget(),
-                      const SectionTitleWidget(title: 'List Article'),
+                      const SectionTitleWidget(title: 'Article List'),
                       const SpaceWidget(),
                       Flexible(
                         child: BlocBuilder<ArticleBloc, ArticleState>(
                           builder: (context, state) {
-                            state.articles.sort((a,b)=> a.id.compareTo(b.id));
-                            return state.articles.isEmpty ||
+                            return (state.isByCategory
+                                        ? state.articlesByCategory.isEmpty
+                                        : state.articles.isEmpty &&
+                                            state.status !=
+                                                ArticleStatus.loading) ||
                                     state.status == ArticleStatus.failure
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      SvgPicture.asset(
-                                          AssetsConstant.illusJobEmpty),
-                                      const SpaceWidget(),
-                                      IText.set(
-                                        text: 'Article is empty',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.medium,
-                                        typeName: TextTypeName.large,
-                                        color: AppColors.textPrimary,
-                                        lineHeight: 1.2.h,
-                                      ),
-                                    ],
-                                  )
+                                ? BlocBuilder<ArticleCategoryBloc,
+                                        ArticleCategoryState>(
+                                    builder: (context, state) {
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        SpaceWidget(
+                                          space: MediaQuery.sizeOf(context).height * 0.15,
+                                        ),
+                                        SvgPicture.asset(
+                                            AssetsConstant.illusJobEmpty),
+                                        const SpaceWidget(),
+                                        IText.set(
+                                          text: 'Article is empty',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.medium,
+                                          typeName: TextTypeName.large,
+                                          color: AppColors.textPrimary,
+                                          lineHeight: 1.2.h,
+                                        ),
+                                        if (selectedCategory.value != 0) ...[
+                                          const SpaceWidget(),
+                                          IText.set(
+                                            text:
+                                                'Article with category name ${state.articleCategories.firstWhereOrNull((element) => element.id == selectedCategory.value)?.name ?? ''} not found, please select another category',
+                                            textAlign: TextAlign.center,
+                                            styleName: TextStyleName.regular,
+                                            typeName: TextTypeName.caption1,
+                                            color: AppColors.textPrimary100,
+                                          )
+                                        ],
+                                      ],
+                                    );
+                                  })
                                 : LazyLoadScrollView(
                                     onEndOfPage: () {
                                       if (!state.hasMaxReached) {
-                                        articleBloc.add(
-                                          ArticleEvent.getArticle(
-                                            PagingRequestParams(
-                                              id: selectedCategory.value == 0
-                                                  ? null
-                                                  : selectedCategory.value,
-                                              page: state.currentPage + 1,
+                                        if (selectedCategory.value == 0) {
+                                          articleBloc.add(
+                                            ArticleEvent.getArticle(
+                                              PagingRequestParams(
+                                                page: state.currentPage + 1,
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        } else {
+                                          articleBloc.add(
+                                            ArticleEvent.getArticleByCategory(
+                                              PagingRequestParams(
+                                                id: selectedCategory.value,
+                                                page: state.currentPage + 1,
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     child: ListView.builder(
                                       padding: EdgeInsets.only(bottom: 150.h),
                                       shrinkWrap: true,
-                                      itemCount: state.articles.length,
+                                      itemCount: state.status ==
+                                                  ArticleStatus.loading &&
+                                              (state.isByCategory
+                                                  ? state.articlesByCategory
+                                                      .isEmpty
+                                                  : state.articles.isEmpty)
+                                          ? 3
+                                          : state.isByCategory
+                                              ? state.articlesByCategory.length
+                                              : state.articles.length,
                                       primary: true,
                                       itemBuilder: (context, index) {
-                                        return ArticleCardItem(
-                                          isLoading: state.status ==
-                                              ArticleStatus.loading,
-                                          articleModel: state.articles[index],
-                                          onTap: () {
-                                            AutoRouter.of(context).push(
-                                              ArticleDetailRoute(
-                                                articleModel:
-                                                    state.articles[index],
-                                              ),
-                                            );
-                                          },
-                                        );
+                                        if (state.status ==
+                                                ArticleStatus.loading &&
+                                            (state.isByCategory
+                                                ? state
+                                                    .articlesByCategory.isEmpty
+                                                : state.articles.isEmpty)) {
+                                          return Container(
+                                            padding: defaultPadding,
+                                            margin:
+                                                EdgeInsets.only(bottom: 16.h),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                              color: AppColors.bg200,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: AppColors.neutral,
+                                                  spreadRadius: 0.1,
+                                                  blurRadius: 0.1,
+                                                ),
+                                                BoxShadow(
+                                                  color: AppColors.neutral,
+                                                  spreadRadius: 0.1,
+                                                  blurRadius: 0.1,
+                                                )
+                                              ],
+                                            ),
+                                            child: const Column(
+                                              children: [
+                                                ShimmerBoxWidget(
+                                                  width: double.infinity,
+                                                  height: 200,
+                                                ),
+                                                SpaceWidget(),
+                                                ShimmerBoxWidget(
+                                                  width: double.infinity,
+                                                  height: 20,
+                                                ),
+                                                SpaceWidget(),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: ShimmerBoxWidget(
+                                                        width: double.infinity,
+                                                        height: 20,
+                                                      ),
+                                                    ),
+                                                    SpaceWidget(
+                                                      direction:
+                                                          Direction.horizontal,
+                                                    ),
+                                                    Expanded(
+                                                      child: ShimmerBoxWidget(
+                                                        width: double.infinity,
+                                                        height: 20,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        } else {
+                                          return ArticleCardItem(
+                                            isLoading: false,
+                                            articleModel: state.isByCategory
+                                                ? state
+                                                    .articlesByCategory[index]
+                                                : state.articles[index],
+                                            onTap: () {
+                                              AutoRouter.of(context).push(
+                                                ArticleDetailRoute(
+                                                  articleModel: state
+                                                          .isByCategory
+                                                      ? state.articlesByCategory[
+                                                          index]
+                                                      : state.articles[index],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }
                                       },
                                     ),
                                   );

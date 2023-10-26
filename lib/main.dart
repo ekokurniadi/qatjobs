@@ -14,6 +14,7 @@ import 'package:qatjobs/features/connectivity/presentations/bloc/connectivity_bl
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
+import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -29,13 +30,24 @@ Future<void> main() async {
       statusBarColor: Colors.transparent,
     ),
   );
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
-  MainApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
   final _appRouter = AppRouter();
+
+  @override
+  void dispose() {
+    getIt<ConnectivityBloc>().close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +65,15 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => getIt<ConnectivityBloc>(),
         ),
+        BlocProvider(
+          create: (context) => getIt<UserBloc>(),
+        ),
       ],
       child: BlocListener<ConnectivityBloc, ConnectivityState>(
         listener: (context, state) {
-          if (!state.internetConnectionStatus) {}
+          if (!state.internetConnectionStatus) {
+            showToast('Device not connected to internet');
+          }
         },
         child: ScreenUtilInit(
           designSize: Size(

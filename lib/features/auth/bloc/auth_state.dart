@@ -1,17 +1,17 @@
 part of 'auth_bloc.dart';
 
-enum LoginStatus { initial, loading, success, failure }
+enum AuthStatus { initial, loading, success, failure,registerSuccess }
 
 @freezed
 class AuthState with _$AuthState {
   const factory AuthState({
-    required LoginStatus status,
+    required AuthStatus status,
     required LoginEntity loginEntity,
     required String message,
   }) = _AuthState;
 
   factory AuthState.initial() => AuthState(
-        status: LoginStatus.initial,
+        status: AuthStatus.initial,
         message: '',
         loginEntity: LoginEntity(
           accessToken: '',

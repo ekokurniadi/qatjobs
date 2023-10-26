@@ -5,6 +5,7 @@ import 'package:qatjobs/features/auth/data/datasources/remote/auth_remote_dataso
 import 'package:qatjobs/features/auth/data/models/login_model.codegen.dart';
 import 'package:qatjobs/features/auth/domain/repositories/auth_repository.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
+import 'package:qatjobs/features/auth/domain/usecases/register_usecase.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -16,5 +17,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failures, LoginModel>> login(LoginRequestParams params) async {
     return await _dataSource.login(params);
+  }
+
+  @override
+  Future<Either<Failures, bool>> register(RegisterRequestParam params) async{
+    return await _dataSource.register(params);
   }
 }

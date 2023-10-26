@@ -1,14 +1,16 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
-import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
+import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 
 class LoginPage extends StatefulWidget {
@@ -38,10 +40,10 @@ class _LoginPageState extends State<LoginPage> {
       create: (context) => getIt<AuthBloc>(),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state.status == LoginStatus.failure) {
+          if (state.status == AuthStatus.failure) {
             showToast(state.message);
-          } else if (state.status == LoginStatus.success) {
-            context.read<BottomNavCubit>().setSelectedMenuIndex(0);
+          } else if (state.status == AuthStatus.success) {
+            context.read<UserBloc>().add(const UserEvent.getLogedinUser());
             showToast(state.message);
             Navigator.pop(context);
           }
@@ -253,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             return BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton(
-                                  onPressed: state.status == LoginStatus.loading
+                                  onPressed: state.status == AuthStatus.loading
                                       ? () {}
                                       : () {
                                           if (!_formKey.currentState!
@@ -271,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 ),
                                               );
                                         },
-                                  child: state.status == LoginStatus.loading
+                                  child: state.status == AuthStatus.loading
                                       ? const CircularProgressIndicator(
                                           color: AppColors.bg200,
                                         )
@@ -299,7 +301,10 @@ class _LoginPageState extends State<LoginPage> {
                               color: AppColors.textPrimary100,
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                AutoRouter.of(context)
+                                    .push(const RegisterRoute());
+                              },
                               child: IText.set(
                                 text: 'Sign up',
                                 styleName: TextStyleName.bold,

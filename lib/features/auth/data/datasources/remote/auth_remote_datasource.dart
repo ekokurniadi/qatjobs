@@ -10,11 +10,13 @@ import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/features/auth/data/models/login_model.codegen.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
+import 'package:qatjobs/features/auth/domain/usecases/register_usecase.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Either<Failures, LoginModel>> login(LoginRequestParams params);
+  Future<Either<Failures, bool>> register(RegisterRequestParam params);
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
@@ -39,6 +41,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           jsonEncode(result.user.toJson()),
         );
 
+        await getIt<SharedPreferences>().setString(
+          AppConstant.prefKeyToken,
+          result.accessToken,
+        );
+        
+        DioHelper.setDioHeader(result.accessToken);
+
+        if (result.roles.isNotEmpty) {
+          await getIt<SharedPreferences>().setString(
+            AppConstant.prefKeyRole,
+            result.roles.first,
+          );
+        }
+
         return right(result);
       }
 
@@ -46,8 +62,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         ServerFailure(errorMessage: response.data['message']),
       );
     } on DioError catch (e) {
+      return left(ServerFailure(errorMessage: DioHelper.formatException(e)));
+    } catch (e) {
       return left(
-        ServerFailure(errorMessage: e.message),
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> register(
+    RegisterRequestParam params,
+  ) async {
+    try {
+      final formData = FormData.fromMap(params.toJson());
+      final response = await _dio.post(
+        URLConstant.register,
+        data: formData,
+      );
+
+      if (response.isOk) {
+        return right(response.isOk);
+      }
+
+      return left(
+        ServerFailure(errorMessage: response.data['message']),
+      );
+    } on DioError catch (e) {
+      return left(
+        ServerFailure(errorMessage: DioHelper.formatException(e)),
       );
     } catch (e) {
       return left(

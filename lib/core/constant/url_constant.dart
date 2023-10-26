@@ -1,4 +1,5 @@
-class URLConstant {
+abstract class URLConstant {
+  /// PUBLIC URL
   static const String baseURL = 'https://job.witek-inspire.net/api';
   static const String login = '/sanctum/token';
   static const String register = '/register';
@@ -14,4 +15,13 @@ class URLConstant {
   static const String articleDetail = '/articles/detail/';
   static const String articleCategory = '/articles/categories';
   static const String articleByCategoryId = '/articles/by-category/';
+
+
+  /// CANDIDATE URL
+  static const String candidateProfile = '/candidate/profiles';
+  static const String candidateChangePassword = '/candidate/profiles/change-password';
+  static const String candidateUpdateProfile = '/candidate/profiles/update';
+  static const String candidateUpdateGeneralProfile = '/candidate/profiles/update-general-profile';
+  static const String candidateGetResume = '/candidate/profiles/resumes';
+
 }

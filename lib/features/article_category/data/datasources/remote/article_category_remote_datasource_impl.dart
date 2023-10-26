@@ -31,7 +31,7 @@ class ArticleCategoryRemoteDataSourceImpl
         );
         result.insert(
           0,
-          ArticleCategoryModel(
+          const ArticleCategoryModel(
             id: 0,
             name: 'All Category',
             description: '',

@@ -1,13 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
-import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -96,12 +95,11 @@ class WelcomeScreenPage extends StatelessWidget {
                 width: double.infinity,
                 child: ZoomTapAnimation(
                   onTap: () async {
+                    AutoRouter.of(context).replace(const LayoutsRoute());
                     await getIt<SharedPreferences>().setBool(
-                      'is_fresh_install',
+                      AppConstant.prefKeyisFreshInstall,
                       true,
                     );
-                    context.read<BottomNavCubit>().setSelectedMenuIndex(0);
-                    AutoRouter.of(context).replace(const LayoutsRoute());
                   },
                   child: Container(
                     width: 60.w,

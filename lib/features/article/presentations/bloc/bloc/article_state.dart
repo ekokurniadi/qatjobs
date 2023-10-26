@@ -8,8 +8,10 @@ class ArticleState with _$ArticleState {
     required ArticleStatus status,
     ArticleDetailModel? articleDetail,
     required List<ArticleModel> articles,
+    required List<ArticleModel> articlesByCategory,
     required String message,
     required bool hasMaxReached,
+    required bool isByCategory,
     required int currentPage,
   }) = _ArticleState;
 
@@ -20,5 +22,7 @@ class ArticleState with _$ArticleState {
         articles: [],
         hasMaxReached: false,
         currentPage: 0,
+        articlesByCategory:[],
+        isByCategory: false,
       );
 }

@@ -55,6 +55,8 @@ class DioHelper {
         return 'Internal server error';
       case 502:
         return 'Bad gateway';
+      case 302:
+        return 'Already exist';
       default:
         return 'Oops something went wrong';
     }

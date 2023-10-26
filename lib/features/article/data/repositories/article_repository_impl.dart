@@ -20,9 +20,16 @@ class ArticleRepositoryImpl implements ArticleRepository {
       PagingRequestParams params) async {
     return await _articleRemoteDataSource.getArticle(params);
   }
-  
+
   @override
-  Future<Either<Failures, ArticleDetailModel>> getArticleDetail(int params)async {
-   return await _articleRemoteDataSource.getArticleDetail(params);
+  Future<Either<Failures, ArticleDetailModel>> getArticleDetail(
+      int params) async {
+    return await _articleRemoteDataSource.getArticleDetail(params);
+  }
+
+  @override
+  Future<Either<Failures, List<ArticleModel>>> getArticleByCategory(
+      PagingRequestParams params) async {
+   return await _articleRemoteDataSource.getArticleByCategory(params);
   }
 }

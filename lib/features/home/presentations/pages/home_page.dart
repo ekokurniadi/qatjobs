@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oktoast/oktoast.dart';
-// import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
@@ -21,7 +20,7 @@ import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/job_category/data/models/job_category_model.codegen.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/plan/data/models/plan_model.codegen.dart';
-import 'package:qatjobs/injector.dart';
+import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class HomePage extends StatefulWidget {
@@ -58,33 +57,36 @@ class _HomePageState extends State<HomePage> {
           color: AppColors.textPrimary,
         ),
         actions: [
-          BlocBuilder<BottomNavCubit, BottomNavState>(
+          BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
-              if (state.user != null) {
-                return Container(
-                  margin: EdgeInsets.only(right: 16.w),
-                  width: 45.w,
-                  height: 45.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.bg200,
-                    boxShadow: AppColors.defaultShadow,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomImageNetwork(
-                      imageUrl: state.user?.avatar ?? '',
-                      fit: BoxFit.cover,
-                      isLoaderShimmer: true,
-                      width: 40.w,
-                      height: 40.w,
+              if (!GlobalHelper.isEmpty(state.user)) {
+                return ZoomTapAnimation(
+                  onTap: () {},
+                  child: Container(
+                    margin: EdgeInsets.only(right: 16.w),
+                    width: 45.w,
+                    height: 45.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.bg200,
+                      boxShadow: AppColors.defaultShadow,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomImageNetwork(
+                        imageUrl: state.user?.avatar ?? '',
+                        fit: BoxFit.cover,
+                        isLoaderShimmer: true,
+                        width: 40.w,
+                        height: 40.w,
+                      ),
                     ),
                   ),
                 );
               }
               return const SizedBox();
             },
-          )
+          ),
         ],
         backgroundColor: AppColors.bg200,
         elevation: 0.5,
@@ -110,8 +112,6 @@ class _HomePageState extends State<HomePage> {
                 primary: false,
                 child: Column(
                   children: [
-                    // const SpaceWidget(),
-                    // const HeaderHomeProfile(),
                     const SpaceWidget(),
                     const SectionTitleWidget(
                       title: 'Find Your Job',
@@ -154,15 +154,77 @@ class _HomePageState extends State<HomePage> {
                                 ? 3
                                 : state.data?.recentBlog.length,
                         itemBuilder: (context, index) {
-                          return ArticleCardItem(
-                            isLoading: state.status == HomeStatus.loading,
-                            onTap: () {
-                              AutoRouter.of(context).push(ArticleDetailRoute(
-                                articleModel: state.data!.recentBlog[index],
-                              ));
-                            },
-                            articleModel: state.data?.recentBlog[index],
-                          );
+                          if (GlobalHelper.isEmptyList(
+                                  state.data?.recentBlog) &&
+                              state.status == HomeStatus.loading) {
+                            return Container(
+                              padding: defaultPadding,
+                              margin: EdgeInsets.only(bottom: 16.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.r),
+                                color: AppColors.bg200,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: AppColors.neutral,
+                                    spreadRadius: 0.1,
+                                    blurRadius: 0.1,
+                                  ),
+                                  BoxShadow(
+                                    color: AppColors.neutral,
+                                    spreadRadius: 0.1,
+                                    blurRadius: 0.1,
+                                  )
+                                ],
+                              ),
+                              child: const Column(
+                                children: [
+                                  ShimmerBoxWidget(
+                                    width: double.infinity,
+                                    height: 200,
+                                  ),
+                                  SpaceWidget(),
+                                  ShimmerBoxWidget(
+                                    width: double.infinity,
+                                    height: 20,
+                                  ),
+                                  SpaceWidget(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: ShimmerBoxWidget(
+                                          width: double.infinity,
+                                          height: 20,
+                                        ),
+                                      ),
+                                      SpaceWidget(
+                                        direction: Direction.horizontal,
+                                      ),
+                                      Expanded(
+                                        child: ShimmerBoxWidget(
+                                          width: double.infinity,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          } else if (state.status == HomeStatus.complete) {
+                            return ArticleCardItem(
+                              isLoading: false,
+                              onTap: () {
+                                AutoRouter.of(context).push(ArticleDetailRoute(
+                                  articleModel: state.data?.recentBlog[index],
+                                ));
+                              },
+                              articleModel: state.data?.recentBlog[index],
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
                         },
                       ),
                     ),
@@ -414,102 +476,106 @@ class _SectionLatestJobs extends StatelessWidget {
                       ],
                     )
                   ] else ...[
-                    SizedBox(
-                      width: 80.w,
-                      height: 80.w,
-                      child: CustomImageNetwork(
-                        imageUrl: jobs[index].company?.companyUrl ?? '',
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IText.set(
-                          text: jobs[index].company?.user?.fullName ?? '',
-                          styleName: TextStyleName.bold,
-                          typeName: TextTypeName.headline3,
-                          color: AppColors.textPrimary,
+                    if (!GlobalHelper.isEmptyList(jobs)) ...[
+                      SizedBox(
+                        width: 80.w,
+                        height: 80.w,
+                        child: CustomImageNetwork(
+                          imageUrl: jobs[index].company?.companyUrl ?? '',
                         ),
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.60,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: IText.set(
-                                  text: jobs[index].jobTitle ?? '',
-                                  styleName: TextStyleName.bold,
-                                  typeName: TextTypeName.headline4,
+                      ),
+                      SizedBox(width: 16.w),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IText.set(
+                            text: jobs[index].company?.user?.fullName ?? '',
+                            styleName: TextStyleName.bold,
+                            typeName: TextTypeName.headline3,
+                            color: AppColors.textPrimary,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.60,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: IText.set(
+                                    text: jobs[index].jobTitle ?? '',
+                                    styleName: TextStyleName.bold,
+                                    typeName: TextTypeName.headline4,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                if (!GlobalHelper.isEmpty(
+                                    jobs[index].jobShift?.shift)) ...[
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.danger50,
+                                      borderRadius: BorderRadius.circular(
+                                        4.r,
+                                      ),
+                                    ),
+                                    child: IText.set(
+                                      text: jobs[index].jobShift?.shift ?? '-',
+                                      styleName: TextStyleName.regular,
+                                      typeName: TextTypeName.caption1,
+                                      color: AppColors.danger100,
+                                    ),
+                                  )
+                                ],
+                              ],
+                            ),
+                          ),
+                          if (!(jobs[index].hideSalary ?? true)) ...[
+                            SpaceWidget(
+                              space: 8.h,
+                            ),
+                            Row(
+                              children: [
+                                IText.set(
+                                  text:
+                                      jobs[index].currency?.currencyIcon ?? '﷼',
+                                  textAlign: TextAlign.left,
+                                  styleName: TextStyleName.regular,
+                                  typeName: TextTypeName.caption1,
                                   color: AppColors.textPrimary,
                                 ),
-                              ),
-                              if (!GlobalHelper.isEmpty(
-                                  jobs[index].jobShift?.shift)) ...[
-                                SizedBox(width: 8.w),
-                                Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.danger50,
-                                    borderRadius: BorderRadius.circular(
-                                      4.r,
-                                    ),
-                                  ),
-                                  child: IText.set(
-                                    text: jobs[index].jobShift?.shift ?? '-',
-                                    styleName: TextStyleName.regular,
-                                    typeName: TextTypeName.caption1,
-                                    color: AppColors.danger100,
-                                  ),
+                                SpaceWidget(
+                                  direction: Direction.horizontal,
+                                  space: 4.w,
+                                ),
+                                IText.set(
+                                  text:
+                                      (jobs[index].salaryFrom ?? 0).toString(),
+                                  textAlign: TextAlign.left,
+                                  styleName: TextStyleName.regular,
+                                  typeName: TextTypeName.caption1,
+                                  color: AppColors.textPrimary,
+                                ),
+                                IText.set(
+                                  text: '-',
+                                  textAlign: TextAlign.left,
+                                  styleName: TextStyleName.regular,
+                                  typeName: TextTypeName.caption1,
+                                  color: AppColors.textPrimary,
+                                ),
+                                IText.set(
+                                  text: (jobs[index].salaryTo ?? 0).toString(),
+                                  textAlign: TextAlign.left,
+                                  styleName: TextStyleName.regular,
+                                  typeName: TextTypeName.caption1,
+                                  color: AppColors.textPrimary,
                                 )
                               ],
-                            ],
-                          ),
-                        ),
-                        if (!(jobs[index].hideSalary ?? true)) ...[
-                          SpaceWidget(
-                            space: 8.h,
-                          ),
-                          Row(
-                            children: [
-                              IText.set(
-                                text: jobs[index].currency?.currencyIcon ?? '﷼',
-                                textAlign: TextAlign.left,
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary,
-                              ),
-                              SpaceWidget(
-                                direction: Direction.horizontal,
-                                space: 4.w,
-                              ),
-                              IText.set(
-                                text: (jobs[index].salaryFrom ?? 0).toString(),
-                                textAlign: TextAlign.left,
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary,
-                              ),
-                              IText.set(
-                                text: '-',
-                                textAlign: TextAlign.left,
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary,
-                              ),
-                              IText.set(
-                                text: (jobs[index].salaryTo ?? 0).toString(),
-                                textAlign: TextAlign.left,
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary,
-                              )
-                            ],
-                          ),
+                            ),
+                          ],
                         ],
-                      ],
-                    )
+                      ),
+                    ],
                   ],
                 ],
               ),

@@ -10,7 +10,6 @@ import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 
 class AutoCompleteBoxWidget extends StatefulWidget {

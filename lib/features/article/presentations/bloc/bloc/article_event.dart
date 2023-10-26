@@ -4,4 +4,5 @@ part of 'article_bloc.dart';
 class ArticleEvent with _$ArticleEvent {
   const factory ArticleEvent.getDetailArticle(int articleId) = _GetDetailArticle;
   const factory ArticleEvent.getArticle(PagingRequestParams params) = _GetArticles;
+  const factory ArticleEvent.getArticleByCategory(PagingRequestParams params) = _GetArticleByCategory;
 }

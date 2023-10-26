@@ -6,7 +6,6 @@ import "package:qatjobs/core/error/failures.dart";
 import "package:qatjobs/core/extensions/dio_response_extension.dart";
 import "package:qatjobs/core/helpers/dio_helper.dart";
 import "package:qatjobs/core/helpers/global_helper.dart";
-import "package:qatjobs/core/usecases/usecases.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
