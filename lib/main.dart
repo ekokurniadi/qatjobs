@@ -10,6 +10,7 @@ import 'package:qatjobs/app.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/logger/bloc_event_logger.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
+import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/features/connectivity/presentations/bloc/connectivity_bloc.dart';
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
@@ -42,6 +43,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   final _appRouter = AppRouter();
+  final GlobalKey<ScaffoldState> _mainNavigatorKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -72,7 +74,10 @@ class _MainAppState extends State<MainApp> {
       child: BlocListener<ConnectivityBloc, ConnectivityState>(
         listener: (context, state) {
           if (!state.internetConnectionStatus) {
-            showToast('Device not connected to internet');
+            showToast(
+              'Device not connected to internet',
+              context: _mainNavigatorKey.currentContext,
+            );
           }
         },
         child: ScreenUtilInit(
@@ -84,6 +89,7 @@ class _MainAppState extends State<MainApp> {
             double scale = 126 / MediaQuery.of(context).size.shortestSide;
             return OKToast(
               child: MaterialApp.router(
+                key: _mainNavigatorKey,
                 builder: EasyLoading.init(
                   builder: (context, widget) => ResponsiveWrapper.builder(
                     BouncingScrollWrapper(child: widget!),
@@ -118,7 +124,8 @@ class _MainAppState extends State<MainApp> {
                   useMaterial3: false,
                   pageTransitionsTheme: const PageTransitionsTheme(
                     builders: {
-                      TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                      TargetPlatform.android:
+                          FadeUpwardsPageTransitionsBuilder(),
                       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
                     },
                   ),
@@ -132,6 +139,16 @@ class _MainAppState extends State<MainApp> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                  ),
+                  radioTheme: const RadioThemeData(
+                    fillColor: MaterialStatePropertyAll(AppColors.warning),
+                  ),
+                  checkboxTheme: const CheckboxThemeData(
+                    fillColor: MaterialStatePropertyAll(AppColors.warning),
+                  ),
+                  datePickerTheme: DatePickerThemeData(
+                    shape: RoundedRectangleBorder(borderRadius: defaultRadius),
+                    headerBackgroundColor: AppColors.primary,
                   ),
                   dropdownMenuTheme: DropdownMenuThemeData(
                     inputDecorationTheme: InputDecorationTheme(

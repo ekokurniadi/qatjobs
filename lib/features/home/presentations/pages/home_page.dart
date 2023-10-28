@@ -8,6 +8,7 @@ import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
+import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
@@ -48,15 +49,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bg300,
-      appBar: AppBar(
-        title: IText.set(
-          text: 'Home',
-          textAlign: TextAlign.left,
-          styleName: TextStyleName.bold,
-          typeName: TextTypeName.headline2,
-          color: AppColors.textPrimary,
-        ),
-        actions: [
+      appBar: CustomAppBar(
+        title: 'Home',
+        actionWidget: [
           BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (!GlobalHelper.isEmpty(state.user)) {
@@ -88,8 +83,6 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ],
-        backgroundColor: AppColors.bg200,
-        elevation: 0.5,
       ),
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {

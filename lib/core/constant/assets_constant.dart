@@ -24,4 +24,11 @@ class AssetsConstant {
   static const String svgAssetsIconFilter = 'assets/svgs/icon/ic-filter.svg';
   static const String svgAssetsJobs = 'assets/svgs/icon/ic-work-experience.svg';
   static const String svgAssetsSaveJobs = 'assets/svgs/icon/ic-save-job.svg';
+  static const String svgAssetsAboutMe = 'assets/svgs/icon/ic-about-me.svg';
+  static const String svgAssetsAppreciate = 'assets/svgs/icon/ic-appreciate.svg';
+  static const String svgAssetsWorkExperience = 'assets/svgs/icon/ic-work-experience.svg';
+  static const String svgAssetsLogout = 'assets/svgs/icon/ic-logout.svg';
+  static const String svgAssetsPassword = 'assets/svgs/icon/ic-password.svg';
+  static const String svgAssetsResume = 'assets/svgs/icon/ic-resume.svg';
+  static const String svgAssetsPDF = 'assets/svgs/icon/ic-pdf.svg';
 }

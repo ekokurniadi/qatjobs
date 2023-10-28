@@ -25,6 +25,9 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
     this.isRequired = false,
     this.label,
+    this.isAlwaysShowLabel = false,
+    this.isCalendarPicker = false,
+    this.showBorder = false,
   });
 
   final String placeholder;
@@ -42,6 +45,9 @@ class CustomTextField extends StatefulWidget {
   final int? minLines;
   final List<TextInputFormatter>? inputFormatters;
   final bool isRequired;
+  final bool isAlwaysShowLabel;
+  final bool isCalendarPicker;
+  final bool showBorder;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -89,20 +95,42 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     : widget.validator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
+                  border: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
+                  focusedBorder: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
+                  enabledBorder: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
+                  floatingLabelBehavior: widget.isAlwaysShowLabel
+                      ? FloatingLabelBehavior.always
+                      : null,
                   contentPadding: const EdgeInsets.all(16),
                   hintText: widget.placeholder,
                   hintStyle: const TextStyle(
                     color: AppColors.textPrimary100,
                   ),
                   label: widget.label != null
-                      ? Text(
-                          widget.label!,
-                          style: IText.set(
-                            text: widget.label!,
-                            typeName: TextTypeName.headline3,
-                            styleName: TextStyleName.regular,
-                            color: AppColors.textPrimary,
-                          ).style,
+                      ? RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: widget.label!,
+                                style: IText.set(
+                                  text: widget.label!,
+                                  typeName: TextTypeName.headline3,
+                                  styleName: TextStyleName.regular,
+                                  color: AppColors.textPrimary,
+                                ).style,
+                              ),
+                              if (widget.isRequired)
+                                TextSpan(
+                                  text: ' *',
+                                  style: IText.set(
+                                    text: '*',
+                                    typeName: TextTypeName.headline1,
+                                    styleName: TextStyleName.regular,
+                                    color: AppColors.danger100,
+                                  ).style,
+                                ),
+                            ],
+                          ),
                         )
                       : null,
                   suffixIcon: widget.isPassword
@@ -122,15 +150,24 @@ class _CustomTextFieldState extends State<CustomTextField> {
                                   size: 24.w,
                                 ),
                         )
-                      : widget.isOption
+                      : widget.isCalendarPicker
                           ? TextButton(
                               onPressed: widget.onTap,
                               child: Icon(
-                                Icons.arrow_forward_ios_rounded,
+                                Icons.calendar_month,
                                 color: AppColors.neutral200,
                                 size: 21.w,
-                              ))
-                          : null,
+                              ),
+                            )
+                          : widget.isOption
+                              ? TextButton(
+                                  onPressed: widget.onTap,
+                                  child: Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: AppColors.neutral200,
+                                    size: 21.w,
+                                  ))
+                              : null,
                 ),
               ),
             ),

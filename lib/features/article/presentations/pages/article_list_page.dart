@@ -12,6 +12,7 @@ import 'package:qatjobs/core/models/paging_request_params.codegen.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
+import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
@@ -68,17 +69,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bg300,
-      appBar: AppBar(
-        backgroundColor: AppColors.bg200,
-        elevation: 0.5,
-        title: IText.set(
-          text: 'Article',
-          textAlign: TextAlign.left,
-          styleName: TextStyleName.bold,
-          typeName: TextTypeName.headline2,
-          color: AppColors.textPrimary,
-        ),
-      ),
+      appBar: const CustomAppBar(title: 'Article'),
       body: MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -231,7 +222,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
                                         SpaceWidget(
-                                          space: MediaQuery.sizeOf(context).height * 0.15,
+                                          space: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.15,
                                         ),
                                         SvgPicture.asset(
                                             AssetsConstant.illusJobEmpty),

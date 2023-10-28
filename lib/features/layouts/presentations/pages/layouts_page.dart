@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
@@ -12,6 +13,7 @@ import 'package:qatjobs/features/home/presentations/pages/home_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/job_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_page.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 
 class LayoutsPage extends StatefulWidget {
@@ -35,26 +37,38 @@ class _LayoutsPageState extends State<LayoutsPage> {
     return Scaffold(
       extendBody: true,
       body: SafeArea(
-        child: BlocBuilder<BottomNavCubit, BottomNavState>(
-          builder: (context, state) {
-            switch (state.selectedMenuIndex) {
-              case 0:
-                return const HomePage();
-              case 1:
-                return const ArticleListPage();
-              case 2:
-                return const JobPage();
-              case 3:
-                return const NotificationPage();
-              default:
-                return Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.pink,
-                );
-            }
-          },
-        ),
+        child: BlocBuilder<UserBloc, UserState>(builder: (context, userState) {
+          return BlocBuilder<BottomNavCubit, BottomNavState>(
+            builder: (context, state) {
+              switch (state.selectedMenuIndex) {
+                case 0:
+                  return const HomePage();
+                case 1:
+                  return const ArticleListPage();
+                case 2:
+                  return const JobPage();
+                case 3:
+                  return const NotificationPage();
+                case 4:
+                  if (!GlobalHelper.isEmpty(userState.user)) {
+                    if (userState.user?.roles?.first.name ==
+                        AppConstant.roleCandidate) {
+                      return CandidateProfilePage();
+                    } else {
+                      return CandidateProfilePage();
+                    }
+                  }
+                  return SizedBox();
+                default:
+                  return Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.pink,
+                  );
+              }
+            },
+          );
+        }),
       ),
       bottomNavigationBar: BlocBuilder<BottomNavCubit, BottomNavState>(
         builder: (context, state) {
@@ -118,7 +132,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
                     ),
                   ),
                   BottomNavigationBarItem(
-                    label: 'Profile',
+                    label: 'Account',
                     icon: SvgPicture.asset(
                       AssetsConstant.svgAssetsBottomNavProfile,
                       width: 28.w,
