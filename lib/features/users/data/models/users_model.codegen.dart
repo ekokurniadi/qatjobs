@@ -63,6 +63,15 @@ extension RoleModelX on RoleModel {
 extension UserModelX on UserModel {
   UserEntity toDomain() => UserEntity(
         id: id,
+        dob: dob,
+        emailVerifiedAt: emailVerifiedAt,
+        facebookUrl: facebookUrl,
+        googlePlusUrl: googlePlusUrl,
+        linkedinUrl: linkedinUrl,
+        phone: phone,
+        pinterestUrl: pinterestUrl,
+        stripeId: stripeId,
+        twitterUrl: twitterUrl,
         firstName: firstName,
         lastName: lastName,
         email: email,

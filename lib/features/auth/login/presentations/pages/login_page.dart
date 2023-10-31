@@ -154,6 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: emailController,
                           validator: (val) {
                             if (val!.isEmpty) {
@@ -175,6 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: passwordController,
                           isRequired: true,
                           placeholder: 'Password',

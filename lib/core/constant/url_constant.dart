@@ -15,6 +15,7 @@ abstract class URLConstant {
   static const String articleDetail = '/articles/detail/';
   static const String articleCategory = '/articles/categories';
   static const String articleByCategoryId = '/articles/by-category/';
+  static const String currencies = '/jobs/salaries/currencies';
 
 
   /// CANDIDATE URL

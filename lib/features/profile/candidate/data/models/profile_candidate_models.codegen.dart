@@ -1,4 +1,5 @@
 import "package:freezed_annotation/freezed_annotation.dart";
+import "package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen.dart";
 import "package:qatjobs/features/profile/candidate/domain/entities/profile_candidate_entity.codegen.dart";
 import "package:qatjobs/features/users/data/models/users_model.codegen.dart";
 
@@ -28,6 +29,7 @@ class ProfileCandidateModels with _$ProfileCandidateModels {
     dynamic jobAlert,
     String? candidateUrl,
     UserModel? user,
+    @Default([]) List<JobsSkillModel> candidateSkill,
   }) = _ProfileCandidateModels;
 
   factory ProfileCandidateModels.fromJson(Map<String, dynamic> json) =>
@@ -56,5 +58,10 @@ extension ProfileCandidateModelsX on ProfileCandidateModels {
         salaryCurrency: salaryCurrency,
         uniqueId: uniqueId,
         user: user?.toDomain(),
+        candidateSkill: List.from(
+          candidateSkill.map(
+            (e) => e.toDomain(),
+          ),
+        ),
       );
 }

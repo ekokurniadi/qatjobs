@@ -1,4 +1,5 @@
 import "package:freezed_annotation/freezed_annotation.dart";
+import "package:qatjobs/features/jobs_skill/domain/entities/jobs_skill_entity.codegen.dart";
 import "package:qatjobs/features/users/domain/entitites/users_entity.codegen.dart";
 
 part "profile_candidate_entity.codegen.freezed.dart";
@@ -25,6 +26,7 @@ class ProfileCandidateEntity with _$ProfileCandidateEntity {
     String? availableAt,
     dynamic jobAlert,
     String? candidateUrl,
-    UserEntity? user
+    UserEntity? user,
+   @Default([]) List<JobsSkillEntity> candidateSkill,
   }) = _ProfileCandidateEntity;
 }

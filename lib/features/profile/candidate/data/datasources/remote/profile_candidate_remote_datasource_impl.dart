@@ -6,8 +6,10 @@ import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
+import 'package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_response_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_change_password_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_general_profile_usecase.dart';
@@ -26,11 +28,20 @@ class ProfileCandidateRemoteDataSourceImpl
     try {
       final response = await _dio.get(URLConstant.candidateProfile);
       if (response.isOk) {
-        return right(
-          ProfileCandidateModels.fromJson(
+        final data = ProfileCandidateResponseModels(
+          candidate: ProfileCandidateModels.fromJson(
             response.data['data']['candidate'],
           ),
+          candidateSkill: List.from(
+            response.data['data']['candidate_skill'].map(
+              (e) => JobsSkillModel.fromJson(e),
+            ),
+          ),
         );
+        final result = data.candidate.copyWith(
+          candidateSkill: data.candidateSkill,
+        );
+        return right(result);
       }
       return left(
         ServerFailure(
@@ -42,6 +53,12 @@ class ProfileCandidateRemoteDataSourceImpl
       return left(
         ServerFailure(
           errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
         ),
       );
     }
@@ -71,6 +88,12 @@ class ProfileCandidateRemoteDataSourceImpl
       return left(
         ServerFailure(
           errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
         ),
       );
     }
@@ -118,6 +141,12 @@ class ProfileCandidateRemoteDataSourceImpl
           errorMessage: message,
         ),
       );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -144,6 +173,12 @@ class ProfileCandidateRemoteDataSourceImpl
       return left(
         ServerFailure(
           errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
         ),
       );
     }
@@ -207,6 +242,12 @@ class ProfileCandidateRemoteDataSourceImpl
           errorMessage: message,
         ),
       );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -215,11 +256,9 @@ class ProfileCandidateRemoteDataSourceImpl
     GeneralProfileRequestParams params,
   ) async {
     try {
-      final formData = FormData.fromMap(params.toJson());
-
       final response = await _dio.post(
         URLConstant.candidateUpdateGeneralProfile,
-        data: formData,
+        data: params.toJson(),
       );
       if (response.isOk) {
         return right(true);
@@ -234,6 +273,12 @@ class ProfileCandidateRemoteDataSourceImpl
       return left(
         ServerFailure(
           errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
         ),
       );
     }

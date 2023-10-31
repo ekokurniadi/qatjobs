@@ -95,9 +95,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     : widget.validator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
-                  border: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
-                  focusedBorder: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
-                  enabledBorder: widget.showBorder ? const OutlineInputBorder() : InputBorder.none,
+                  border: widget.showBorder
+                      ? const OutlineInputBorder()
+                      : InputBorder.none,
+                  focusedBorder: widget.showBorder
+                      ? const OutlineInputBorder()
+                      : InputBorder.none,
+                  enabledBorder: widget.showBorder
+                      ? const OutlineInputBorder()
+                      : InputBorder.none,
                   floatingLabelBehavior: widget.isAlwaysShowLabel
                       ? FloatingLabelBehavior.always
                       : null,
@@ -106,6 +112,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   hintStyle: const TextStyle(
                     color: AppColors.textPrimary100,
                   ),
+                  labelStyle: const TextStyle(height: 0.5),
                   label: widget.label != null
                       ? RichText(
                           text: TextSpan(

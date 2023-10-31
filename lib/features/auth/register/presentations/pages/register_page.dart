@@ -155,6 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: nameController,
                           isRequired: true,
                           placeholder: 'Enter your name',
@@ -169,6 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: emailController,
                           validator: (val) {
                             if (val!.isEmpty) {
@@ -190,6 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: passwordController,
                           isRequired: true,
                           placeholder: 'Password',
@@ -205,6 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomTextField(
+                          showBorder: true,
                           controller: confirmPasswordController,
                           validator: (val) {
                             if (val!.isEmpty) {
@@ -281,52 +285,58 @@ class _RegisterPageState extends State<RegisterPage> {
                           valueListenable: selectedRole,
                           builder: (context, role, _) {
                             return ValueListenableBuilder(
-                          valueListenable: agreePolicy,
-                          builder: (context, agree, _) {
-                                return BlocBuilder<AuthBloc, AuthState>(
-                                  builder: (context, state) {
-                                    return ElevatedButton(
-                                      onPressed: !agreePolicy.value
-                                          ? null
-                                          : state.status == AuthStatus.loading
-                                              ? () {}
-                                              : () {
-                                                  if (!_formKey.currentState!
-                                                      .validate()) {
-                                                    return;
-                                                  }
-                                                  context.read<AuthBloc>().add(
-                                                        RegisterEvent(
-                                                          RegisterRequestParam(
-                                                            email: emailController
-                                                                .text,
-                                                            password:
-                                                                passwordController
-                                                                    .text,
-                                                            firstName:
-                                                                nameController.text,
-                                                            type: selectedRole.value
-                                                                .toString(),
+                                valueListenable: agreePolicy,
+                                builder: (context, agree, _) {
+                                  return BlocBuilder<AuthBloc, AuthState>(
+                                    builder: (context, state) {
+                                      return ElevatedButton(
+                                        onPressed: !agreePolicy.value
+                                            ? null
+                                            : state.status == AuthStatus.loading
+                                                ? () {}
+                                                : () {
+                                                    if (!_formKey.currentState!
+                                                        .validate()) {
+                                                      return;
+                                                    }
+                                                    context
+                                                        .read<AuthBloc>()
+                                                        .add(
+                                                          RegisterEvent(
+                                                            RegisterRequestParam(
+                                                              email:
+                                                                  emailController
+                                                                      .text,
+                                                              password:
+                                                                  passwordController
+                                                                      .text,
+                                                              firstName:
+                                                                  nameController
+                                                                      .text,
+                                                              type: selectedRole
+                                                                  .value
+                                                                  .toString(),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
-                                                },
-                                      child: state.status == AuthStatus.loading
-                                          ? const CircularProgressIndicator(
-                                              color: AppColors.bg200,
-                                            )
-                                          : IText.set(
-                                              text: 'Create Account',
-                                              typeName: TextTypeName.headline3,
-                                              color: !agreePolicy.value
-                                                  ? AppColors.textPrimary100
-                                                  : AppColors.bg100,
-                                            ),
-                                    );
-                                  },
-                                );
-                              }
-                            );
+                                                        );
+                                                  },
+                                        child: state.status ==
+                                                AuthStatus.loading
+                                            ? const CircularProgressIndicator(
+                                                color: AppColors.bg200,
+                                              )
+                                            : IText.set(
+                                                text: 'Create Account',
+                                                typeName:
+                                                    TextTypeName.headline3,
+                                                color: !agreePolicy.value
+                                                    ? AppColors.textPrimary100
+                                                    : AppColors.bg100,
+                                              ),
+                                      );
+                                    },
+                                  );
+                                });
                           },
                         ),
                       ),
