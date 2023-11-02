@@ -7,6 +7,7 @@ import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/dropdown_search_widget.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/carrier_level/domain/entities/career_level_entity.codegen.dart';
@@ -82,7 +83,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: BlocConsumer<JobCategoryBloc, JobCategoryState>(
                   listener: (context, state) {
                     if (state.status == JobCategoryStatus.failure) {
-                      showToast(state.message);
+                      LoadingDialog.showError(message: state.message);
                     }
                   },
                   builder: (context, state) {
@@ -122,7 +123,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: BlocConsumer<JobSkillBloc, JobSkillState>(
                   listener: (context, state) {
                     if (state.status == JobSkillStatus.failure) {
-                      showToast(state.message);
+                      LoadingDialog.showError(message: state.message);
                     }
                   },
                   builder: (context, state) {
@@ -192,7 +193,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: BlocConsumer<CareerLevelBloc, CareerLevelState>(
                   listener: (context, state) {
                     if (state.status == CareerLevelStatus.failure) {
-                      showToast(state.message);
+                      LoadingDialog.showError(message: state.message);
                     }
                   },
                   builder: (context, state) {
@@ -232,7 +233,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: BlocConsumer<FunctionalAreaBloc, FunctionalAreaState>(
                   listener: (context, state) {
                     if (state.status == FunctionalAreaStatus.failure) {
-                      showToast(state.message);
+                      LoadingDialog.showError(message: state.message);
                     }
                   },
                   builder: (context, state) {
@@ -271,7 +272,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: BlocConsumer<JobTypeBloc, JobTypeState>(
                   listener: (context, state) {
                     if (state.status == JobTypeStatus.failure) {
-                      showToast(state.message);
+                      LoadingDialog.showError(message: state.message);
                     }
                   },
                   builder: (context, state) {
@@ -401,7 +402,7 @@ class _JobFilterPageState extends State<JobFilterPage> {
           if (state.status == JobStatus.success) {
             Navigator.pop(context);
           } else if (state.status == JobStatus.failure) {
-            showToast(state.message);
+            LoadingDialog.showError(message: state.message);
           }
         },
         child: ValueListenableBuilder(

@@ -4,16 +4,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
-import 'package:qatjobs/core/helpers/image_picker_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
-import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/dropdown_search_widget.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
@@ -29,7 +26,6 @@ import 'package:qatjobs/features/jobs_skill/presentations/bloc/job_skill_bloc.da
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_general_profile_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/injector.dart';
-import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CandidateGeneralProfilePage extends StatefulWidget {
   const CandidateGeneralProfilePage({super.key});
@@ -68,6 +64,7 @@ class _CandidateGeneralProfilePageState
   final TextEditingController linkedinController = TextEditingController();
   final TextEditingController googlePlusController = TextEditingController();
   final TextEditingController pinterestController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey();
   final ValueNotifier<File?> imageProfile = ValueNotifier(null);
 
@@ -103,6 +100,7 @@ class _CandidateGeneralProfilePageState
           selectedSKill.value = profileState.generalProfile.candidateSkill;
           birthDateController.text =
               profileState.generalProfile.user?.dob ?? '';
+          addressController.text = profileState.generalProfile.address ?? '';
 
           birthDateController.text =
               !GlobalHelper.isEmpty(profileState.generalProfile.user?.dob)
@@ -182,60 +180,6 @@ class _CandidateGeneralProfilePageState
               key: _formKey,
               child: Column(
                 children: [
-                  BlocBuilder<ProfileCandidateBloc, ProfileCandidateState>(
-                    builder: (context, state) {
-                      return ZoomTapAnimation(
-                        onTap: () async{
-                          await ImagePickerHelper.pickImage(source: ImageSource.gallery);
-                        },
-                        child: Container(
-                          width: 90.w,
-                          height: 90.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: AppColors.defaultShadow,
-                            color: AppColors.bg200,
-                          ),
-                          child: Stack(
-                            children: [
-                              ClipOval(
-                                child: CustomImageNetwork(
-                                  imageUrl:
-                                      state.generalProfile.user?.avatar ?? '',
-                                  customErrorWidget: const Center(
-                                    child: Icon(Icons.people),
-                                  ),
-                                  isLoaderShimmer: true,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 34.w,
-                                  height: 34.w,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    boxShadow: AppColors.defaultShadow,
-                                    color: AppColors.warning50,
-                                  ),
-                                  child: Icon(
-                                    GlobalHelper.isEmpty(
-                                      state.generalProfile.user?.avatar,
-                                    )
-                                        ? Icons.upload
-                                        : Icons.edit,
-                                    size: 21.sp,
-                                    color: AppColors.warning,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                   const SpaceWidget(),
                   CustomTextField(
                     placeholder: 'First Name',
@@ -256,6 +200,11 @@ class _CandidateGeneralProfilePageState
                     controller: emailController,
                     textInputType: TextInputType.emailAddress,
                     isReadOnly: true,
+                  ),
+                  CustomTextField(
+                    placeholder: 'Address',
+                    label: 'Address',
+                    controller: addressController,
                   ),
                   CustomTextField(
                     placeholder: 'Father Name',
@@ -288,6 +237,8 @@ class _CandidateGeneralProfilePageState
                       color: AppColors.bg200,
                     ),
                     child: DropdownSearchWidget<String>(
+                      alwaysShowLabel: true,
+                      label: 'Gender',
                       items: genderOption,
                       selectedItem: genderOption.firstWhereOrNull(
                         (element) =>
@@ -320,6 +271,8 @@ class _CandidateGeneralProfilePageState
                               builder: (context, skills, _) {
                                 return DropdownSearchMultiSelectWidget<
                                     JobsSkillEntity>(
+                                  label: 'Skills',
+                                  alwaysShowLabel: true,
                                   items: state.skills,
                                   onChanged: (val) {
                                     selectedSKill.value = val;
@@ -366,12 +319,19 @@ class _CandidateGeneralProfilePageState
                       invalidNumberMessage: 'Invalid format',
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: phoneController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Phone',
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                      ),
+                      dropdownIconPosition: IconPosition.leading,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Phone',
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          label: IText.set(
+                            text: 'Phone',
+                            typeName: TextTypeName.headline3,
+                            styleName: TextStyleName.regular,
+                            color: AppColors.textPrimary,
+                          )),
                       languageCode: "en",
                       initialCountryCode: 'QA',
                     ),
@@ -396,6 +356,8 @@ class _CandidateGeneralProfilePageState
                             color: AppColors.bg200,
                           ),
                           child: DropdownSearchWidget<CareerLevelEntity>(
+                            alwaysShowLabel: true,
+                            label: 'Career Level',
                             items: state.careerLevels,
                             selectedItem: state.careerLevels.firstWhereOrNull(
                                 (element) =>
@@ -427,6 +389,8 @@ class _CandidateGeneralProfilePageState
                           BlocBuilder<FunctionalAreaBloc, FunctionalAreaState>(
                         builder: (context, state) {
                           return DropdownSearchWidget<FunctionalAreaEntity>(
+                            alwaysShowLabel: true,
+                            label: 'Functional Area',
                             items: state.functionalAreas,
                             selectedItem:
                                 state.functionalAreas.firstWhereOrNull(
@@ -471,6 +435,8 @@ class _CandidateGeneralProfilePageState
                       child: BlocBuilder<CurrencyBloc, CurrencyState>(
                         builder: (context, state) {
                           return DropdownSearchWidget<CurrencyEntity>(
+                            alwaysShowLabel: true,
+                            label: 'Currency',
                             items: state.currency,
                             selectedItem: state.currency.firstWhereOrNull(
                               (element) => element.id == selectedCurrency.value,
@@ -603,7 +569,7 @@ class _CandidateGeneralProfilePageState
                         GeneralProfileRequestParams(
                           firstName: firstNameController.text,
                           lastName: lastNameController.text,
-                          address: '',
+                          address: addressController.text,
                           availableAt: availableDateController.text,
                           candidateSkill: List<int>.from(
                               selectedSKill.value.map((e) => e.id)),
@@ -624,6 +590,7 @@ class _CandidateGeneralProfilePageState
                           phone: phoneController.text,
                           pinterestUrl: pinterestController.text,
                           twitterUrl: twitterController.text,
+                          
                         ),
                       ),
                     );

@@ -8,6 +8,7 @@ import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/article/data/models/article_model.codegen.dart';
@@ -32,7 +33,7 @@ class ArticleDetailPage extends StatelessWidget {
       child: BlocListener<ArticleBloc, ArticleState>(
         listener: (context, state) {
           if (state.status == ArticleStatus.failure) {
-            showToast(state.message);
+            LoadingDialog.showError(message: state.message);
           }
         },
         child: Scaffold(

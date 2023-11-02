@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -12,12 +13,16 @@ class DropdownSearchWidget<T> extends StatelessWidget {
     this.itemAsString,
     this.onChanged,
     this.selectedItem,
+    this.alwaysShowLabel = false,
+    this.label,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
   final void Function(T?)? onChanged;
   final String hintText;
+  final String? label;
   final T? selectedItem;
+  final bool alwaysShowLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +49,16 @@ class DropdownSearchWidget<T> extends StatelessWidget {
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           contentPadding: defaultPadding,
+          floatingLabelBehavior:
+              alwaysShowLabel ? FloatingLabelBehavior.always : null,
+          label: GlobalHelper.isEmpty(label)
+              ? null
+              : IText.set(
+                  text: label!,
+                  typeName: TextTypeName.headline3,
+                  styleName: TextStyleName.regular,
+                  color: AppColors.textPrimary,
+                ),
           hintStyle: IText.set(
             text: '',
             typeName: TextTypeName.headline3,
@@ -70,12 +85,16 @@ class DropdownSearchMultiSelectWidget<T> extends StatelessWidget {
     this.itemAsString,
     required this.onChanged,
     required this.selectedItem,
+    this.alwaysShowLabel = false,
+    this.label,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
   final void Function(List<T>)? onChanged;
   final String hintText;
   final List<T> selectedItem;
+  final bool alwaysShowLabel;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +121,16 @@ class DropdownSearchMultiSelectWidget<T> extends StatelessWidget {
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           contentPadding: defaultPadding,
+          floatingLabelBehavior:
+              alwaysShowLabel ? FloatingLabelBehavior.always : null,
+          label: GlobalHelper.isEmpty(label)
+              ? null
+              : IText.set(
+                  text: label!,
+                  typeName: TextTypeName.headline3,
+                  styleName: TextStyleName.regular,
+                  color: AppColors.textPrimary,
+                ),
           hintStyle: IText.set(
             text: '',
             typeName: TextTypeName.headline3,

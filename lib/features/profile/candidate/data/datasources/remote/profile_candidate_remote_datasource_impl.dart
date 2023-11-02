@@ -8,6 +8,7 @@ import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_response_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
@@ -258,6 +259,76 @@ class ProfileCandidateRemoteDataSourceImpl
     try {
       final response = await _dio.post(
         URLConstant.candidateUpdateGeneralProfile,
+        data: params.toJson(),
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<CandidateExperienceModels>>> getExperiences(
+    NoParams params,
+  ) async {
+    try {
+      final response = await _dio.get(URLConstant.candidateGetExperiences);
+      if (response.isOk) {
+        return right(List.from(
+          response.data.map(
+            (e) => CandidateExperienceModels.fromJson(e),
+          ),
+        ));
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> addExperience(
+      CandidateExperienceModels params) async {
+    try {
+      params.toJson().remove('id');
+      params.toJson().remove('currenty_working');
+      params.toJson().remove('candidate_id');
+
+      final response = await _dio.post(
+        URLConstant.candidateGetExperiences,
         data: params.toJson(),
       );
       if (response.isOk) {

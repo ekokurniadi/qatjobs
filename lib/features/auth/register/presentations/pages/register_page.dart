@@ -6,6 +6,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/register_usecase.dart';
 import 'package:qatjobs/injector.dart';
@@ -41,9 +42,9 @@ class _RegisterPageState extends State<RegisterPage> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.status == AuthStatus.failure) {
-            showToast(state.message);
+            LoadingDialog.showError(message: state.message);
           } else if (state.status == AuthStatus.registerSuccess) {
-            showToast(state.message);
+            LoadingDialog.showSuccess(message: state.message);
             Navigator.pop(context);
           }
         },

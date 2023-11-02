@@ -24,5 +24,6 @@ abstract class URLConstant {
   static const String candidateUpdateProfile = '/candidate/profiles/update';
   static const String candidateUpdateGeneralProfile = '/candidate/profiles/update-general-profile';
   static const String candidateGetResume = '/candidate/profiles/resumes';
+  static const String candidateGetExperiences = '/candidate/experiences';
 
 }

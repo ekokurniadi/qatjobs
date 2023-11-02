@@ -57,6 +57,8 @@ class DioHelper {
         return 'Bad gateway';
       case 302:
         return 'Already exist';
+      case 422:
+        return error?.statusMessage ?? 'Error';
       default:
         return 'Oops something went wrong';
     }

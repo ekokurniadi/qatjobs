@@ -8,4 +8,9 @@ class AppConstant {
   // ROLE
   static const String roleCandidate = 'candidate';
   static const String roleEmployer = 'employer';
+
+
+  // MIME TYPE
+  static const String mimeTypePDF = 'pdf';
+  static const String mimeTypeImage = 'image';
 }

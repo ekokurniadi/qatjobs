@@ -6,9 +6,12 @@ import 'package:qatjobs/features/job/presentations/pages/job_detail_page.dart';
 import 'package:qatjobs/features/job/presentations/widgets/job_filter.dart';
 import 'package:qatjobs/features/layouts/presentations/pages/layouts_page.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_add_resume_page.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_carrer_information_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_general_profile_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_detail_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_page.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_resume_page.dart';
 import 'package:qatjobs/features/splash_screen/presentations/pages/splash_screen_page.dart';
 import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_screen_page.dart';
 
@@ -51,6 +54,15 @@ import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_scre
     ),
     AutoRoute(
       page: CandidateGeneralProfilePage,
+    ),
+    AutoRoute(
+      page: CandidateResumePage,
+    ),
+    AutoRoute(
+      page: CandidateAddResumePage,
+    ),
+    AutoRoute(
+      page: CandidateCareerInformationPage,
     ),
   ],
 )

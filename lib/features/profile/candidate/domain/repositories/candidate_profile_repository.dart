@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_change_password_usecase.dart';
@@ -29,5 +30,11 @@ abstract class CandidateProfileRepository {
   );
   Future<Either<Failures, bool>> updateGeneralProfile(
     GeneralProfileRequestParams params,
+  );
+  Future<Either<Failures, List<CandidateExperienceModels>>> getExperiences(
+    NoParams params,
+  );
+  Future<Either<Failures, bool>> addExperience(
+    CandidateExperienceModels params,
   );
 }

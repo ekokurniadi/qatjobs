@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
+import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
@@ -11,7 +13,10 @@ import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/card_menu_item.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
+import 'package:qatjobs/injector.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CandidateProfilePage extends StatelessWidget {
@@ -159,7 +164,24 @@ class CandidateProfilePage extends StatelessWidget {
               CardMenuItem(
                 title: 'Logout',
                 icon: AssetsConstant.svgAssetsLogout,
-                onTap: () {},
+                onTap: () async {
+                  await getIt<SharedPreferences>().remove(
+                    AppConstant.prefKeyUserLogin,
+                  );
+
+                  await getIt<SharedPreferences>().remove(
+                    AppConstant.prefKeyToken,
+                  );
+
+                  DioHelper.setDioHeader('');
+
+                  await getIt<SharedPreferences>().remove(
+                    AppConstant.prefKeyRole,
+                  );
+
+                  context.read<BottomNavCubit>().setSelectedMenuIndex(0);
+                  context.read<UserBloc>().add(const UserEvent.getLogedinUser());
+                },
                 showIconArrow: false,
               ),
             ],

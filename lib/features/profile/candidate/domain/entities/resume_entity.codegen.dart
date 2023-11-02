@@ -10,6 +10,8 @@ class ResumeEntity with _$ResumeEntity {
     required String name,
     required Map<String, dynamic> customProperties,
     required String originalUrl,
+    required String mimeType,
+    required String size,
   }) = _ResumeEntity;
 
   factory ResumeEntity.fromJson(Map<String, dynamic> json) =>

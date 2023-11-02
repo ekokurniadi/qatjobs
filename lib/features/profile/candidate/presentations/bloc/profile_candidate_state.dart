@@ -10,6 +10,8 @@ enum ProfileCandidateStatus {
   insertResume,
   downloadResume,
   deleteResume,
+  getExperiences,
+  addExperiences,
 }
 
 @freezed
@@ -17,19 +19,16 @@ class ProfileCandidateState with _$ProfileCandidateState {
   const factory ProfileCandidateState({
     required ProfileCandidateStatus status,
     required ProfileCandidateEntity generalProfile,
-    required ResumeEntity resumeEntity,
+    required List<ResumeEntity> resumes,
+    required List<CandidateExperienceEntity> experiences,
     required String message,
   }) = _ProfileCandidateState;
 
   factory ProfileCandidateState.initial() => ProfileCandidateState(
         status: ProfileCandidateStatus.initial,
         generalProfile: ProfileCandidateEntity(id: 0, userId: 0),
-        resumeEntity: const ResumeEntity(
-          id: 0,
-          name: '',
-          customProperties: {},
-          originalUrl: '',
-        ),
+        resumes: [],
         message: '',
+        experiences: [],
       );
 }

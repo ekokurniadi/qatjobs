@@ -31,4 +31,9 @@ class AssetsConstant {
   static const String svgAssetsPassword = 'assets/svgs/icon/ic-password.svg';
   static const String svgAssetsResume = 'assets/svgs/icon/ic-resume.svg';
   static const String svgAssetsPDF = 'assets/svgs/icon/ic-pdf.svg';
+  static const String svgAssetsPicture = 'assets/svgs/icon/ic-picture.svg';
+  static const String svgAssetsDoc = 'assets/svgs/icon/ic-doc.svg';
+  static const String svgAssetsDelete = 'assets/svgs/icon/ic-delete.svg';
+  static const String svgAssetsEdit = 'assets/svgs/icon/ic-edit.svg';
+  static const String svgAssetsUploadCV = 'assets/svgs/icon/ic-upload-cv.svg';
 }

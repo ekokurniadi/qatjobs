@@ -1,13 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/widget/card_menu_item.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
-import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 
 class CandidateProfileDetailPage extends StatelessWidget {
   const CandidateProfileDetailPage({super.key});
@@ -39,12 +37,20 @@ class CandidateProfileDetailPage extends StatelessWidget {
             CardMenuItem(
               title: 'Resume',
               icon: AssetsConstant.svgAssetsResume,
-              onTap: () {},
+              onTap: () {
+                AutoRouter.of(context).push(
+                    const CandidateResumeRoute(),
+                  );
+              },
             ),
             CardMenuItem(
               title: 'Career Information',
               icon: AssetsConstant.svgAssetsWorkExperience,
-              onTap: () {},
+              onTap: () {
+                AutoRouter.of(context).push(
+                    const CandidateCareerInformationRoute(),
+                  );
+              },
             ),
             CardMenuItem(
               title: 'CV Builder',

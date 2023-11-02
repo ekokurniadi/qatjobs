@@ -11,4 +11,11 @@ class DateHelper{
 
     return DateFormat('d MMM yyyy').format(DateTime.parse(date!));
   }
+  static String getOnlyDate(String? date){
+    if(GlobalHelper.isEmpty(date)){
+      return '';
+    }
+
+    return DateFormat('yyyy-MM-dd').format(DateTime.parse(date!));
+  }
 }

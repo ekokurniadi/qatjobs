@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/repositories/candidate_profile_repository.dart';
@@ -58,6 +59,19 @@ class CandidateProfileRepositoryImpl implements CandidateProfileRepository {
   Future<Either<Failures, bool>> updateGeneralProfile(
     GeneralProfileRequestParams params,
   ) async {
-   return await _dataSource.updateGeneralProfile(params);
+    return await _dataSource.updateGeneralProfile(params);
+  }
+
+  @override
+  Future<Either<Failures, List<CandidateExperienceModels>>> getExperiences(
+    NoParams params,
+  ) async {
+    return await _dataSource.getExperiences(params);
+  }
+
+  @override
+  Future<Either<Failures, bool>> addExperience(
+      CandidateExperienceModels params) async {
+    return await _dataSource.addExperience(params);
   }
 }

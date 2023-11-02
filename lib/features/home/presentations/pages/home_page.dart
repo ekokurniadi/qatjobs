@@ -2,14 +2,17 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
@@ -87,7 +90,7 @@ class _HomePageState extends State<HomePage> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state.status == HomeStatus.failure) {
-            showToast(state.message);
+            LoadingDialog.showError(message: state.message);
           }
         },
         builder: (context, state) {
@@ -127,10 +130,29 @@ class _HomePageState extends State<HomePage> {
                       title: 'Latest Jobs',
                     ),
                     const SpaceWidget(),
-                    _SectionLatestJobs(
-                      state.data?.latestJobs ?? [],
-                      isLoading: state.status == HomeStatus.loading,
-                    ),
+                    if (state.status == HomeStatus.complete &&
+                        GlobalHelper.isEmptyList(state.data?.latestJobs)) ...[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(AssetsConstant.illusJobEmpty),
+                          const SpaceWidget(),
+                          IText.set(
+                            text: 'Job is empty',
+                            textAlign: TextAlign.left,
+                            styleName: TextStyleName.medium,
+                            typeName: TextTypeName.large,
+                            color: AppColors.textPrimary,
+                            lineHeight: 1.2.h,
+                          ),
+                        ],
+                      )
+                    ] else ...[
+                      _SectionLatestJobs(
+                        state.data?.latestJobs ?? [],
+                        isLoading: state.status == HomeStatus.loading,
+                      ),
+                    ],
                     const SpaceWidget(),
                     const SectionTitleWidget(
                       title: 'Latest Article',

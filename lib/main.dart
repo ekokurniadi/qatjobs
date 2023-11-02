@@ -128,8 +128,7 @@ class _MainAppState extends State<MainApp> {
                   useMaterial3: false,
                   pageTransitionsTheme: const PageTransitionsTheme(
                     builders: {
-                      TargetPlatform.android:
-                          FadeUpwardsPageTransitionsBuilder(),
+                      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
                     },
                   ),
