@@ -10,8 +10,14 @@ enum ProfileCandidateStatus {
   insertResume,
   downloadResume,
   deleteResume,
+  deleteExperience,
   getExperiences,
   addExperiences,
+  updateExperiences,
+  deleteEducation,
+  getEducation,
+  addEducation,
+  updateEducation,
 }
 
 @freezed
@@ -21,6 +27,7 @@ class ProfileCandidateState with _$ProfileCandidateState {
     required ProfileCandidateEntity generalProfile,
     required List<ResumeEntity> resumes,
     required List<CandidateExperienceEntity> experiences,
+    required List<CandidateEducationEntity> educations,
     required String message,
   }) = _ProfileCandidateState;
 
@@ -30,5 +37,6 @@ class ProfileCandidateState with _$ProfileCandidateState {
         resumes: [],
         message: '',
         experiences: [],
+        educations: [],
       );
 }

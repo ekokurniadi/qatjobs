@@ -15,6 +15,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
     this.selectedItem,
     this.alwaysShowLabel = false,
     this.label,
+    this.isRequired = false,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
@@ -23,6 +24,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
   final String? label;
   final T? selectedItem;
   final bool alwaysShowLabel;
+  final bool isRequired;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,14 @@ class DropdownSearchWidget<T> extends StatelessWidget {
       selectedItem: selectedItem,
       onChanged: onChanged,
       autoValidateMode: AutovalidateMode.onUserInteraction,
+      validator: isRequired
+          ? (val) {
+              if (GlobalHelper.isEmpty(val)) {
+                return 'Please fill out this field';
+              }
+              return null;
+            }
+          : null,
       popupProps: const PopupPropsMultiSelection.menu(
         fit: FlexFit.loose,
         showSearchBox: true,

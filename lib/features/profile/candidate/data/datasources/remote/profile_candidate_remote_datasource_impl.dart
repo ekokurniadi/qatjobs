@@ -8,6 +8,7 @@ import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/candidate_education_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_response_models.codegen.dart';
@@ -326,10 +327,207 @@ class ProfileCandidateRemoteDataSourceImpl
       params.toJson().remove('id');
       params.toJson().remove('currenty_working');
       params.toJson().remove('candidate_id');
-
+      params.toJson().putIfAbsent('country_id', () => '178');
       final response = await _dio.post(
         URLConstant.candidateGetExperiences,
         data: params.toJson(),
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> updateExperience(
+      CandidateExperienceModels params) async {
+    try {
+      Map<String, dynamic> paramsNew = params.toJson();
+      paramsNew['country_id'] = 178;
+
+      final response = await _dio.put(
+        '${URLConstant.candidateGetExperiences}/${params.id}',
+        data: paramsNew,
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> deleteExperience(int id) async {
+    try {
+      final response = await _dio.delete(
+        '${URLConstant.candidateGetExperiences}/$id',
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> addEducation(
+      CandidateEducationModels params) async {
+    try {
+      params.toJson().remove('id');
+      final newParams = params.toJson();
+      newParams['country_id'] = 178;
+      final response = await _dio.post(
+        URLConstant.candidateEducation,
+        data: newParams,
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<CandidateEducationModels>>> getEducation(
+      NoParams params) async {
+    try {
+      final response = await _dio.get(URLConstant.candidateEducation);
+      if (response.isOk) {
+        return right(List.from(
+          response.data.map(
+            (e) => CandidateEducationModels.fromJson(e),
+          ),
+        ));
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> updateEducation(
+      CandidateEducationModels params) async {
+    try {
+      final newParams = params.toJson();
+      newParams['country_id'] = 178;
+      final response = await _dio.put(
+        '${URLConstant.candidateEducation}/${params.id}',
+        data: newParams,
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> deleteEducation(int id) async {
+    try {
+      final response = await _dio.delete(
+        '${URLConstant.candidateEducation}/$id',
       );
       if (response.isOk) {
         return right(true);

@@ -6,7 +6,11 @@ import "package:qatjobs/core/error/failures.dart";
 import "package:qatjobs/core/extensions/dio_response_extension.dart";
 import "package:qatjobs/core/helpers/dio_helper.dart";
 import "package:qatjobs/core/helpers/global_helper.dart";
+import "package:qatjobs/core/usecases/usecases.dart";
+import "package:qatjobs/features/job/data/models/applied_job_model.codegen.dart";
+import "package:qatjobs/features/job/data/models/favorite_job_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
+import "package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart";
 import "job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
 
@@ -29,6 +33,148 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
           final result = List<JobModel>.from(
             response.data['data'].map(
               (e) => JobModel.fromJson(e),
+            ),
+          );
+          return right(result);
+        }
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<FavoriteJobModel>>> getFavoriteJob(
+      NoParams params) async {
+    try {
+      final response = await _dio.get(
+        URLConstant.candidateFavoriteJob,
+      );
+
+      if (response.isOk) {
+        if (!GlobalHelper.isEmpty(response.data)) {
+          final result = List<FavoriteJobModel>.from(
+            response.data.map(
+              (e) => FavoriteJobModel.fromJson(e),
+            ),
+          );
+          return right(result);
+        }
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> saveToFavorite(
+      FavoriteJobRequestParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.candidateFavoriteJob,
+        data: params.toJson(),
+      );
+
+      if (response.isOk) {
+        return right(response.isOk);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> deleteFavoriteJob(int params) async {
+    try {
+      final response = await _dio.delete(
+        '${URLConstant.candidateFavoriteJob}/$params',
+      );
+
+      if (response.isOk) {
+        return right(response.isOk);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<AppliedJobModel>>> getAppliedJob(
+      NoParams params) async {
+    try {
+      final response = await _dio.get(
+        URLConstant.candidateAppliedJob,
+      );
+
+      if (response.isOk) {
+        if (!GlobalHelper.isEmpty(response.data)) {
+          final result = List<AppliedJobModel>.from(
+            response.data.map(
+              (e) => AppliedJobModel.fromJson(e),
             ),
           );
           return right(result);

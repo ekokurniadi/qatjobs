@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/candidate_education_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
@@ -31,10 +32,28 @@ abstract class ProfileCandidateRemoteDataSource {
   Future<Either<Failures, bool>> updateGeneralProfile(
     GeneralProfileRequestParams params,
   );
-   Future<Either<Failures, List<CandidateExperienceModels>>> getExperiences(
+  Future<Either<Failures, List<CandidateExperienceModels>>> getExperiences(
     NoParams params,
   );
   Future<Either<Failures, bool>> addExperience(
     CandidateExperienceModels params,
+  );
+  Future<Either<Failures, bool>> updateExperience(
+    CandidateExperienceModels params,
+  );
+  Future<Either<Failures, bool>> deleteExperience(
+    int id,
+  );
+  Future<Either<Failures, bool>> addEducation(
+    CandidateEducationModels params,
+  );
+  Future<Either<Failures, List<CandidateEducationModels>>> getEducation(
+    NoParams params,
+  );
+  Future<Either<Failures, bool>> updateEducation(
+    CandidateEducationModels params,
+  );
+   Future<Either<Failures, bool>> deleteEducation(
+    int id,
   );
 }
