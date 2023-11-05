@@ -29,5 +29,6 @@ abstract class URLConstant {
   static const String candidateEducation = '/candidate/educations';
   static const String candidateFavoriteJob = '/candidate/jobs/favourite-jobs';
   static const String candidateAppliedJob = '/candidate/jobs/applied';
+  static const String candidateJobAlert = '/candidate/jobs/job-alerts';
 
 }

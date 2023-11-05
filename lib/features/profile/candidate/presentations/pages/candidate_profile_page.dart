@@ -13,6 +13,7 @@ import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/card_menu_item.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
@@ -133,7 +134,11 @@ class CandidateProfilePage extends StatelessWidget {
               CardMenuItem(
                 title: 'Favorite Jobs',
                 icon: AssetsConstant.svgAssetsSaveJobs,
-                onTap: () {},
+                onTap: () {
+                  AutoRouter.of(context).push(
+                    const FavoriteJobRoute(),
+                  );
+                },
               ),
               CardMenuItem(
                 title: 'Followings',
@@ -180,7 +185,9 @@ class CandidateProfilePage extends StatelessWidget {
                   );
 
                   context.read<BottomNavCubit>().setSelectedMenuIndex(0);
-                  context.read<UserBloc>().add(const UserEvent.getLogedinUser());
+                  context
+                      .read<UserBloc>()
+                      .add(const UserEvent.getLogedinUser());
                 },
                 showIconArrow: false,
               ),

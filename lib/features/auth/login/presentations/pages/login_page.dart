@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: AppColors.bg200,
             resizeToAvoidBottomInset: false,
             body: Container(
-              padding: const EdgeInsets.all(29),
+              padding:  EdgeInsets.fromLTRB(29,29,29,MediaQuery.of(context).viewInsets.bottom),
               width: double.infinity,
               height: MediaQuery.sizeOf(context).height,
               child: SingleChildScrollView(

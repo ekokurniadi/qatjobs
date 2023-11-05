@@ -1,15 +1,23 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart';
+import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
+import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_html/flutter_html.dart';
 
@@ -17,14 +25,21 @@ class JobDetailPage extends StatefulWidget {
   const JobDetailPage({
     super.key,
     required this.jobModel,
+    this.isShowFavoriteButton = true,
   });
   final JobModel jobModel;
+  final bool isShowFavoriteButton;
 
   @override
   State<JobDetailPage> createState() => _JobDetailPageState();
 }
 
 class _JobDetailPageState extends State<JobDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +110,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                     imageUrl:
                                         widget.jobModel.company?.companyUrl ??
                                             '',
+                                    customErrorWidget: SvgPicture.asset(
+                                      AssetsConstant.svgAssetsPicture,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -377,40 +395,129 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: defaultPadding,
-        decoration: BoxDecoration(
-          color: AppColors.bg200,
-          boxShadow: AppColors.defaultShadow,
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 50.w,
-              height: 50.h,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.bg200,
-                  shadowColor: AppColors.bg200,
-                ),
-                onPressed: () {},
-                child: SvgPicture.asset(AssetsConstant.svgAssetsSaveJobs),
-              ),
-            ),
-            SpaceWidget(
-              direction: Direction.horizontal,
-              space: 16.w,
-            ),
-            Expanded(
-              child: SizedBox(
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Apply Now'),
-                ),
-              ),
-            ),
-          ],
+      bottomNavigationBar: MultiBlocListener(
+        listeners: [
+          BlocListener<JobsBloc, JobsState>(
+            listener: (context, state) {
+              if (state.status == JobStatus.loading) {
+                LoadingDialog.show(message: 'Loading...');
+              } else if (state.status == JobStatus.insertFavJob ||
+                  state.status == JobStatus.deleted) {
+                LoadingDialog.dismiss();
+                LoadingDialog.showSuccess(message: state.message);
+                context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
+              } else {
+                LoadingDialog.dismiss();
+              }
+            },
+          ),
+          BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (!GlobalHelper.isEmpty(state.user)) {
+                context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
+                context.read<JobsBloc>().add(const JobsEvent.getAppliedJob());
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<JobsBloc, JobsState>(
+          builder: (context, jobState) {
+            return BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                return Container(
+                  padding: defaultPadding,
+                  decoration: BoxDecoration(
+                    color: AppColors.bg200,
+                    boxShadow: AppColors.defaultShadow,
+                  ),
+                  child: Row(
+                    children: [
+                      if (widget.isShowFavoriteButton) ...[
+                        SizedBox(
+                          width: 50.w,
+                          height: 50.h,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.bg200,
+                              shadowColor: AppColors.bg200,
+                            ),
+                            onPressed: jobState.favoriteJobs.any((element) =>
+                                    element.job.id == widget.jobModel.id)
+                                ? () {
+                                    if (state.user == null ||
+                                        state.user?.id == 0) {
+                                      LoadingDialog.showError(
+                                        message:
+                                            'Please login for save job to favorite',
+                                      );
+                                      AutoRouter.of(context)
+                                          .push(const LoginRoute());
+                                    } else {
+                                      context.read<JobsBloc>().add(
+                                            JobsEvent.deleteFavoriteJob(
+                                              jobState.favoriteJobs
+                                                  .where((element) =>
+                                                      element.job.id ==
+                                                      widget.jobModel.id)
+                                                  .first
+                                                  .id,
+                                            ),
+                                          );
+                                    }
+                                  }
+                                : () {
+                                    if (state.user == null ||
+                                        state.user?.id == 0) {
+                                      LoadingDialog.showError(
+                                        message:
+                                            'Please login for save job to favorite',
+                                      );
+                                      AutoRouter.of(context)
+                                          .push(const LoginRoute());
+                                    } else {
+                                      context.read<JobsBloc>().add(
+                                            JobsEvent.saveFavoriteJob(
+                                              FavoriteJobRequestParams(
+                                                jobId: widget.jobModel.id ?? 0,
+                                                userId: state.user?.id ?? 0,
+                                              ),
+                                            ),
+                                          );
+                                    }
+                                  },
+                            child: jobState.favoriteJobs.any((element) =>
+                                        element.job.id == widget.jobModel.id) &&
+                                    !GlobalHelper.isEmpty(state.user)
+                                ? const Icon(
+                                    Icons.favorite,
+                                    color: AppColors.danger100,
+                                  )
+                                : const Icon(
+                                    Icons.favorite_border,
+                                    color: AppColors.warning,
+                                  ),
+                          ),
+                        ),
+                        SpaceWidget(
+                          direction: Direction.horizontal,
+                          space: 16.w,
+                        ),
+                      ],
+                      Expanded(
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Apply Now'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );

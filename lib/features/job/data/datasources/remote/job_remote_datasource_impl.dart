@@ -9,6 +9,8 @@ import "package:qatjobs/core/helpers/global_helper.dart";
 import "package:qatjobs/core/usecases/usecases.dart";
 import "package:qatjobs/features/job/data/models/applied_job_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/favorite_job_model.codegen.dart";
+import "package:qatjobs/features/job/data/models/job_alert_request_params.codegen.dart";
+import "package:qatjobs/features/job/data/models/job_alerts_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart";
 import "job_remote_datasource.dart";
@@ -180,6 +182,72 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
           return right(result);
         }
       }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> addJobAlert(
+      JobAlertRequestParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.candidateJobAlert,
+        data: params.toJson(),
+      );
+
+      if (response.isOk) {
+        return right(true);
+      }
+
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, JobAlertsModel>> getJobAlert(NoParams params) async {
+    try {
+      final response = await _dio.get(
+        URLConstant.candidateJobAlert,
+      );
+
+      if (response.isOk) {
+        return right(JobAlertsModel.fromJson(response.data));
+      }
+
       return left(
         ServerFailure(
           errorMessage: response.data['message'],

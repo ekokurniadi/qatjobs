@@ -4,6 +4,8 @@ import "package:qatjobs/core/error/failures.dart";
 import "package:qatjobs/core/usecases/usecases.dart";
 import "package:qatjobs/features/job/data/models/applied_job_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/favorite_job_model.codegen.dart";
+import "package:qatjobs/features/job/data/models/job_alert_request_params.codegen.dart";
+import "package:qatjobs/features/job/data/models/job_alerts_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "package:qatjobs/features/job/domain/repositories/job_repository.dart";
 import "package:qatjobs/features/job/data/datasources/remote/job_remote_datasource.dart";
@@ -45,5 +47,16 @@ class JobRepositoryImpl implements JobRepository {
   Future<Either<Failures, List<AppliedJobModel>>> getAppliedJob(
       NoParams params) async {
     return await _jobRemoteDataSource.getAppliedJob(params);
+  }
+
+  @override
+  Future<Either<Failures, JobAlertsModel>> getJobAlert(NoParams params) async {
+    return await _jobRemoteDataSource.getJobAlert(params);
+  }
+
+  @override
+  Future<Either<Failures, bool>> addJobAlert(
+      JobAlertRequestParams params) async {
+    return await _jobRemoteDataSource.addJobAlert(params);
   }
 }
