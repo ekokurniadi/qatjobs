@@ -14,4 +14,6 @@ class JobsEvent with _$JobsEvent {
   const factory JobsEvent.getJobAlert() = _GetJobAlertEvent;
   const factory JobsEvent.addJobAlert(JobAlertRequestParams params) =
       _AddJobAlertEvent;
+  const factory JobsEvent.applyJob(ApplyJobRequestParams params) =
+      _ApplyJobAlertEvent;
 }

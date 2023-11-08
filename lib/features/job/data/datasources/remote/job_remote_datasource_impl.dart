@@ -12,6 +12,7 @@ import "package:qatjobs/features/job/data/models/favorite_job_model.codegen.dart
 import "package:qatjobs/features/job/data/models/job_alert_request_params.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_alerts_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
+import "package:qatjobs/features/job/domain/usecases/apply_job_usecase.dart";
 import "package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart";
 import "job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
@@ -246,6 +247,39 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
 
       if (response.isOk) {
         return right(JobAlertsModel.fromJson(response.data));
+      }
+
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> applyJob(ApplyJobRequestParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.candidateJobApply(params.jobId),
+        data: params.toJson(),
+      );
+
+      if (response.isOk) {
+        return right(true);
       }
 
       return left(

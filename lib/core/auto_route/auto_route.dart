@@ -2,6 +2,9 @@ import 'package:auto_route/annotations.dart';
 import 'package:qatjobs/features/article/presentations/pages/article_detail_page.dart';
 import 'package:qatjobs/features/auth/login/presentations/pages/login_page.dart';
 import 'package:qatjobs/features/auth/register/presentations/pages/register_page.dart';
+import 'package:qatjobs/features/company/presentations/pages/company_page.dart';
+import 'package:qatjobs/features/job/presentations/pages/applied_jobs_page.dart';
+import 'package:qatjobs/features/job/presentations/pages/apply_job_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/favorite_job_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/job_detail_page.dart';
 import 'package:qatjobs/features/job/presentations/widgets/job_filter.dart';
@@ -67,6 +70,15 @@ import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_scre
     ),
     AutoRoute(
       page: FavoriteJobPage,
+    ),
+    AutoRoute(
+      page: ApplyJobPage,
+    ),
+    AutoRoute(
+      page: AppliedJobsPage,
+    ),
+    AutoRoute(
+      page: CompanyPage,
     ),
   ],
 )

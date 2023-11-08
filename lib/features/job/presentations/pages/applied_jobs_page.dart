@@ -1,124 +1,76 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
-import 'package:qatjobs/core/widget/confirm_dialog_bottom_sheet.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
-import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
-import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class FavoriteJobPage extends StatefulWidget {
-  const FavoriteJobPage({super.key});
-
-  @override
-  State<FavoriteJobPage> createState() => _FavoriteJobPageState();
-}
-
-class _FavoriteJobPageState extends State<FavoriteJobPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
-    context
-        .read<ProfileCandidateBloc>()
-        .add(const ProfileCandidateEvent.getResume());
-  }
+class AppliedJobsPage extends StatelessWidget {
+  const AppliedJobsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg300,
       appBar: const CustomAppBar(
-        title: 'Favorite Jobs',
+        title: 'Applied Job',
         showLeading: true,
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<JobsBloc, JobsState>(
-            listener: (context, state) {
-              if (state.status == JobStatus.loading) {
-                LoadingDialog.show(message: 'Loading...');
-              } else if (state.status == JobStatus.deleted) {
-                LoadingDialog.dismiss();
-                LoadingDialog.showSuccess(message: state.message);
-                context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
-              } else if (state.status == JobStatus.failure) {
-                LoadingDialog.dismiss();
-                LoadingDialog.showError(message: state.message);
-              } else {
-                LoadingDialog.dismiss();
-              }
-            },
-          ),
-          BlocListener<ProfileCandidateBloc, ProfileCandidateState>(
-            listener: (context, state) {
-              if (state.status == ProfileCandidateStatus.failure) {
-                LoadingDialog.showError(message: state.message);
-              }
-            },
-          ),
-        ],
-        child: PullToRefreshWidget(
-          onRefresh: () async {
-            context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
-            context
-                .read<ProfileCandidateBloc>()
-                .add(const ProfileCandidateEvent.getResume());
+      body: Padding(
+        padding: defaultPadding,
+        child: BlocListener<JobsBloc, JobsState>(
+          listener: (context, state) {
+            if (state.status == JobStatus.loading) {
+              LoadingDialog.show(message: 'Loading ...');
+            } else {
+              LoadingDialog.dismiss();
+            }
           },
           child: BlocBuilder<JobsBloc, JobsState>(
             builder: (context, state) {
-              return state.favoriteJobs.isEmpty
+              return state.appliedJobs.isEmpty
                   ? SizedBox(
                       width: double.infinity,
                       height: MediaQuery.sizeOf(context).height,
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          height: MediaQuery.sizeOf(context).height,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SvgPicture.asset(AssetsConstant.illusJobEmpty),
-                              const SpaceWidget(),
-                              IText.set(
-                                text: 'No Savings',
-                                textAlign: TextAlign.left,
-                                styleName: TextStyleName.medium,
-                                typeName: TextTypeName.large,
-                                color: AppColors.textPrimary,
-                                lineHeight: 1.2.h,
-                              ),
-                              const SpaceWidget(),
-                              IText.set(
-                                text:
-                                    'You don\'t have any favorite jobs saved, please\n find it in search to save jobs',
-                                textAlign: TextAlign.center,
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary100,
-                              )
-                            ],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(AssetsConstant.illusJobEmpty),
+                          const SpaceWidget(),
+                          IText.set(
+                            text: 'No Applied Jobs',
+                            textAlign: TextAlign.left,
+                            styleName: TextStyleName.medium,
+                            typeName: TextTypeName.large,
+                            color: AppColors.textPrimary,
+                            lineHeight: 1.2.h,
                           ),
-                        ),
+                          const SpaceWidget(),
+                          IText.set(
+                            text:
+                                'You don\'t have any applied jobs saved, please\n find it in search to apply a jobs',
+                            textAlign: TextAlign.center,
+                            styleName: TextStyleName.regular,
+                            typeName: TextTypeName.caption1,
+                            color: AppColors.textPrimary100,
+                          )
+                        ],
                       ),
                     )
                   : ListView.builder(
-                      padding: defaultPadding,
-                      itemCount: state.favoriteJobs.length,
+                      itemCount: state.appliedJobs.length,
                       itemBuilder: (context, index) {
-                        final data = state.favoriteJobs[index].job;
+                        final data = state.appliedJobs[index].job;
                         return Container(
                           width: double.infinity,
                           padding: defaultPadding,
@@ -152,123 +104,27 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                         ),
                                       ),
                                     ),
-                                    BlocBuilder<ProfileCandidateBloc,
-                                        ProfileCandidateState>(
-                                      builder: (context, profileState) {
-                                        return PopupMenuButton(
-                                          itemBuilder: (context) {
-                                            return [
-                                              PopupMenuItem(
-                                                value: 'apply',
-                                                child: IText.set(
-                                                  text: 'Apply',
-                                                  textAlign: TextAlign.left,
-                                                  styleName:
-                                                      TextStyleName.semiBold,
-                                                  typeName:
-                                                      TextTypeName.headline3,
-                                                  color:
-                                                      AppColors.textPrimary100,
-                                                ),
-                                              ),
-                                              PopupMenuItem(
-                                                value: 'delete',
-                                                child: IText.set(
-                                                  text: 'Delete',
-                                                  textAlign: TextAlign.left,
-                                                  styleName:
-                                                      TextStyleName.semiBold,
-                                                  typeName:
-                                                      TextTypeName.headline3,
-                                                  color:
-                                                      AppColors.textPrimary100,
-                                                ),
-                                              ),
-                                              PopupMenuItem(
-                                                value: 'email',
-                                                child: Row(
-                                                  children: [
-                                                    IText.set(
-                                                      text: 'Email to friends',
-                                                      textAlign: TextAlign.left,
-                                                      styleName: TextStyleName
-                                                          .semiBold,
-                                                      typeName: TextTypeName
-                                                          .headline3,
-                                                      color: AppColors
-                                                          .textPrimary100,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ];
-                                          },
-                                          icon: const Icon(Icons.more_vert),
-                                          onSelected: (value) async {
-                                            switch (value) {
-                                              case 'apply':
-                                                if (profileState
-                                                    .resumes.isEmpty) {
-                                                  LoadingDialog.showError(
-                                                    message:
-                                                        'Please add your resume first before apply this job',
-                                                  );
-                                                  return;
-                                                }
-                                                AutoRouter.of(context).push(
-                                                  ApplyJobRoute(
-                                                    favoritJobId: state.favoriteJobs[index].id,
-                                                    jobId: data.id ?? 0,
-                                                    jobTitle:
-                                                        data.jobTitle ?? '',
-                                                    resumes:
-                                                        profileState.resumes,
-                                                  ),
-                                                );
-                                                break;
-                                              case 'delete':
-                                                await showModalBottomSheet(
-                                                  shape:
-                                                      const RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topRight:
-                                                          Radius.circular(32),
-                                                      topLeft:
-                                                          Radius.circular(32),
-                                                    ),
-                                                  ),
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return ConfirmDialogBottomSheet(
-                                                      title:
-                                                          'Remove Favorite Job ?',
-                                                      caption:
-                                                          'Are you sure you want to delete ${data.jobTitle}?',
-                                                      onTapCancel: () =>
-                                                          Navigator.pop(
-                                                              context),
-                                                      onTapContinue: () {
-                                                        Navigator.pop(context);
-                                                        context
-                                                            .read<JobsBloc>()
-                                                            .add(JobsEvent
-                                                                .deleteFavoriteJob(
-                                                              state
-                                                                  .favoriteJobs[
-                                                                      index]
-                                                                  .id,
-                                                            ));
-                                                      },
-                                                    );
-                                                  },
-                                                );
-                                                break;
-                                              default:
-                                            }
-                                          },
-                                        );
-                                      },
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.warning,
+                                        boxShadow: AppColors.defaultShadow,
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
+                                        ),
+                                      ),
+                                      margin: EdgeInsets.only(
+                                          right: 8.w, bottom: 8.w),
+                                      padding: const EdgeInsets.all(8),
+                                      child: IText.set(
+                                        text:
+                                            state.appliedJobs[index].status == 0
+                                                ? 'Draft'
+                                                : 'Applied',
+                                        textAlign: TextAlign.left,
+                                        styleName: TextStyleName.regular,
+                                        typeName: TextTypeName.caption2,
+                                        color: AppColors.bg200,
+                                      ),
                                     )
                                   ],
                                 ),

@@ -11,6 +11,7 @@ import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/logger/bloc_event_logger.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
+import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
 import 'package:qatjobs/features/connectivity/presentations/bloc/connectivity_bloc.dart';
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
@@ -74,6 +75,9 @@ class _MainAppState extends State<MainApp> {
         BlocProvider(
           create: (context) => getIt<ProfileCandidateBloc>(),
         ),
+        BlocProvider(
+          create: (context) => getIt<CompanyBloc>(),
+        ),
       ],
       child: BlocListener<ConnectivityBloc, ConnectivityState>(
         listener: (context, state) {
@@ -96,7 +100,7 @@ class _MainAppState extends State<MainApp> {
                 key: _mainNavigatorKey,
                 builder: EasyLoading.init(
                   builder: (context, widget) => ResponsiveWrapper.builder(
-                    BouncingScrollWrapper(child: widget!),
+                    ClampingScrollWrapper(child: widget!),
                     defaultScale: true,
                     background: const ColoredBox(
                       color: Color(0xFFF5F5F5),

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
+import 'package:qatjobs/core/helpers/url_launcher_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -20,6 +22,7 @@ import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_html/flutter_html.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class JobDetailPage extends StatefulWidget {
   const JobDetailPage({
@@ -383,12 +386,34 @@ class _JobDetailPageState extends State<JobDetailPage> {
               ),
               Padding(
                 padding: defaultPadding.copyWith(top: 0, bottom: 0),
-                child: IText.set(
-                  text: widget.jobModel.company?.website ?? '-',
-                  styleName: TextStyleName.regular,
-                  typeName: TextTypeName.headline3,
-                  color: AppColors.secondary200,
-                  textDecoration: TextDecoration.underline,
+                child: Row(
+                  children: [
+                    ZoomTapAnimation(
+                      onTap: () async {
+                        if (!GlobalHelper.isEmpty(widget.jobModel.company?.website)) {
+                          await UrlLauncherHelper.openUrl(
+                            widget.jobModel.company!.website!,
+                          );
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          IText.set(
+                            text: widget.jobModel.company?.website ?? '-',
+                            styleName: TextStyleName.regular,
+                            typeName: TextTypeName.headline3,
+                            color: AppColors.secondary200,
+                            textDecoration: TextDecoration.underline,
+                          ),
+                          SizedBox(width: 8.w),
+                          FaIcon(
+                            FontAwesomeIcons.externalLink,
+                            size: 16.sp,
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

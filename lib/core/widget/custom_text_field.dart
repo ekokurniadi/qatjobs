@@ -28,6 +28,7 @@ class CustomTextField extends StatefulWidget {
     this.isAlwaysShowLabel = false,
     this.isCalendarPicker = false,
     this.showBorder = false,
+    this.isSearch = false,
   });
 
   final String placeholder;
@@ -48,6 +49,7 @@ class CustomTextField extends StatefulWidget {
   final bool isAlwaysShowLabel;
   final bool isCalendarPicker;
   final bool showBorder;
+  final bool isSearch;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -174,7 +176,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
                                     color: AppColors.neutral200,
                                     size: 21.w,
                                   ))
-                              : null,
+                              : widget.isSearch
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.warning,
+                                        ),
+                                        onPressed: widget.onTap,
+                                        child: Icon(
+                                          Icons.search,
+                                          color: AppColors.bg100,
+                                          size: 28.w,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
                 ),
               ),
             ),

@@ -148,7 +148,12 @@ class CandidateProfilePage extends StatelessWidget {
               CardMenuItem(
                 title: 'Applied Jobs',
                 icon: AssetsConstant.svgAssetsWorkExperience,
-                onTap: () {},
+                onTap: () {
+                  context.read<JobsBloc>().add(const JobsEvent.getAppliedJob());
+                   AutoRouter.of(context).push(
+                    const AppliedJobsRoute(),
+                  );
+                },
               ),
               CardMenuItem(
                 title: 'Job Alert',

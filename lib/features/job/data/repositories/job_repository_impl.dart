@@ -10,6 +10,7 @@ import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "package:qatjobs/features/job/domain/repositories/job_repository.dart";
 import "package:qatjobs/features/job/data/datasources/remote/job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
+import "package:qatjobs/features/job/domain/usecases/apply_job_usecase.dart";
 import "package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart";
 
 @LazySingleton(as: JobRepository)
@@ -58,5 +59,10 @@ class JobRepositoryImpl implements JobRepository {
   Future<Either<Failures, bool>> addJobAlert(
       JobAlertRequestParams params) async {
     return await _jobRemoteDataSource.addJobAlert(params);
+  }
+
+  @override
+  Future<Either<Failures, bool>> applyJob(ApplyJobRequestParams params) async{
+    return await  _jobRemoteDataSource.applyJob(params);
   }
 }

@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/widget/error_view.dart';
 import 'package:qatjobs/core/widget/shimmer.dart';
 
@@ -96,7 +98,10 @@ class CustomImageNetwork extends StatelessWidget {
         alignment: alignment,
         errorWidget: customErrorWidgetBuilder ??
             (BuildContext context, String url, dynamic error) {
-              return customErrorWidget ?? const ErrorView();
+              return customErrorWidget ??
+                  SvgPicture.asset(
+                    AssetsConstant.svgAssetsPicture,
+                  );
             },
       ),
     );

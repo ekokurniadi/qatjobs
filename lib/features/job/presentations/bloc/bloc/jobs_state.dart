@@ -11,6 +11,7 @@ enum JobStatus {
   insertJobAlert,
   getJobAlert,
   deleted,
+  applyJobSuccess,
 }
 
 @freezed
@@ -38,9 +39,11 @@ class JobsState with _$JobsState {
         isFilterActive: false,
         appliedJobs: [],
         favoriteJobs: [],
-        jobAlerts: const JobAlertsModel(
+        jobAlerts:  JobAlertsModel(
           jobTypes: [],
           jobAlerts: [],
+          candidate: ProfileCandidateModels(id: 0,userId: 0)
+          
         ),
       );
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
@@ -17,6 +16,9 @@ import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/article/presentations/widgets/article_card_item.dart';
+import 'package:qatjobs/features/company/domain/usecases/get_company_usecase.dart';
+import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
+import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
 import 'package:qatjobs/features/home/data/models/home_models.codegen.dart';
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
@@ -44,6 +46,15 @@ class _HomePageState extends State<HomePage> {
     homeBloc.add(
       const HomeEvent.getFrontData(),
     );
+    context.read<CompanyBloc>().add(
+          const CompanyEvent.started(
+            CompanyRequestParams(
+              page: 1,
+              limit: 10,
+            ),
+            isReset: true,
+          ),
+        );
     super.initState();
   }
 
@@ -99,6 +110,15 @@ class _HomePageState extends State<HomePage> {
               homeBloc.add(
                 const HomeEvent.getFrontData(),
               );
+              context.read<CompanyBloc>().add(
+                    const CompanyEvent.started(
+                      CompanyRequestParams(
+                        page: 1,
+                        limit: 10,
+                      ),
+                      isReset: true,
+                    ),
+                  );
             },
             child: Container(
               width: double.infinity,
@@ -118,16 +138,177 @@ class _HomePageState extends State<HomePage> {
                       isLoading: state.status == HomeStatus.loading,
                     ),
                     const SpaceWidget(),
-                    const SectionTitleWidget(
+                    SectionTitleWidget(
                       title: 'Popular Categories',
+                      showMoreWidget: true,
+                      onTap: () {},
                     ),
                     _SectionPopularCategory(
                       state.data?.jobCategories ?? {},
                       isLoading: state.status == HomeStatus.loading,
                     ),
                     const SpaceWidget(),
-                    const SectionTitleWidget(
+                    SectionTitleWidget(
+                      title: 'Company',
+                      showMoreWidget: true,
+                      onTap: () {
+                        AutoRouter.of(context).push(const CompanyRoute());
+                      },
+                    ),
+                    BlocBuilder<CompanyBloc, CompanyState>(
+                      builder: (context, state) {
+                        return SizedBox(
+                          width: double.infinity,
+                          child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: state.companies.length > 4
+                                ? 4
+                                : state.companies.length,
+                            itemBuilder: (context, index) {
+                              final data = state.companies[index];
+                              return ZoomTapAnimation(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return CompanyDetailPage(
+                                          company: data,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: MediaQuery.sizeOf(context).width,
+                                  padding: const EdgeInsets.all(16),
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 1.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    color: AppColors.bg200,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: AppColors.neutral,
+                                        spreadRadius: 0.1,
+                                        blurRadius: 0.1,
+                                      ),
+                                      BoxShadow(
+                                        color: AppColors.neutral,
+                                        spreadRadius: 0.1,
+                                        blurRadius: 0.1,
+                                      )
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (state.status ==
+                                          CompanyStatus.loading) ...[
+                                        ShimmerBoxWidget(
+                                            width: 80.w, height: 80.w),
+                                        SizedBox(width: 16.w),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            ShimmerBoxWidget(
+                                              width: 200.w,
+                                              height: 20,
+                                            ),
+                                            const SpaceWidget(),
+                                            SizedBox(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.60,
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Expanded(
+                                                    child: ShimmerBoxWidget(
+                                                      width: double.infinity,
+                                                      height: 20,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8.w),
+                                                ],
+                                              ),
+                                            ),
+                                            const SpaceWidget(),
+                                            const ShimmerBoxWidget(
+                                              width: 100,
+                                              height: 20,
+                                            ),
+                                          ],
+                                        )
+                                      ] else ...[
+                                        if (!GlobalHelper.isEmptyList(
+                                            state.companies)) ...[
+                                          SizedBox(
+                                            width: 80.w,
+                                            height: 80.w,
+                                            child: CustomImageNetwork(
+                                              imageUrl: data.companyUrl ?? '',
+                                            ),
+                                          ),
+                                          SizedBox(width: 16.w),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              IText.set(
+                                                text: data.user?.fullName ?? '',
+                                                styleName: TextStyleName.bold,
+                                                typeName:
+                                                    TextTypeName.headline3,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.all(4.w),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.danger50,
+                                                  borderRadius: defaultRadius,
+                                                ),
+                                                child: IText.set(
+                                                  text:
+                                                      '${data.jobs?.length ?? 0} Open Position',
+                                                  styleName: TextStyleName.bold,
+                                                  typeName:
+                                                      TextTypeName.caption1,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    const SpaceWidget(),
+                    SectionTitleWidget(
                       title: 'Latest Jobs',
+                      showMoreWidget: true,
+                      onTap: () {
+                        context.read<BottomNavCubit>().setSelectedMenuIndex(2);
+                      },
                     ),
                     const SpaceWidget(),
                     if (state.status == HomeStatus.complete &&
@@ -394,209 +575,179 @@ class _SectionLatestJobs extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: GlobalHelper.isEmptyList(jobs) ? 3 : jobs.length + 1,
+      itemCount: jobs.length,
       itemBuilder: (context, index) {
-        if (index > jobs.length - 1 && !GlobalHelper.isEmptyList(jobs)) {
-          return SizedBox(
-            width: double.infinity,
-            child: Center(
-              child: ZoomTapAnimation(
-                child: InkWell(
-                  onTap: () {
-                    context.read<BottomNavCubit>().setSelectedMenuIndex(2);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.r),
-                      color: AppColors.secondary,
-                    ),
-                    child: IText.set(
-                      text: 'Browse All',
-                      styleName: TextStyleName.bold,
-                      typeName: TextTypeName.headline3,
-                      color: AppColors.textPrimary100,
-                    ),
-                  ),
-                ),
+        return ZoomTapAnimation(
+          onTap: () {
+            AutoRouter.of(context).push(
+              JobDetailRoute(
+                jobModel: jobs[index],
               ),
+            );
+          },
+          child: Container(
+            width: MediaQuery.sizeOf(context).width,
+            padding: const EdgeInsets.all(16),
+            margin: EdgeInsets.symmetric(
+              horizontal: 1.w,
+              vertical: 8.h,
             ),
-          );
-        } else {
-          return ZoomTapAnimation(
-            onTap: () {
-              AutoRouter.of(context).push(
-                JobDetailRoute(
-                  jobModel: jobs[index],
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              color: AppColors.bg200,
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.neutral,
+                  spreadRadius: 0.1,
+                  blurRadius: 0.1,
                 ),
-              );
-            },
-            child: Container(
-              width: MediaQuery.sizeOf(context).width,
-              padding: const EdgeInsets.all(16),
-              margin: EdgeInsets.symmetric(
-                horizontal: 1.w,
-                vertical: 8.h,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                color: AppColors.bg200,
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
-                  ),
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
+                BoxShadow(
+                  color: AppColors.neutral,
+                  spreadRadius: 0.1,
+                  blurRadius: 0.1,
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                if (isLoading) ...[
+                  ShimmerBoxWidget(width: 80.w, height: 80.w),
+                  SizedBox(width: 16.w),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ShimmerBoxWidget(
+                        width: 200.w,
+                        height: 20,
+                      ),
+                      const SpaceWidget(),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.60,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Expanded(
+                              child: ShimmerBoxWidget(
+                                width: double.infinity,
+                                height: 20,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                          ],
+                        ),
+                      ),
+                      const SpaceWidget(),
+                      const ShimmerBoxWidget(
+                        width: 100,
+                        height: 20,
+                      ),
+                    ],
                   )
-                ],
-              ),
-              child: Row(
-                children: [
-                  if (isLoading) ...[
-                    ShimmerBoxWidget(width: 80.w, height: 80.w),
+                ] else ...[
+                  if (!GlobalHelper.isEmptyList(jobs)) ...[
+                    SizedBox(
+                      width: 80.w,
+                      height: 80.w,
+                      child: CustomImageNetwork(
+                        imageUrl: jobs[index].company?.companyUrl ?? '',
+                      ),
+                    ),
                     SizedBox(width: 16.w),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ShimmerBoxWidget(
-                          width: 200.w,
-                          height: 20,
+                        IText.set(
+                          text: jobs[index].company?.user?.fullName ?? '',
+                          styleName: TextStyleName.bold,
+                          typeName: TextTypeName.headline3,
+                          color: AppColors.textPrimary,
                         ),
-                        const SpaceWidget(),
                         SizedBox(
                           width: MediaQuery.sizeOf(context).width * 0.60,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Expanded(
-                                child: ShimmerBoxWidget(
-                                  width: double.infinity,
-                                  height: 20,
+                              Expanded(
+                                child: IText.set(
+                                  text: jobs[index].jobTitle ?? '',
+                                  styleName: TextStyleName.bold,
+                                  typeName: TextTypeName.headline4,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
-                              SizedBox(width: 8.w),
+                              if (!GlobalHelper.isEmpty(
+                                  jobs[index].jobShift?.shift)) ...[
+                                SizedBox(width: 8.w),
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.danger50,
+                                    borderRadius: BorderRadius.circular(
+                                      4.r,
+                                    ),
+                                  ),
+                                  child: IText.set(
+                                    text: jobs[index].jobShift?.shift ?? '-',
+                                    styleName: TextStyleName.regular,
+                                    typeName: TextTypeName.caption1,
+                                    color: AppColors.danger100,
+                                  ),
+                                )
+                              ],
                             ],
                           ),
                         ),
-                        const SpaceWidget(),
-                        const ShimmerBoxWidget(
-                          width: 100,
-                          height: 20,
-                        ),
-                      ],
-                    )
-                  ] else ...[
-                    if (!GlobalHelper.isEmptyList(jobs)) ...[
-                      SizedBox(
-                        width: 80.w,
-                        height: 80.w,
-                        child: CustomImageNetwork(
-                          imageUrl: jobs[index].company?.companyUrl ?? '',
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IText.set(
-                            text: jobs[index].company?.user?.fullName ?? '',
-                            styleName: TextStyleName.bold,
-                            typeName: TextTypeName.headline3,
-                            color: AppColors.textPrimary,
+                        if (!(jobs[index].hideSalary ?? true)) ...[
+                          SpaceWidget(
+                            space: 8.h,
                           ),
-                          SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 0.60,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: IText.set(
-                                    text: jobs[index].jobTitle ?? '',
-                                    styleName: TextStyleName.bold,
-                                    typeName: TextTypeName.headline4,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                if (!GlobalHelper.isEmpty(
-                                    jobs[index].jobShift?.shift)) ...[
-                                  SizedBox(width: 8.w),
-                                  Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.danger50,
-                                      borderRadius: BorderRadius.circular(
-                                        4.r,
-                                      ),
-                                    ),
-                                    child: IText.set(
-                                      text: jobs[index].jobShift?.shift ?? '-',
-                                      styleName: TextStyleName.regular,
-                                      typeName: TextTypeName.caption1,
-                                      color: AppColors.danger100,
-                                    ),
-                                  )
-                                ],
-                              ],
-                            ),
+                          Row(
+                            children: [
+                              IText.set(
+                                text: jobs[index].currency?.currencyIcon ?? '﷼',
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.regular,
+                                typeName: TextTypeName.caption1,
+                                color: AppColors.textPrimary,
+                              ),
+                              SpaceWidget(
+                                direction: Direction.horizontal,
+                                space: 4.w,
+                              ),
+                              IText.set(
+                                text: (jobs[index].salaryFrom ?? 0).toString(),
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.regular,
+                                typeName: TextTypeName.caption1,
+                                color: AppColors.textPrimary,
+                              ),
+                              IText.set(
+                                text: '-',
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.regular,
+                                typeName: TextTypeName.caption1,
+                                color: AppColors.textPrimary,
+                              ),
+                              IText.set(
+                                text: (jobs[index].salaryTo ?? 0).toString(),
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.regular,
+                                typeName: TextTypeName.caption1,
+                                color: AppColors.textPrimary,
+                              )
+                            ],
                           ),
-                          if (!(jobs[index].hideSalary ?? true)) ...[
-                            SpaceWidget(
-                              space: 8.h,
-                            ),
-                            Row(
-                              children: [
-                                IText.set(
-                                  text:
-                                      jobs[index].currency?.currencyIcon ?? '﷼',
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.regular,
-                                  typeName: TextTypeName.caption1,
-                                  color: AppColors.textPrimary,
-                                ),
-                                SpaceWidget(
-                                  direction: Direction.horizontal,
-                                  space: 4.w,
-                                ),
-                                IText.set(
-                                  text:
-                                      (jobs[index].salaryFrom ?? 0).toString(),
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.regular,
-                                  typeName: TextTypeName.caption1,
-                                  color: AppColors.textPrimary,
-                                ),
-                                IText.set(
-                                  text: '-',
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.regular,
-                                  typeName: TextTypeName.caption1,
-                                  color: AppColors.textPrimary,
-                                ),
-                                IText.set(
-                                  text: (jobs[index].salaryTo ?? 0).toString(),
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.regular,
-                                  typeName: TextTypeName.caption1,
-                                  color: AppColors.textPrimary,
-                                )
-                              ],
-                            ),
-                          ],
                         ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ],
                 ],
-              ),
+              ],
             ),
-          );
-        }
+          ),
+        );
       },
     );
   }
@@ -621,86 +772,65 @@ class _SectionPopularCategory extends StatelessWidget {
         ),
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        itemCount: categories.isNotEmpty ? categories.entries.length + 1 : 3,
+        itemCount: categories.entries.length,
         itemBuilder: (context, index) {
-          if (index > categories.entries.length - 1 &&
-              !GlobalHelper.isEmptyList(categories.entries)) {
-            return Container(
-              width: MediaQuery.sizeOf(context).width * 0.40,
-              padding: const EdgeInsets.all(16),
-              margin: EdgeInsets.symmetric(horizontal: 4.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                color: AppColors.bg200,
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
-                  ),
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
-                  )
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IText.set(
-                    text: 'Browse All',
-                    styleName: TextStyleName.bold,
-                    typeName: TextTypeName.headline3,
-                    color: AppColors.textPrimary,
-                  ),
-                  SpaceWidget(
-                    space: 8.h,
-                  ),
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary,
+          return Container(
+            width: MediaQuery.sizeOf(context).width * 0.75,
+            padding: const EdgeInsets.all(16),
+            margin: EdgeInsets.only(right: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              color: AppColors.bg200,
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.neutral,
+                  spreadRadius: 0.1,
+                  blurRadius: 0.1,
+                ),
+                BoxShadow(
+                  color: AppColors.neutral,
+                  spreadRadius: 0.1,
+                  blurRadius: 0.1,
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                if (isLoading) ...[
+                  Expanded(
+                    child: ShimmerBoxWidget(
+                      width: double.infinity,
+                      height: 80.h,
                     ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: AppColors.bg200,
-                      size: 20.sp,
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ShimmerBoxWidget(
+                          width: 100.w,
+                          height: 20.h,
+                        ),
+                        SizedBox(height: 8.h),
+                        ShimmerBoxWidget(
+                          width: 150.w,
+                          height: 20.h,
+                        )
+                      ],
                     ),
                   )
-                ],
-              ),
-            );
-          } else {
-            return Container(
-              width: MediaQuery.sizeOf(context).width * 0.75,
-              padding: const EdgeInsets.all(16),
-              margin: EdgeInsets.only(right: 16.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                color: AppColors.bg200,
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
-                  ),
-                  BoxShadow(
-                    color: AppColors.neutral,
-                    spreadRadius: 0.1,
-                    blurRadius: 0.1,
-                  )
-                ],
-              ),
-              child: Row(
-                children: [
-                  if (isLoading) ...[
+                ] else ...[
+                  if (categories.entries.isNotEmpty) ...[
                     Expanded(
-                      child: ShimmerBoxWidget(
-                        width: double.infinity,
-                        height: 80.h,
+                      child: CustomImageNetwork(
+                        imageUrl: categories.entries
+                                .elementAt(index)
+                                .value
+                                .imageUrl ??
+                            '',
                       ),
                     ),
                     SizedBox(width: 16.w),
@@ -710,61 +840,28 @@ class _SectionPopularCategory extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ShimmerBoxWidget(
-                            width: 100.w,
-                            height: 20.h,
+                          IText.set(
+                            text:
+                                categories.entries.elementAt(index).value.name,
+                            styleName: TextStyleName.bold,
+                            typeName: TextTypeName.headline3,
+                            color: AppColors.textPrimary,
                           ),
-                          SizedBox(height: 8.h),
-                          ShimmerBoxWidget(
-                            width: 150.w,
-                            height: 20.h,
-                          )
+                          IText.set(
+                            text:
+                                '${categories.entries.elementAt(index).value.jobsCount ?? 0} Open Position',
+                            styleName: TextStyleName.regular,
+                            typeName: TextTypeName.caption1,
+                            color: AppColors.textPrimary100,
+                          ),
                         ],
                       ),
                     )
-                  ] else ...[
-                    if (categories.entries.isNotEmpty) ...[
-                      Expanded(
-                        child: CustomImageNetwork(
-                          imageUrl: categories.entries
-                                  .elementAt(index)
-                                  .value
-                                  .imageUrl ??
-                              '',
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IText.set(
-                              text: categories.entries
-                                  .elementAt(index)
-                                  .value
-                                  .name,
-                              styleName: TextStyleName.bold,
-                              typeName: TextTypeName.headline3,
-                              color: AppColors.textPrimary,
-                            ),
-                            IText.set(
-                              text:
-                                  '${categories.entries.elementAt(index).value.jobsCount ?? 0} Open Position',
-                              styleName: TextStyleName.regular,
-                              typeName: TextTypeName.caption1,
-                              color: AppColors.textPrimary100,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
                   ],
                 ],
-              ),
-            );
-          }
+              ],
+            ),
+          );
         },
       ),
     );

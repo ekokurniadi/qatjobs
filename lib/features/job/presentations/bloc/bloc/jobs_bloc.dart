@@ -10,12 +10,14 @@ import 'package:qatjobs/features/job/data/models/job_alerts_model.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/job/domain/usecases/add_job_alert_usecase.dart';
+import 'package:qatjobs/features/job/domain/usecases/apply_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/delete_favorite_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_a_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_applied_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_favorite_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_job_alert_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 
 part 'jobs_event.dart';
 part 'jobs_state.dart';
@@ -30,6 +32,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
   final GetFavoriteJobUseCase _getFavoriteJobUseCase;
   final GetJobAlertUseCase _getJobAlertUseCase;
   final SaveToFavoriteJobUseCase _saveToFavoriteJobUseCase;
+  final ApplyJobUseCase _applyJobUseCase;
   JobsBloc(
     this._getAJobUseCase,
     this._addJobAlertUseCase,
@@ -38,6 +41,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     this._getFavoriteJobUseCase,
     this._saveToFavoriteJobUseCase,
     this._getJobAlertUseCase,
+    this._applyJobUseCase,
   ) : super(JobsState.initial()) {
     on<_GetJobsEvent>(_getJobs);
     on<_GetFavoriteJobsEvent>(_getFavoriteJobs);
@@ -46,6 +50,32 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     on<_GetAppliedJobEvent>(_getAppliedJobs);
     on<_GetJobAlertEvent>(_getJobsAlert);
     on<_AddJobAlertEvent>(_addJobsAlert);
+    on<_ApplyJobAlertEvent>(_applyJobsAlert);
+  }
+
+  FutureOr<void> _applyJobsAlert(
+    _ApplyJobAlertEvent event,
+    Emitter<JobsState> emit,
+  ) async {
+    emit(state.copyWith(status: JobStatus.loading));
+    final result = await _applyJobUseCase(event.params);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          message: l.errorMessage,
+          status: JobStatus.failure,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: JobStatus.applyJobSuccess,
+          message: event.params.applicationType == 'draft'
+              ? 'Job Application Drafted Successfully'
+              : 'Job Application Successfully',
+        ),
+      ),
+    );
   }
 
   FutureOr<void> _getFavoriteJobs(
