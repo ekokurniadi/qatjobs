@@ -4,6 +4,10 @@ class AppConstant {
   static const String prefKeyisFreshInstall = 'is_fresh_install';
   static const String prefKeyToken = 'token';
   static const String prefKeyRole = 'role';
+  static const String prefIsRememberMeKey = 'is_remember_me';
+  static const String prefEmailKey = 'email';
+  static const String prefPasswordKey = 'password';
+  static const String prefSelectedRoledKey = 'selected_role';
 
   // ROLE
   static const String roleCandidate = 'candidate';

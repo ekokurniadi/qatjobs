@@ -5,6 +5,7 @@ import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_education_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/cv_builder_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/repositories/candidate_profile_repository.dart';
@@ -108,5 +109,11 @@ class CandidateProfileRepositoryImpl implements CandidateProfileRepository {
   @override
   Future<Either<Failures, bool>> deleteEducation(int id) async {
     return await _dataSource.deleteEducation(id);
+  }
+
+  @override
+  Future<Either<Failures, CvBuilderResponseModels>> getCVBuilder(
+      NoParams params) async {
+    return await _dataSource.getCVBuilder(params);
   }
 }

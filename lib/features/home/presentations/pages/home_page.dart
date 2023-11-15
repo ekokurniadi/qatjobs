@@ -15,15 +15,20 @@ import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/article/presentations/widgets/article_card_item.dart';
+import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
 import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
 import 'package:qatjobs/features/home/data/models/home_models.codegen.dart';
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
+import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job_category/data/models/job_category_model.codegen.dart';
+import 'package:qatjobs/features/job_category/presentations/widgets/card_category.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/plan/data/models/plan_model.codegen.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
@@ -125,6 +130,7 @@ class _HomePageState extends State<HomePage> {
               height: MediaQuery.sizeOf(context).height,
               padding: const EdgeInsets.all(16),
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 primary: false,
                 child: Column(
                   children: [
@@ -141,7 +147,9 @@ class _HomePageState extends State<HomePage> {
                     SectionTitleWidget(
                       title: 'Popular Categories',
                       showMoreWidget: true,
-                      onTap: () {},
+                      onTap: () {
+                        AutoRouter.of(context).push(const JobCategoryRoute());
+                      },
                     ),
                     _SectionPopularCategory(
                       state.data?.jobCategories ?? {},
@@ -163,11 +171,15 @@ class _HomePageState extends State<HomePage> {
                             physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
-                            itemCount: state.companies.length > 4
-                                ? 4
-                                : state.companies.length,
+                            itemCount: state.status == CompanyStatus.loading
+                                ? 3
+                                : state.companies.length > 4
+                                    ? 4
+                                    : state.companies.length,
                             itemBuilder: (context, index) {
-                              final data = state.companies[index];
+                              final data = state.status == CompanyStatus.loading
+                                  ? CompanyModel()
+                                  : state.companies[index];
                               return ZoomTapAnimation(
                                 onTap: () {
                                   Navigator.push(
@@ -274,20 +286,9 @@ class _HomePageState extends State<HomePage> {
                                               SizedBox(
                                                 height: 8.h,
                                               ),
-                                              Container(
-                                                padding: EdgeInsets.all(4.w),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.danger50,
-                                                  borderRadius: defaultRadius,
-                                                ),
-                                                child: IText.set(
-                                                  text:
-                                                      '${data.jobs?.length ?? 0} Open Position',
-                                                  styleName: TextStyleName.bold,
-                                                  typeName:
-                                                      TextTypeName.caption1,
-                                                  color: AppColors.textPrimary,
-                                                ),
+                                              WidgetChip(
+                                                content:
+                                                    '${data.jobs?.length ?? 0} Open Position',
                                               ),
                                             ],
                                           ),
@@ -659,7 +660,7 @@ class _SectionLatestJobs extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IText.set(
-                          text: jobs[index].company?.user?.fullName ?? '',
+                          text: jobs[index].jobTitle ?? '',
                           styleName: TextStyleName.bold,
                           typeName: TextTypeName.headline3,
                           color: AppColors.textPrimary,
@@ -671,10 +672,11 @@ class _SectionLatestJobs extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: IText.set(
-                                  text: jobs[index].jobTitle ?? '',
-                                  styleName: TextStyleName.bold,
+                                  text:
+                                      jobs[index].company?.user?.fullName ?? '',
+                                  styleName: TextStyleName.regular,
                                   typeName: TextTypeName.headline4,
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.textPrimary100,
                                 ),
                               ),
                               if (!GlobalHelper.isEmpty(
@@ -764,107 +766,111 @@ class _SectionPopularCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 120.h,
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(
-          vertical: 16.h,
-        ),
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: categories.entries.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: MediaQuery.sizeOf(context).width * 0.75,
-            padding: const EdgeInsets.all(16),
-            margin: EdgeInsets.only(right: 16.w),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              color: AppColors.bg200,
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.neutral,
-                  spreadRadius: 0.1,
-                  blurRadius: 0.1,
-                ),
-                BoxShadow(
-                  color: AppColors.neutral,
-                  spreadRadius: 0.1,
-                  blurRadius: 0.1,
-                )
-              ],
+    return isLoading
+        ? SizedBox(
+            height: 120.h,
+            width: double.infinity,
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(
+                vertical: 16.h,
+              ),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: MediaQuery.sizeOf(context).width * 0.75,
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(right:16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: AppColors.bg200,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.neutral,
+                        spreadRadius: 0.1,
+                        blurRadius: 0.1,
+                      ),
+                      BoxShadow(
+                        color: AppColors.neutral,
+                        spreadRadius: 0.1,
+                        blurRadius: 0.1,
+                      )
+                    ],
+                  ),
+                  height: 120.h,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ShimmerBoxWidget(
+                          width: double.infinity,
+                          height: 80.h,
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ShimmerBoxWidget(
+                              width: 100.w,
+                              height: 20.h,
+                            ),
+                            SizedBox(height: 8.h),
+                            ShimmerBoxWidget(
+                              width: 150.w,
+                              height: 20.h,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
             ),
-            child: Row(
-              children: [
-                if (isLoading) ...[
-                  Expanded(
-                    child: ShimmerBoxWidget(
-                      width: double.infinity,
-                      height: 80.h,
+          )
+        : SizedBox(
+            height: 120.h,
+            width: double.infinity,
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(
+                vertical: 16.h,
+              ),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: categories.entries.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: ZoomTapAnimation(
+                    onTap: () {
+                      if (!isLoading) {
+                        context.read<JobsBloc>().add(
+                              JobsEvent.getJobs(
+                                JobFilterModel(
+                                  jobCategoryId: categories.entries
+                                      .elementAt(index)
+                                      .value
+                                      .id,
+                                ),
+                                true,
+                              ),
+                            );
+                        context.read<BottomNavCubit>().setSelectedMenuIndex(2);
+                      }
+                    },
+                    child: CardCategory(
+                      categoryModel: categories.entries.elementAt(index).value,
+                      isLoading: isLoading,
                     ),
                   ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ShimmerBoxWidget(
-                          width: 100.w,
-                          height: 20.h,
-                        ),
-                        SizedBox(height: 8.h),
-                        ShimmerBoxWidget(
-                          width: 150.w,
-                          height: 20.h,
-                        )
-                      ],
-                    ),
-                  )
-                ] else ...[
-                  if (categories.entries.isNotEmpty) ...[
-                    Expanded(
-                      child: CustomImageNetwork(
-                        imageUrl: categories.entries
-                                .elementAt(index)
-                                .value
-                                .imageUrl ??
-                            '',
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IText.set(
-                            text:
-                                categories.entries.elementAt(index).value.name,
-                            styleName: TextStyleName.bold,
-                            typeName: TextTypeName.headline3,
-                            color: AppColors.textPrimary,
-                          ),
-                          IText.set(
-                            text:
-                                '${categories.entries.elementAt(index).value.jobsCount ?? 0} Open Position',
-                            styleName: TextStyleName.regular,
-                            typeName: TextTypeName.caption1,
-                            color: AppColors.textPrimary100,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ],
-              ],
+                );
+              },
             ),
           );
-        },
-      ),
-    );
   }
 }
 

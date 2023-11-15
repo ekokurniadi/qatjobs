@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -32,6 +33,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await _dio.post(
         URLConstant.login,
         data: formData,
+        
       );
 
       if (response.isOk) {
@@ -45,7 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           AppConstant.prefKeyToken,
           result.accessToken,
         );
-        
+
         DioHelper.setDioHeader(result.accessToken);
 
         if (result.roles.isNotEmpty) {
@@ -53,6 +55,30 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             AppConstant.prefKeyRole,
             result.roles.first,
           );
+        }
+
+        if (params.isRememberMe ?? false) {
+          await getIt<SharedPreferences>().setBool(
+            AppConstant.prefIsRememberMeKey,
+            true,
+          );
+          await getIt<SharedPreferences>().setString(
+            AppConstant.prefEmailKey,
+            params.email,
+          );
+          await getIt<SharedPreferences>().setString(
+            AppConstant.prefPasswordKey,
+            params.password,
+          );
+
+          if (result.roles.isNotEmpty) {
+            await getIt<SharedPreferences>().setInt(
+              AppConstant.prefSelectedRoledKey,
+              result.roles.first.toLowerCase() == AppConstant.roleCandidate
+                  ? 1
+                  : 2,
+            );
+          }
         }
 
         return right(result);

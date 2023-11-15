@@ -9,10 +9,12 @@ class SectionTitleWidget extends StatelessWidget {
     required this.title,
     this.showMoreWidget,
     this.onTap,
+    this.textColor,
   });
   final String title;
   final bool? showMoreWidget;
   final VoidCallback? onTap;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class SectionTitleWidget extends StatelessWidget {
             textAlign: TextAlign.left,
             styleName: TextStyleName.bold,
             typeName: TextTypeName.headline2,
-            color: AppColors.textPrimary,
+            color: textColor ?? AppColors.textPrimary,
             lineHeight: 1.2.h,
           ),
           if (showMoreWidget ?? false)

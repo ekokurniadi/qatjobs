@@ -149,6 +149,15 @@ class _CandidateGeneralProfilePageState
             ProfileCandidateStatus.generalProfileSaved) {
           LoadingDialog.dismiss();
           LoadingDialog.showSuccess(message: profileState.message);
+          Future.delayed(const Duration(milliseconds: 500), () {
+            context
+                .read<ProfileCandidateBloc>()
+                .add(const ProfileCandidateEvent.getGeneralProfile());
+            Navigator.pop(context);
+          });
+        } else if (profileState.status == ProfileCandidateStatus.failure) {
+          LoadingDialog.dismiss();
+          LoadingDialog.showError(message: profileState.message);
         } else {
           LoadingDialog.dismiss();
         }
@@ -320,6 +329,14 @@ class _CandidateGeneralProfilePageState
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: phoneController,
                       dropdownIconPosition: IconPosition.leading,
+                      validator: (val) {
+                        if (val!.number.length < 9) {
+                          return 'Invalid Phone Number, minimum length is 9 digits';
+                        } else if (val.number.length > 9) {
+                          return 'Invalid Phone Number, maximum length is 9 digits';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Phone',
@@ -590,7 +607,6 @@ class _CandidateGeneralProfilePageState
                           phone: phoneController.text,
                           pinterestUrl: pinterestController.text,
                           twitterUrl: twitterController.text,
-                          
                         ),
                       ),
                     );

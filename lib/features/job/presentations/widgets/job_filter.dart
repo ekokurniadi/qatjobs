@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -420,39 +419,45 @@ class _JobFilterPageState extends State<JobFilterPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: !widget.jobsBloc.isJobFilterNotEmpty(filter)
-                            ? null
-                            : () {
-                                widget.jobsBloc.add(
-                                  JobsEvent.getJobs(
-                                    filter,
-                                    widget.jobsBloc.isJobFilterNotEmpty(filter),
-                                  ),
-                                );
-                              },
-                        child: const Text('Apply Filter'),
+                      child: SizedBox(
+                        height: 50.h,
+                        child: ElevatedButton(
+                          onPressed: !widget.jobsBloc.isJobFilterNotEmpty(filter)
+                              ? null
+                              : () {
+                                  widget.jobsBloc.add(
+                                    JobsEvent.getJobs(
+                                      filter,
+                                      widget.jobsBloc.isJobFilterNotEmpty(filter),
+                                    ),
+                                  );
+                                },
+                          child: const Text('Apply Filter'),
+                        ),
                       ),
                     ),
                     if (widget.jobsBloc.isJobFilterNotEmpty(filter)) ...[
                       SizedBox(width: 16.w),
                       Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.danger100,
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.danger100,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                jobFilterModel.value = JobFilterModel();
+                              });
+                              widget.jobsBloc.add(
+                                JobsEvent.getJobs(
+                                  JobFilterModel(),
+                                  false,
+                                ),
+                              );
+                            },
+                            child: const Text('Reset Filter'),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              jobFilterModel.value = JobFilterModel();
-                            });
-                            widget.jobsBloc.add(
-                              JobsEvent.getJobs(
-                                JobFilterModel(),
-                                false,
-                              ),
-                            );
-                          },
-                          child: const Text('Reset Filter'),
                         ),
                       ),
                     ],

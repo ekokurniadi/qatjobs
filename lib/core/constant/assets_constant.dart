@@ -36,4 +36,6 @@ class AssetsConstant {
   static const String svgAssetsDelete = 'assets/svgs/icon/ic-delete.svg';
   static const String svgAssetsEdit = 'assets/svgs/icon/ic-edit.svg';
   static const String svgAssetsUploadCV = 'assets/svgs/icon/ic-upload-cv.svg';
+  static const String svgAssetsCamera = 'assets/svgs/icon/ic-camera.svg';
+  static const String svgAssetsForward = 'assets/svgs/icon/ic-forward.svg';
 }

@@ -10,7 +10,9 @@ import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/features/article/presentations/pages/article_list_page.dart';
 import 'package:qatjobs/features/home/presentations/pages/home_page.dart';
-import 'package:qatjobs/features/job/presentations/pages/job_page.dart';
+import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
+import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
+import 'package:qatjobs/features/job/presentations/pages/jobs_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_page.dart';
@@ -46,19 +48,19 @@ class _LayoutsPageState extends State<LayoutsPage> {
                 case 1:
                   return const ArticleListPage();
                 case 2:
-                  return const JobPage();
+                  return const JobsPage();
                 case 3:
                   return const NotificationPage();
                 case 4:
                   if (!GlobalHelper.isEmpty(userState.user)) {
-                    if (userState.user?.roles?.first.name ==
+                    if (userState.user?.roles?.first.name.toLowerCase() ==
                         AppConstant.roleCandidate) {
-                      return CandidateProfilePage();
+                      return const CandidateProfilePage();
                     } else {
-                      return CandidateProfilePage();
+                      return const CandidateProfilePage();
                     }
                   }
-                  return SizedBox();
+                  return const SizedBox();
                 default:
                   return Container(
                     width: double.infinity,
@@ -86,6 +88,14 @@ class _LayoutsPageState extends State<LayoutsPage> {
                 onTap: (index) {
                   if (index > 2 && GlobalHelper.isEmpty(userState.user)) {
                     AutoRouter.of(context).push(const LoginRoute());
+                  } else if (index == 2) {
+                    context.read<JobsBloc>().add(
+                          JobsEvent.getJobs(
+                            JobFilterModel(),
+                            false,
+                          ),
+                        );
+                    context.read<BottomNavCubit>().setSelectedMenuIndex(index);
                   } else {
                     context.read<BottomNavCubit>().setSelectedMenuIndex(index);
                   }

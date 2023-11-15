@@ -337,17 +337,16 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                   ],
                 ),
               ),
-              const SpaceWidget(),
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 16,
+              if (!GlobalHelper.isEmptyList(widget.company.jobs)) ...[
+                const SpaceWidget(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 16,
+                  ),
+                  child: SectionTitleWidget(title: 'Latest Jobs'),
                 ),
-                child: SectionTitleWidget(title: 'Latest Jobs'),
-              ),
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height,
-                child: ListView.builder(
+                ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: widget.company.jobs?.length,
                   shrinkWrap: true,
@@ -559,8 +558,8 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                       ),
                     );
                   },
-                ),
-              )
+                )
+              ],
             ],
           ),
         ),

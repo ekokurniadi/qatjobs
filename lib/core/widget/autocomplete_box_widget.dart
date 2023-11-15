@@ -8,6 +8,7 @@ import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/constant/url_constant.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
@@ -55,7 +56,7 @@ class _AutoCompleteBoxWidgetState extends State<AutoCompleteBoxWidget> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.bg100,
+                color: AppColors.bg200,
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: BlocBuilder<JobsBloc, JobsState>(
@@ -87,6 +88,7 @@ class _AutoCompleteBoxWidgetState extends State<AutoCompleteBoxWidget> {
                             JobsEvent.getJobs(
                               state.jobFilter.copyWith(
                                 perPage: 10,
+                                title: val,
                               ),
                               widget.jobsBloc.isJobFilterNotEmpty(
                                 state.jobFilter,
@@ -95,11 +97,33 @@ class _AutoCompleteBoxWidgetState extends State<AutoCompleteBoxWidget> {
                           );
                         }
                       },
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(16),
+                      decoration: InputDecoration(
+                        suffixIcon: !GlobalHelper.isEmpty(state.jobFilter.title)
+                            ? IconButton(
+                              onPressed: (){
+                                 widget.jobsBloc.add(
+                                JobsEvent.getJobs(
+                                  state.jobFilter.copyWith(
+                                    perPage: 10,
+                                    title: null,
+                                  ),
+                                  widget.jobsBloc.isJobFilterNotEmpty(
+                                    state.jobFilter,
+                                  ),
+                                ),
+                              );
+                              typeAheadController.clear();
+                              },
+                              icon: const Icon(
+                                Icons.clear,
+                                color: Colors.red,
+                              ),
+                            )
+                            : null,
+                        contentPadding: const EdgeInsets.all(16),
                         hintText: 'Job title, keywords, or company',
                         isCollapsed: true,
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: AppColors.textPrimary100,
                         ),
                       ),

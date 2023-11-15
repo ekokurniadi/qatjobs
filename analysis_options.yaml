@@ -34,5 +34,6 @@ analyzer:
     invalid_annotation_target: ignore
     slash_for_doc_comments: ignore
     deprecated_member_use: ignore
+    use_build_context_synchronously: ignore
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

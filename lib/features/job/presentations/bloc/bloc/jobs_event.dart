@@ -16,4 +16,10 @@ class JobsEvent with _$JobsEvent {
       _AddJobAlertEvent;
   const factory JobsEvent.applyJob(ApplyJobRequestParams params) =
       _ApplyJobAlertEvent;
+  const factory JobsEvent.getFilteredJobs(
+    JobFilterModel filter,
+  ) = _GetFilteredJobsEvent;
+  const factory JobsEvent.emailToFriend(
+    EmailToFriendRequestParams filter,
+  ) = _EmailToFriendEvent;
 }

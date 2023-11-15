@@ -13,6 +13,7 @@ import "package:qatjobs/features/job/data/models/job_alert_request_params.codege
 import "package:qatjobs/features/job/data/models/job_alerts_model.codegen.dart";
 import "package:qatjobs/features/job/data/models/job_filter.codegen.dart";
 import "package:qatjobs/features/job/domain/usecases/apply_job_usecase.dart";
+import "package:qatjobs/features/job/domain/usecases/email_to_friend_usecase.dart";
 import "package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart";
 import "job_remote_datasource.dart";
 import "package:qatjobs/features/job/data/models/job_model.codegen.dart";
@@ -208,9 +209,14 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
   Future<Either<Failures, bool>> addJobAlert(
       JobAlertRequestParams params) async {
     try {
+      Map<String, dynamic> req = {};
+      req['job_alert'] = params.jobTypes.toString();
+      req['job_types'] =
+          List<String>.from(params.jobAlerts.map((e) => e.toString()));
+      print(req);
       final response = await _dio.post(
         URLConstant.candidateJobAlert,
-        data: params.toJson(),
+        data: req,
       );
 
       if (response.isOk) {
@@ -275,6 +281,40 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
     try {
       final response = await _dio.post(
         URLConstant.candidateJobApply(params.jobId),
+        data: params.toJson(),
+      );
+
+      if (response.isOk) {
+        return right(true);
+      }
+
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> emailToFriend(
+      EmailToFriendRequestParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.candidateJobEmailToFriend(params.jobId),
         data: params.toJson(),
       );
 

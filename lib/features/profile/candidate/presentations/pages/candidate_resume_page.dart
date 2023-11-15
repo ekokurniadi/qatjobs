@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,7 +16,6 @@ import 'package:qatjobs/core/widget/confirm_dialog_bottom_sheet.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
-import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';

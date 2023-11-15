@@ -12,6 +12,7 @@ enum JobStatus {
   getJobAlert,
   deleted,
   applyJobSuccess,
+  emailToFriendSuccess,
 }
 
 @freezed
@@ -19,6 +20,7 @@ class JobsState with _$JobsState {
   const factory JobsState({
     required JobStatus status,
     required List<JobModel> jobs,
+    required List<JobModel> filteredJob,
     required List<AppliedJobModel> appliedJobs,
     required List<FavoriteJobModel> favoriteJobs,
     required JobAlertsModel jobAlerts,
@@ -32,6 +34,7 @@ class JobsState with _$JobsState {
   factory JobsState.initial() => JobsState(
         status: JobStatus.initial,
         jobs: [],
+        filteredJob: [],
         message: '',
         hasMaxReached: false,
         jobFilter: JobFilterModel(),

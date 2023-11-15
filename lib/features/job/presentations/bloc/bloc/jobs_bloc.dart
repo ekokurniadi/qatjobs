@@ -12,6 +12,7 @@ import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/job/domain/usecases/add_job_alert_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/apply_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/delete_favorite_job_usecase.dart';
+import 'package:qatjobs/features/job/domain/usecases/email_to_friend_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_a_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_applied_job_usecase.dart';
 import 'package:qatjobs/features/job/domain/usecases/get_favorite_job_usecase.dart';
@@ -33,6 +34,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
   final GetJobAlertUseCase _getJobAlertUseCase;
   final SaveToFavoriteJobUseCase _saveToFavoriteJobUseCase;
   final ApplyJobUseCase _applyJobUseCase;
+  final EmailToFriendUseCase _emailToFriendUseCase;
   JobsBloc(
     this._getAJobUseCase,
     this._addJobAlertUseCase,
@@ -42,6 +44,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     this._saveToFavoriteJobUseCase,
     this._getJobAlertUseCase,
     this._applyJobUseCase,
+    this._emailToFriendUseCase,
   ) : super(JobsState.initial()) {
     on<_GetJobsEvent>(_getJobs);
     on<_GetFavoriteJobsEvent>(_getFavoriteJobs);
@@ -51,6 +54,32 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     on<_GetJobAlertEvent>(_getJobsAlert);
     on<_AddJobAlertEvent>(_addJobsAlert);
     on<_ApplyJobAlertEvent>(_applyJobsAlert);
+    on<_EmailToFriendEvent>(_emailToFriend);
+  }
+
+  FutureOr<void> _emailToFriend(
+    _EmailToFriendEvent event,
+    Emitter<JobsState> emit,
+  ) async {
+    emit(state.copyWith(status: JobStatus.loading));
+    final result = await _emailToFriendUseCase(event.filter);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          message: l.errorMessage,
+          status: JobStatus.failure,
+        ),
+      ),
+      (r) {
+        emit(
+          state.copyWith(
+            status: JobStatus.emailToFriendSuccess,
+            message: 'Email to friend successfully',
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _applyJobsAlert(
@@ -67,14 +96,16 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
           status: JobStatus.failure,
         ),
       ),
-      (r) => emit(
-        state.copyWith(
-          status: JobStatus.applyJobSuccess,
-          message: event.params.applicationType == 'draft'
-              ? 'Job Application Drafted Successfully'
-              : 'Job Application Successfully',
-        ),
-      ),
+      (r) {
+        emit(
+          state.copyWith(
+            status: JobStatus.applyJobSuccess,
+            message: event.params.applicationType == 'draft'
+                ? 'Job Application Drafted Successfully'
+                : 'Job Application Successfully',
+          ),
+        );
+      },
     );
   }
 

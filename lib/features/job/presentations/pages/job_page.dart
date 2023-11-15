@@ -11,6 +11,7 @@ import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
@@ -18,6 +19,8 @@ import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/autocomplete_box_widget.dart';
 import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
+import 'package:qatjobs/features/job/presentations/widgets/email_to_friend_dialog.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -261,6 +264,85 @@ class _JobPageState extends State<JobPage> {
                                             ],
                                           ),
                                         ),
+                                        BlocBuilder<ProfileCandidateBloc,
+                                            ProfileCandidateState>(
+                                          builder: (context, profileState) {
+                                            return PopupMenuButton(
+                                              itemBuilder: (context) {
+                                                return [
+                                                  PopupMenuItem(
+                                                    value: 'apply',
+                                                    child: IText.set(
+                                                      text: 'Apply',
+                                                      textAlign: TextAlign.left,
+                                                      styleName: TextStyleName
+                                                          .semiBold,
+                                                      typeName: TextTypeName
+                                                          .headline3,
+                                                      color: AppColors
+                                                          .textPrimary100,
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    value: 'email',
+                                                    child: Row(
+                                                      children: [
+                                                        IText.set(
+                                                          text:
+                                                              'Email to friends',
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName
+                                                                  .semiBold,
+                                                          typeName: TextTypeName
+                                                              .headline3,
+                                                          color: AppColors
+                                                              .textPrimary100,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ];
+                                              },
+                                              icon: const Icon(Icons.more_vert),
+                                              onSelected: (value) async {
+                                                switch (value) {
+                                                  case 'apply':
+                                                    if (profileState
+                                                        .resumes.isEmpty) {
+                                                      LoadingDialog.showError(
+                                                        message:
+                                                            'Please add your resume first before apply this job',
+                                                      );
+                                                      return;
+                                                    }
+                                                    AutoRouter.of(context).push(
+                                                      ApplyJobRoute(
+                                                        jobId: data.id ?? 0,
+                                                        jobTitle:
+                                                            data.jobTitle ?? '',
+                                                      ),
+                                                    );
+                                                    break;
+                                                  default:
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return EmailToFriendDialogBottomSheet(
+                                                          title:
+                                                              'Email to Friend',
+                                                          caption:
+                                                              'Send this job to your friend',
+                                                          jobId: data.id ?? 0,
+                                                        );
+                                                      },
+                                                    );
+                                                }
+                                              },
+                                            );
+                                          },
+                                        )
                                       ],
                                     ),
                                   ),

@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:qatjobs/core/error/failures.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_education_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/cv_builder_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/entities/candidate_education_entity.codegen.dart';
@@ -14,9 +17,11 @@ import 'package:qatjobs/features/profile/candidate/domain/entities/profile_candi
 import 'package:qatjobs/features/profile/candidate/domain/entities/resume_entity.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_add_education_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_add_experience_usecase.dart';
+import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_change_password_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_delete_education_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_delete_experience_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_delete_resume_usecase.dart';
+import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_get_cv_builder_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_get_education_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_get_experience_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_get_profile_usecase.dart';
@@ -24,6 +29,7 @@ import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_get
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_education_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_experience_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_general_profile_usecase.dart';
+import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_update_profile_usecase.dart';
 import 'package:qatjobs/features/profile/candidate/domain/usecases/candidate_upload_resume_usecase.dart';
 
 part 'profile_candidate_event.dart';
@@ -46,6 +52,9 @@ class ProfileCandidateBloc
   final CandidateGetEducationUseCase _getEducationUseCase;
   final CandidateUpdateEducationUseCase _updateEducationUseCase;
   final CandidateDeleteEducationUseCase _deleteEducationUseCase;
+  final CandidateChangePasswordUseCase _candidateChangePasswordUseCase;
+  final CandidateUpdateProfile _candidateUpdateProfile;
+  final CandidateGetCVBuilderUseCase _candidateGetCVBuilderUseCase;
 
   ProfileCandidateBloc(
     this._candidateGetProfile,
@@ -61,6 +70,9 @@ class ProfileCandidateBloc
     this._getEducationUseCase,
     this._updateEducationUseCase,
     this._deleteEducationUseCase,
+    this._candidateChangePasswordUseCase,
+    this._candidateUpdateProfile,
+    this._candidateGetCVBuilderUseCase,
   ) : super(ProfileCandidateState.initial()) {
     on<_GetGeneralProfileEvent>(_onGetGeneralProfile);
     on<_UpdateGeneralProfileEvent>(_onUpdateGeneralProfile);
@@ -75,6 +87,82 @@ class ProfileCandidateBloc
     on<_AddEducationEvent>(_onAddEducation);
     on<_UpdateEducationEvent>(_onUpdateEducation);
     on<_DeleteEducationEvent>(_onDeleteEducation);
+    on<_ChangePasswordEvent>(_onChangePassword);
+    on<_UpdateProfileEvent>(_onUpdateProfile);
+    on<_GetCVBuilderEvent>(_onGetCVBuilder);
+  }
+
+
+   FutureOr<void> _onGetCVBuilder(
+    _GetCVBuilderEvent event,
+    Emitter<ProfileCandidateState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileCandidateStatus.loading));
+
+    final result = await _candidateGetCVBuilderUseCase(NoParams());
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.failure,
+          message: l.errorMessage,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.getCvBuilder,
+          cvBuilder: optionOf(result),
+        ),
+      ),
+    );
+  }
+
+  FutureOr<void> _onChangePassword(
+    _ChangePasswordEvent event,
+    Emitter<ProfileCandidateState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileCandidateStatus.loading));
+
+    final result = await _candidateChangePasswordUseCase(event.params);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.failure,
+          message: l.errorMessage,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.changePasswordSuccess,
+          message: 'Change password successfully',
+        ),
+      ),
+    );
+  }
+
+  FutureOr<void> _onUpdateProfile(
+    _UpdateProfileEvent event,
+    Emitter<ProfileCandidateState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileCandidateStatus.loading));
+
+    final result = await _candidateUpdateProfile(event.params);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.failure,
+          message: l.errorMessage,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: ProfileCandidateStatus.updateProfileSuccess,
+          message: 'Update Profile successfully',
+        ),
+      ),
+    );
   }
 
   FutureOr<void> _onGetGeneralProfile(
@@ -146,8 +234,9 @@ class ProfileCandidateBloc
       ),
       (r) => emit(
         state.copyWith(
-            status: ProfileCandidateStatus.generalProfileSaved,
-            message: 'General profile updated'),
+          status: ProfileCandidateStatus.generalProfileSaved,
+          message: 'General profile updated',
+        ),
       ),
     );
   }

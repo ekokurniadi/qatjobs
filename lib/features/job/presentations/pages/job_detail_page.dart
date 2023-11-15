@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
@@ -16,9 +17,11 @@ import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_html/flutter_html.dart';
@@ -40,6 +43,10 @@ class JobDetailPage extends StatefulWidget {
 class _JobDetailPageState extends State<JobDetailPage> {
   @override
   void initState() {
+    context
+        .read<ProfileCandidateBloc>()
+        .add(const ProfileCandidateEvent.getResume());
+    context.read<JobsBloc>().add(const JobsEvent.getAppliedJob());
     super.initState();
   }
 
@@ -99,22 +106,36 @@ class _JobDetailPageState extends State<JobDetailPage> {
                           SizedBox(
                             width: double.infinity,
                             height: 100.h,
-                            child: Container(
-                              width: 100.w,
-                              height: 100.w,
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                shape: BoxShape.circle,
-                                boxShadow: AppColors.defaultShadow,
-                              ),
-                              child: Center(
-                                child: ClipOval(
-                                  child: CustomImageNetwork(
-                                    imageUrl:
-                                        widget.jobModel.company?.companyUrl ??
-                                            '',
-                                    customErrorWidget: SvgPicture.asset(
-                                      AssetsConstant.svgAssetsPicture,
+                            child: ZoomTapAnimation(
+                              onTap: () {
+                                if(widget.jobModel.company != null){
+                                  Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CompanyDetailPage(company: widget.jobModel.company!),
+                                  ),
+                                );
+                                }
+                                
+                              },
+                              child: Container(
+                                width: 100.w,
+                                height: 100.w,
+                                decoration: BoxDecoration(
+                                  color: AppColors.success,
+                                  shape: BoxShape.circle,
+                                  boxShadow: AppColors.defaultShadow,
+                                ),
+                                child: Center(
+                                  child: ClipOval(
+                                    child: CustomImageNetwork(
+                                      imageUrl:
+                                          widget.jobModel.company?.companyUrl ??
+                                              '',
+                                      customErrorWidget: SvgPicture.asset(
+                                        AssetsConstant.svgAssetsPicture,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -390,7 +411,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   children: [
                     ZoomTapAnimation(
                       onTap: () async {
-                        if (!GlobalHelper.isEmpty(widget.jobModel.company?.website)) {
+                        if (!GlobalHelper.isEmpty(
+                            widget.jobModel.company?.website)) {
                           await UrlLauncherHelper.openUrl(
                             widget.jobModel.company!.website!,
                           );
@@ -448,7 +470,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
         child: BlocBuilder<JobsBloc, JobsState>(
           builder: (context, jobState) {
             return BlocBuilder<UserBloc, UserState>(
-              builder: (context, state) {
+              builder: (context, userState) {
                 return Container(
                   padding: defaultPadding,
                   decoration: BoxDecoration(
@@ -469,8 +491,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             onPressed: jobState.favoriteJobs.any((element) =>
                                     element.job.id == widget.jobModel.id)
                                 ? () {
-                                    if (state.user == null ||
-                                        state.user?.id == 0) {
+                                    if (userState.user == null ||
+                                        userState.user?.id == 0) {
                                       LoadingDialog.showError(
                                         message:
                                             'Please login for save job to favorite',
@@ -491,8 +513,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                     }
                                   }
                                 : () {
-                                    if (state.user == null ||
-                                        state.user?.id == 0) {
+                                    if (userState.user == null ||
+                                        userState.user?.id == 0) {
                                       LoadingDialog.showError(
                                         message:
                                             'Please login for save job to favorite',
@@ -504,7 +526,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                             JobsEvent.saveFavoriteJob(
                                               FavoriteJobRequestParams(
                                                 jobId: widget.jobModel.id ?? 0,
-                                                userId: state.user?.id ?? 0,
+                                                userId: userState.user?.id ?? 0,
                                               ),
                                             ),
                                           );
@@ -512,7 +534,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                   },
                             child: jobState.favoriteJobs.any((element) =>
                                         element.job.id == widget.jobModel.id) &&
-                                    !GlobalHelper.isEmpty(state.user)
+                                    !GlobalHelper.isEmpty(userState.user)
                                 ? const Icon(
                                     Icons.favorite,
                                     color: AppColors.danger100,
@@ -529,13 +551,50 @@ class _JobDetailPageState extends State<JobDetailPage> {
                         ),
                       ],
                       Expanded(
-                        child: SizedBox(
-                          height: 50.h,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: const Text('Apply Now'),
-                          ),
-                        ),
+                        child: BlocBuilder<ProfileCandidateBloc,
+                            ProfileCandidateState>(builder: (context, state) {
+                          return SizedBox(
+                            height: 50.h,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (jobState.appliedJobs.any((element) =>
+                                    element.job.id == widget.jobModel.id)) {
+                                  LoadingDialog.showError(
+                                    message: 'This job Already applied',
+                                  );
+                                  return;
+                                }
+
+                                if (state.resumes.isEmpty) {
+                                  LoadingDialog.showError(
+                                    message:
+                                        'Please add your resume before apply this jobs',
+                                  );
+                                  return;
+                                }
+                                if (userState.user == null ||
+                                    userState.user?.id == 0) {
+                                  LoadingDialog.showError(
+                                    message:
+                                        'Please login for save job to favorite',
+                                  );
+                                  AutoRouter.of(context)
+                                      .push(const LoginRoute());
+                                } else if (userState.user!.roles!.first.name
+                                        .toLowerCase() ==
+                                    AppConstant.roleCandidate) {
+                                  AutoRouter.of(context).push(
+                                    ApplyJobRoute(
+                                      jobId: widget.jobModel.id ?? 0,
+                                      jobTitle: widget.jobModel.jobTitle ?? '',
+                                    ),
+                                  );
+                                }
+                              },
+                              child: const Text('Apply Now'),
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   ),

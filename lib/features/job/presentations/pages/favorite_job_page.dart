@@ -15,7 +15,9 @@ import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/features/job/domain/usecases/email_to_friend_usecase.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
+import 'package:qatjobs/features/job/presentations/widgets/email_to_friend_dialog.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -50,10 +52,15 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
             listener: (context, state) {
               if (state.status == JobStatus.loading) {
                 LoadingDialog.show(message: 'Loading...');
-              } else if (state.status == JobStatus.deleted) {
+              } else if (state.status == JobStatus.deleted ||
+                  state.status == JobStatus.emailToFriendSuccess) {
                 LoadingDialog.dismiss();
                 LoadingDialog.showSuccess(message: state.message);
-                context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  context
+                      .read<JobsBloc>()
+                      .add(const JobsEvent.getFavoriteJob());
+                });
               } else if (state.status == JobStatus.failure) {
                 LoadingDialog.dismiss();
                 LoadingDialog.showError(message: state.message);
@@ -217,12 +224,11 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                                 }
                                                 AutoRouter.of(context).push(
                                                   ApplyJobRoute(
-                                                    favoritJobId: state.favoriteJobs[index].id,
+                                                    favoritJobId: state
+                                                        .favoriteJobs[index].id,
                                                     jobId: data.id ?? 0,
                                                     jobTitle:
                                                         data.jobTitle ?? '',
-                                                    resumes:
-                                                        profileState.resumes,
                                                   ),
                                                 );
                                                 break;
@@ -265,6 +271,17 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                                 );
                                                 break;
                                               default:
+                                                await showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return EmailToFriendDialogBottomSheet(
+                                                      title: 'Email to Friend',
+                                                      caption:
+                                                          'Send this job to your friend',
+                                                      jobId: data.id ?? 0,
+                                                    );
+                                                  },
+                                                );
                                             }
                                           },
                                         );

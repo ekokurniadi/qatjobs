@@ -38,30 +38,12 @@ class DioHelper {
 
   static setDioHeader(String? token) {
     dio!.options.headers = {HttpHeaders.authorizationHeader: 'Bearer $token'};
+    dio!.options.headers['X-Requested-With'] = 'XMLHttpRequest';
     log('token user: $token');
   }
 
   static String _handleError(int? statusCode, Response? error) {
-    switch (statusCode) {
-      case 400:
-        return 'Bad request';
-      case 401:
-        return 'Unauthorized';
-      case 403:
-        return 'Forbidden';
-      case 404:
-        return error?.statusMessage ?? 'Not Found';
-      case 500:
-        return 'Internal server error';
-      case 502:
-        return 'Bad gateway';
-      case 302:
-        return 'Already exist';
-      case 422:
-        return error?.statusMessage ?? 'Error';
-      default:
-        return 'Oops something went wrong';
-    }
+   return error?.statusMessage ?? 'Something when wrong';
   }
 
   static String formatException(DioError dioError) {

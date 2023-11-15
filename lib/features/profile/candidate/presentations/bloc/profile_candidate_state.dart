@@ -18,6 +18,9 @@ enum ProfileCandidateStatus {
   getEducation,
   addEducation,
   updateEducation,
+  changePasswordSuccess,
+  updateProfileSuccess,
+  getCvBuilder,
 }
 
 @freezed
@@ -29,6 +32,7 @@ class ProfileCandidateState with _$ProfileCandidateState {
     required List<CandidateExperienceEntity> experiences,
     required List<CandidateEducationEntity> educations,
     required String message,
+    required Option<Either<Failures, CvBuilderResponseModels>> cvBuilder,
   }) = _ProfileCandidateState;
 
   factory ProfileCandidateState.initial() => ProfileCandidateState(
@@ -38,5 +42,6 @@ class ProfileCandidateState with _$ProfileCandidateState {
         message: '',
         experiences: [],
         educations: [],
+        cvBuilder: none(),
       );
 }

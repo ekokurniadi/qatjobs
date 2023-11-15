@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
@@ -15,6 +14,7 @@ class FileDownloaderHelper {
       if (!status.isGranted) {
         await Permission.storage.request();
       }
+
       String savePath = "/storage/emulated/0/Download/$name";
       File file = File(savePath);
 

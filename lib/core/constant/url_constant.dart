@@ -18,6 +18,7 @@ abstract class URLConstant {
   static const String currencies = '/jobs/salaries/currencies';
   static const String degreeLevel = '/jobs/degrees';
   static const String companies = '/companies/search';
+  static const String aboutUs = '/about-us';
 
 
   /// CANDIDATE URL
@@ -33,6 +34,8 @@ abstract class URLConstant {
   static const String candidateJobAlert = '/candidate/jobs/job-alerts';
   static String candidateJobApply(int id) => '/candidate/jobs/$id/apply-job';
   static String candidateReportCompany(int id) => '/candidate/companies/$id/report-to-company';
+  static String candidateJobEmailToFriend(int id) => '/candidate/jobs/$id/email-job';
   static const String candidateFavoriteCompany = '/candidate/favourite-companies';
+  static const String candidateCVBuilder = '/candidate/profiles/cv-data';
 
 }

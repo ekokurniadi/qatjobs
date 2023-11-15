@@ -10,6 +10,7 @@ import 'package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen
 import 'package:qatjobs/features/profile/candidate/data/datasources/remote/profile_candidate_remote_datasource.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_education_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/candidate_experience_models.codegen.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/cv_builder_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_response_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/resume_models.codegen.dart';
@@ -531,6 +532,36 @@ class ProfileCandidateRemoteDataSourceImpl
       );
       if (response.isOk) {
         return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, CvBuilderResponseModels>> getCVBuilder(
+    NoParams params,
+  ) async {
+    try {
+      final response = await _dio.get(URLConstant.candidateCVBuilder);
+      if (response.isOk) {
+        return right(CvBuilderResponseModels.fromJson(response.data));
       }
       return left(
         ServerFailure(

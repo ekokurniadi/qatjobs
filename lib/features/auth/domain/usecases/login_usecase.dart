@@ -23,10 +23,12 @@ class LoginRequestParams extends Equatable {
     required this.email,
     required this.password,
     required this.deviceName,
+    this.isRememberMe,
   });
   final String email;
   final String password;
   final String deviceName;
+  final bool? isRememberMe;
 
   Map<String, dynamic> toJson() {
     return {

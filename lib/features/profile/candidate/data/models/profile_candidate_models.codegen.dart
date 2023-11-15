@@ -26,6 +26,7 @@ class ProfileCandidateModels with _$ProfileCandidateModels {
     String? address,
     bool? immediateAvailable,
     String? availableAt,
+    String? avatar,
     dynamic jobAlert,
     String? candidateUrl,
     UserModel? user,
@@ -58,6 +59,7 @@ extension ProfileCandidateModelsX on ProfileCandidateModels {
         salaryCurrency: salaryCurrency,
         uniqueId: uniqueId,
         user: user?.toDomain(),
+        avatar: avatar,
         candidateSkill: List.from(
           candidateSkill.map(
             (e) => e.toDomain(),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
@@ -12,6 +13,7 @@ import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,6 +28,36 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    getRememberMe();
+    super.initState();
+  }
+
+  Future<void> getRememberMe() async {
+    final isRememberMeActive = getIt<SharedPreferences>().getBool(
+      AppConstant.prefIsRememberMeKey,
+    );
+
+    rememberMe.value = isRememberMeActive ?? false;
+
+    if (isRememberMeActive ?? false) {
+      final email = getIt<SharedPreferences>().getString(
+        AppConstant.prefEmailKey,
+      );
+      final password = getIt<SharedPreferences>().getString(
+        AppConstant.prefPasswordKey,
+      );
+      final role = getIt<SharedPreferences>().getInt(
+        AppConstant.prefSelectedRoledKey,
+      );
+
+      emailController.text = email ?? '';
+      passwordController.text = password ?? '';
+      selectedRole.value = role ?? 0;
+    }
+  }
 
   @override
   void dispose() {
@@ -53,7 +85,8 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: AppColors.bg200,
             resizeToAvoidBottomInset: false,
             body: Container(
-              padding:  EdgeInsets.fromLTRB(29,29,29,MediaQuery.of(context).viewInsets.bottom),
+              padding: EdgeInsets.fromLTRB(
+                  29, 29, 29, MediaQuery.of(context).viewInsets.bottom),
               width: double.infinity,
               height: MediaQuery.sizeOf(context).height,
               child: SingleChildScrollView(
@@ -271,6 +304,8 @@ class _LoginPageState extends State<LoginPage> {
                                                     password:
                                                         passwordController.text,
                                                     deviceName: 'mobile',
+                                                    isRememberMe:
+                                                        rememberMe.value,
                                                   ),
                                                 ),
                                               );

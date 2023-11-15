@@ -25,4 +25,9 @@ class ProfileCandidateEvent with _$ProfileCandidateEvent {
       CandidateEducationModels params) = _UpdateEducationEvent;
   const factory ProfileCandidateEvent.deleteEducation(int id) =
       _DeleteEducationEvent;
+  const factory ProfileCandidateEvent.changePassword(
+      ChangePasswordRequestParams params) = _ChangePasswordEvent;
+  const factory ProfileCandidateEvent.updateProfile(
+      ChangeProfileRequestParams params) = _UpdateProfileEvent;
+  const factory ProfileCandidateEvent.getCVBuilder() = _GetCVBuilderEvent;
 }

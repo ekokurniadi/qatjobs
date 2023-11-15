@@ -7,7 +7,7 @@ import "package:qatjobs/features/active_featured/data/models/active_featured_mod
 class ActiveFeaturedRemoteDataSourceImpl implements ActiveFeaturedRemoteDataSource {
 	@override
 	Future<Either<Failures,List<ActiveFeaturedModel>>> getActiveFeatured(NoParams params) async{
-		// TODO: implement execute 
+		
 		throw UnimplementedError();
 	}
 }

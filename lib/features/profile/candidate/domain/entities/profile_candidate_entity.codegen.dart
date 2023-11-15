@@ -24,6 +24,7 @@ class ProfileCandidateEntity with _$ProfileCandidateEntity {
     String? address,
     bool? immediateAvailable,
     String? availableAt,
+    String? avatar,
     dynamic jobAlert,
     String? candidateUrl,
     UserEntity? user,

@@ -12,7 +12,6 @@ class PlanRemoteDataSourceImpl implements PlanRemoteDataSource {
   final Dio _dio;
   @override
   Future<Either<Failures, List<PlanModel>>> getPlan(NoParams params) async {
-    // TODO: implement execute
     throw UnimplementedError();
   }
 }

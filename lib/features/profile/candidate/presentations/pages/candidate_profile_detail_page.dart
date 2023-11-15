@@ -39,8 +39,8 @@ class CandidateProfileDetailPage extends StatelessWidget {
               icon: AssetsConstant.svgAssetsResume,
               onTap: () {
                 AutoRouter.of(context).push(
-                    const CandidateResumeRoute(),
-                  );
+                  const CandidateResumeRoute(),
+                );
               },
             ),
             CardMenuItem(
@@ -48,14 +48,18 @@ class CandidateProfileDetailPage extends StatelessWidget {
               icon: AssetsConstant.svgAssetsWorkExperience,
               onTap: () {
                 AutoRouter.of(context).push(
-                    const CandidateCareerInformationRoute(),
-                  );
+                  const CandidateCareerInformationRoute(),
+                );
               },
             ),
             CardMenuItem(
               title: 'CV Builder',
               icon: AssetsConstant.svgAssetsPDF,
-              onTap: () {},
+              onTap: () {
+                AutoRouter.of(context).push(
+                  const CvBuilderRoute(),
+                );
+              },
             )
           ],
         ),
