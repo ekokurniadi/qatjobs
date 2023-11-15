@@ -11,6 +11,7 @@ import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
 import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -52,6 +53,7 @@ class _FollowingCompanyPageState extends State<FollowingCompanyPage> {
                           height: MediaQuery.sizeOf(context).height,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               SvgPicture.asset(AssetsConstant.illusJobEmpty),
@@ -76,146 +78,140 @@ class _FollowingCompanyPageState extends State<FollowingCompanyPage> {
                           ),
                         )
                       : ListView.builder(
-                        itemCount: state.favoriteCompanies.length,
-                        itemBuilder: (context, index) {
-                          final data = state.favoriteCompanies[index];
-                          return ZoomTapAnimation(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return CompanyDetailPage(
-                                      company: data,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: MediaQuery.sizeOf(context).width,
-                              padding: const EdgeInsets.all(16),
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 1.w,
-                                vertical: 8.h,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.r),
-                                color: AppColors.bg200,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: AppColors.neutral,
-                                    spreadRadius: 0.1,
-                                    blurRadius: 0.1,
+                          itemCount: state.favoriteCompanies.length,
+                          itemBuilder: (context, index) {
+                            final data = state.favoriteCompanies[index];
+                            return ZoomTapAnimation(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return CompanyDetailPage(
+                                        company: data,
+                                      );
+                                    },
                                   ),
-                                  BoxShadow(
-                                    color: AppColors.neutral,
-                                    spreadRadius: 0.1,
-                                    blurRadius: 0.1,
-                                  )
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  if (state.status ==
-                                      CompanyStatus.loading) ...[
-                                    ShimmerBoxWidget(
-                                        width: 80.w, height: 80.w),
-                                    SizedBox(width: 16.w),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        ShimmerBoxWidget(
-                                          width: 200.w,
-                                          height: 20,
-                                        ),
-                                        const SpaceWidget(),
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.sizeOf(context).width,
+                                padding: const EdgeInsets.all(16),
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: 1.w,
+                                  vertical: 8.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  color: AppColors.bg200,
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: AppColors.neutral,
+                                      spreadRadius: 0.1,
+                                      blurRadius: 0.1,
+                                    ),
+                                    BoxShadow(
+                                      color: AppColors.neutral,
+                                      spreadRadius: 0.1,
+                                      blurRadius: 0.1,
+                                    )
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    if (state.status ==
+                                        CompanyStatus.loading) ...[
+                                      ShimmerBoxWidget(
+                                          width: 80.w, height: 80.w),
+                                      SizedBox(width: 16.w),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ShimmerBoxWidget(
+                                            width: 200.w,
+                                            height: 20,
+                                          ),
+                                          const SpaceWidget(),
+                                          SizedBox(
+                                            width: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                0.60,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Expanded(
+                                                  child: ShimmerBoxWidget(
+                                                    width: double.infinity,
+                                                    height: 20,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                              ],
+                                            ),
+                                          ),
+                                          const SpaceWidget(),
+                                          const ShimmerBoxWidget(
+                                            width: 100,
+                                            height: 20,
+                                          ),
+                                        ],
+                                      )
+                                    ] else ...[
+                                      if (!GlobalHelper.isEmptyList(
+                                          state.favoriteCompanies)) ...[
                                         SizedBox(
-                                          width: MediaQuery.sizeOf(context)
-                                                  .width *
-                                              0.60,
-                                          child: Row(
+                                          width: 80.w,
+                                          height: 80.w,
+                                          child: ClipRRect(
+                                            borderRadius: defaultRadius,
+                                            child: CustomImageNetwork(
+                                              width: 80.w,
+                                              fit: BoxFit.cover,
+                                              imageUrl: data.companyUrl ?? '',
+                                              customErrorWidget:
+                                                  SvgPicture.asset(
+                                                AssetsConstant.svgAssetsPicture,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 16.w),
+                                        Expanded(
+                                          child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
-                                              const Expanded(
-                                                child: ShimmerBoxWidget(
-                                                  width: double.infinity,
-                                                  height: 20,
-                                                ),
+                                              IText.set(
+                                                text: data.user?.fullName ?? '',
+                                                styleName: TextStyleName.bold,
+                                                typeName:
+                                                    TextTypeName.headline3,
+                                                color: AppColors.textPrimary,
                                               ),
-                                              SizedBox(width: 8.w),
+                                              SizedBox(
+                                                height: 8.h,
+                                              ),
+                                              WidgetChip(
+                                                content:
+                                                    '${data.jobs?.length ?? 0} Open Position',
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        const SpaceWidget(),
-                                        const ShimmerBoxWidget(
-                                          width: 100,
-                                          height: 20,
-                                        ),
                                       ],
-                                    )
-                                  ] else ...[
-                                    if (!GlobalHelper.isEmptyList(
-                                        state.favoriteCompanies)) ...[
-                                      SizedBox(
-                                        width: 80.w,
-                                        height: 80.w,
-                                        child: CustomImageNetwork(
-                                          imageUrl: data.companyUrl ?? '',
-                                        ),
-                                      ),
-                                      SizedBox(width: 16.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            IText.set(
-                                              text:
-                                                  data.user?.fullName ?? '',
-                                              styleName: TextStyleName.bold,
-                                              typeName:
-                                                  TextTypeName.headline3,
-                                              color: AppColors.textPrimary,
-                                            ),
-                                            SizedBox(
-                                              height: 8.h,
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.all(4.w),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.danger50,
-                                                borderRadius: defaultRadius,
-                                              ),
-                                              child: IText.set(
-                                                text:
-                                                    '${data.jobs?.length ?? 0} Open Position',
-                                                styleName:
-                                                    TextStyleName.bold,
-                                                typeName:
-                                                    TextTypeName.caption1,
-                                                color:
-                                                    AppColors.textPrimary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const Icon(Icons.arrow_forward_ios)
                                     ],
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
                 );
               },
             )

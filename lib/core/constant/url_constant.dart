@@ -11,6 +11,7 @@ abstract class URLConstant {
   static const String careerLevel = '/jobs/career-levels';
   static const String functionalArea = '/jobs/functional-areas';
   static const String jobTypes = '/jobs/types';
+  static const String ownerShipTypes = '/ownership-types';
   static const String article = '/articles';
   static const String articleDetail = '/articles/detail/';
   static const String articleCategory = '/articles/categories';
@@ -19,6 +20,7 @@ abstract class URLConstant {
   static const String degreeLevel = '/jobs/degrees';
   static const String companies = '/companies/search';
   static const String aboutUs = '/about-us';
+  static const String industry = '/industries';
 
 
   /// CANDIDATE URL
@@ -37,5 +39,12 @@ abstract class URLConstant {
   static String candidateJobEmailToFriend(int id) => '/candidate/jobs/$id/email-job';
   static const String candidateFavoriteCompany = '/candidate/favourite-companies';
   static const String candidateCVBuilder = '/candidate/profiles/cv-data';
+
+  // EMPLOYER
+  static const String employerProfile = '/employer/profiles';
+  static const String employerProfileCompany = '/employer/company';
+  static const String employerProfileUpdate = '/employer/profiles/update';
+  static const String employerProfileChangePassword = '/employer/profiles/change-password';
+
 
 }

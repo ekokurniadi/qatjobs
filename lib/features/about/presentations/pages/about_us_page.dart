@@ -25,7 +25,9 @@ class AboutUsPage extends StatelessWidget {
         ),
         body: BlocBuilder<AboutCubit, AboutState>(
           builder: (context, state) {
-            return ListView.separated(
+            return state.status == AboutStatus.loading ? const Center(
+              child: CircularProgressIndicator(),
+            ) : ListView.separated(
               padding: defaultPadding,
               shrinkWrap: true,
               itemBuilder: (context, index) {

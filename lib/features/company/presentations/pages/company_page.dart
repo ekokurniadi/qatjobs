@@ -13,6 +13,7 @@ import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/shimmer_box_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
 import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
@@ -217,8 +218,18 @@ class _CompanyPageState extends State<CompanyPage> {
                                           SizedBox(
                                             width: 80.w,
                                             height: 80.w,
-                                            child: CustomImageNetwork(
-                                              imageUrl: data.companyUrl ?? '',
+                                            child: ClipRRect(
+                                              borderRadius: defaultRadius,
+                                              child: CustomImageNetwork(
+                                                imageUrl: data.companyUrl ?? '',
+                                                fit: BoxFit.cover,
+                                                width: 80.w,
+                                                customErrorWidget:
+                                                    SvgPicture.asset(
+                                                  AssetsConstant
+                                                      .svgAssetsPicture,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: 16.w),
@@ -240,27 +251,12 @@ class _CompanyPageState extends State<CompanyPage> {
                                                 SizedBox(
                                                   height: 8.h,
                                                 ),
-                                                Container(
-                                                  padding: EdgeInsets.all(4.w),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.danger50,
-                                                    borderRadius: defaultRadius,
-                                                  ),
-                                                  child: IText.set(
-                                                    text:
-                                                        '${data.jobs?.length ?? 0} Open Position',
-                                                    styleName:
-                                                        TextStyleName.bold,
-                                                    typeName:
-                                                        TextTypeName.caption1,
-                                                    color:
-                                                        AppColors.textPrimary,
-                                                  ),
-                                                ),
+                                                WidgetChip(
+                                                    content:
+                                                        '${data.jobs?.length ?? 0} Open Position')
                                               ],
                                             ),
                                           ),
-                                          const Icon(Icons.arrow_forward_ios)
                                         ],
                                       ],
                                     ],

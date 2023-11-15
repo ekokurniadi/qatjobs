@@ -172,17 +172,24 @@ class _JobsPageState extends State<JobsPage> {
                                             child: Row(
                                               children: [
                                                 Container(
-                                                  width: 40.w,
-                                                  height: 40.w,
+                                                  width: 80.w,
+                                                  height: 80.w,
                                                   decoration:
                                                       const BoxDecoration(
                                                           shape:
                                                               BoxShape.circle),
-                                                  child: ClipOval(
+                                                  child: ClipRRect(
+                                                    borderRadius: defaultRadius,
                                                     child: CustomImageNetwork(
+                                                      width: 80.w,
                                                       imageUrl: data.company
                                                               ?.companyUrl ??
                                                           '',
+                                                      customErrorWidget:
+                                                          SvgPicture.asset(
+                                                        AssetsConstant
+                                                            .svgAssetsPicture,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -192,18 +199,21 @@ class _JobsPageState extends State<JobsPage> {
                                                 Expanded(
                                                   child: Row(
                                                     children: [
-                                                      IText.set(
-                                                        text: data.company?.user
-                                                                ?.firstName ??
-                                                            '',
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        styleName:
-                                                            TextStyleName.bold,
-                                                        typeName: TextTypeName
-                                                            .headline2,
-                                                        color: AppColors
-                                                            .textPrimary100,
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: IText.set(
+                                                          text: data.company?.user
+                                                                  ?.firstName ??
+                                                              '',
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName.bold,
+                                                          typeName: TextTypeName
+                                                              .headline2,
+                                                          color: AppColors
+                                                              .textPrimary100,
+                                                        ),
                                                       ),
                                                       SpaceWidget(
                                                         direction: Direction

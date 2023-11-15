@@ -7,6 +7,7 @@ part "company_model.codegen.g.dart";
 
 @freezed
 class CompanyModel with _$CompanyModel {
+  @JsonSerializable(includeIfNull: false)
   factory CompanyModel({
     int? id,
     String? ceo,

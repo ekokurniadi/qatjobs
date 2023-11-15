@@ -68,40 +68,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bg300,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Home',
-        actionWidget: [
-          BlocBuilder<UserBloc, UserState>(
-            builder: (context, state) {
-              if (!GlobalHelper.isEmpty(state.user)) {
-                return ZoomTapAnimation(
-                  onTap: () {},
-                  child: Container(
-                    margin: EdgeInsets.only(right: 16.w),
-                    width: 45.w,
-                    height: 45.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.bg200,
-                      boxShadow: AppColors.defaultShadow,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomImageNetwork(
-                        imageUrl: state.user?.avatar ?? '',
-                        fit: BoxFit.cover,
-                        isLoaderShimmer: true,
-                        width: 40.w,
-                        height: 40.w,
-                      ),
-                    ),
-                  ),
-                );
-              }
-              return const SizedBox();
-            },
-          ),
-        ],
       ),
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
@@ -265,8 +233,18 @@ class _HomePageState extends State<HomePage> {
                                           SizedBox(
                                             width: 80.w,
                                             height: 80.w,
-                                            child: CustomImageNetwork(
-                                              imageUrl: data.companyUrl ?? '',
+                                            child: ClipRRect(
+                                              borderRadius: defaultRadius,
+                                              child: CustomImageNetwork(
+                                                width: 80.w,
+                                                fit: BoxFit.cover,
+                                                imageUrl: data.companyUrl ?? '',
+                                                customErrorWidget:
+                                                    SvgPicture.asset(
+                                                  AssetsConstant
+                                                      .svgAssetsPicture,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: 16.w),
@@ -650,8 +628,16 @@ class _SectionLatestJobs extends StatelessWidget {
                     SizedBox(
                       width: 80.w,
                       height: 80.w,
-                      child: CustomImageNetwork(
-                        imageUrl: jobs[index].company?.companyUrl ?? '',
+                      child: ClipRRect(
+                        borderRadius: defaultRadius,
+                        child: CustomImageNetwork(
+                          width: 80.w,
+                          fit: BoxFit.cover,
+                          imageUrl: jobs[index].company?.companyUrl ?? '',
+                          customErrorWidget: SvgPicture.asset(
+                            AssetsConstant.svgAssetsPicture,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 16.w),
@@ -781,7 +767,7 @@ class _SectionPopularCategory extends StatelessWidget {
                 return Container(
                   width: MediaQuery.sizeOf(context).width * 0.75,
                   padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(right:16),
+                  margin: const EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.r),
                     color: AppColors.bg200,

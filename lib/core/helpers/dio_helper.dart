@@ -43,7 +43,7 @@ class DioHelper {
   }
 
   static String _handleError(int? statusCode, Response? error) {
-   return error?.statusMessage ?? 'Something when wrong';
+   return error?.data['message'] ?? 'Something when wrong';
   }
 
   static String formatException(DioError dioError) {

@@ -130,6 +130,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                 child: Center(
                                   child: ClipOval(
                                     child: CustomImageNetwork(
+                                      width: 100.w,
+                                      fit: BoxFit.cover,
                                       imageUrl:
                                           widget.jobModel.company?.companyUrl ??
                                               '',

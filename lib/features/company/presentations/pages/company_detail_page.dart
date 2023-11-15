@@ -79,9 +79,12 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                         boxShadow: AppColors.defaultShadow,
                       ),
                       child: Center(
-                        child: ClipOval(
+                        child: ClipRRect(
+                          borderRadius: defaultRadius,
                           child: CustomImageNetwork(
                             imageUrl: widget.company.companyUrl ?? '',
+                            fit: BoxFit.cover,
+                            width: 80.w,
                             customErrorWidget: SvgPicture.asset(
                               AssetsConstant.svgAssetsPicture,
                             ),
