@@ -8,28 +8,28 @@ import 'dart:math' as math;
 import 'package:qatjobs/core/styles/text_name_style.dart';
 
 class CustomTextField extends StatefulWidget {
-  const CustomTextField({
-    super.key,
-    required this.placeholder,
-    this.isPassword = false,
-    this.textInputType = TextInputType.text,
-    this.controller,
-    this.isReadOnly = false,
-    this.validator,
-    this.isOption = false,
-    this.onTap,
-    this.mouseCursor,
-    this.maxLines = 1,
-    this.minLines = 1,
-    this.onChange,
-    this.inputFormatters,
-    this.isRequired = false,
-    this.label,
-    this.isAlwaysShowLabel = false,
-    this.isCalendarPicker = false,
-    this.showBorder = false,
-    this.isSearch = false,
-  });
+  const CustomTextField(
+      {super.key,
+      required this.placeholder,
+      this.isPassword = false,
+      this.textInputType = TextInputType.text,
+      this.controller,
+      this.isReadOnly = false,
+      this.validator,
+      this.isOption = false,
+      this.onTap,
+      this.mouseCursor,
+      this.maxLines = 1,
+      this.minLines = 1,
+      this.onChange,
+      this.inputFormatters,
+      this.isRequired = false,
+      this.label,
+      this.isAlwaysShowLabel = false,
+      this.isCalendarPicker = false,
+      this.showBorder = false,
+      this.isSearch = false,
+      this.scrollController});
 
   final String placeholder;
   final bool isPassword;
@@ -50,6 +50,7 @@ class CustomTextField extends StatefulWidget {
   final bool isCalendarPicker;
   final bool showBorder;
   final bool isSearch;
+  final ScrollController? scrollController;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -74,9 +75,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 borderRadius: BorderRadius.circular(
                   8.r,
                 ),
+                boxShadow: AppColors.defaultShadow,
               ),
               width: double.infinity,
               child: TextFormField(
+                scrollController: widget.scrollController,
                 inputFormatters: widget.inputFormatters,
                 onChanged: widget.onChange,
                 minLines: widget.minLines,

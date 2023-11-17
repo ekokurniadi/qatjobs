@@ -78,8 +78,8 @@ class AppliedJobsPage extends StatelessWidget {
                           onTap: () {
                             AutoRouter.of(context).push(
                               ApplyJobRoute(
-                                jobId: data.id ?? 0,
-                                jobTitle: data.jobTitle ?? '',
+                                jobId: data?.id ?? 0,
+                                jobTitle: data?.jobTitle ?? '',
                                 appliedJob: state.appliedJobs[index],
                               ),
                             );
@@ -110,10 +110,8 @@ class AppliedJobsPage extends StatelessWidget {
                                         child: ClipOval(
                                           child: CustomImageNetwork(
                                             imageUrl:
-                                                data.company?.companyUrl ??
-                                                    '',
-                                            customErrorWidget:
-                                                SvgPicture.asset(
+                                                data?.company?.companyUrl ?? '',
+                                            customErrorWidget: SvgPicture.asset(
                                               AssetsConstant.svgAssetsPicture,
                                             ),
                                           ),
@@ -131,11 +129,11 @@ class AppliedJobsPage extends StatelessWidget {
                                             right: 8.w, bottom: 8.w),
                                         padding: const EdgeInsets.all(8),
                                         child: IText.set(
-                                          text: state.appliedJobs[index]
-                                                      .status ==
-                                                  0
-                                              ? 'Draft'
-                                              : 'Applied',
+                                          text:
+                                              state.appliedJobs[index].status ==
+                                                      0
+                                                  ? 'Draft'
+                                                  : 'Applied',
                                           textAlign: TextAlign.left,
                                           styleName: TextStyleName.regular,
                                           typeName: TextTypeName.caption2,
@@ -149,7 +147,7 @@ class AppliedJobsPage extends StatelessWidget {
                                 SizedBox(
                                   width: double.infinity,
                                   child: IText.set(
-                                    text: data.jobTitle ?? '-',
+                                    text: data?.jobTitle ?? '-',
                                     textAlign: TextAlign.left,
                                     styleName: TextStyleName.semiBold,
                                     typeName: TextTypeName.headline3,
@@ -160,7 +158,7 @@ class AppliedJobsPage extends StatelessWidget {
                                   children: [
                                     IText.set(
                                       text:
-                                          data.company?.user?.firstName ?? '',
+                                          data?.company?.user?.firstName ?? '',
                                       textAlign: TextAlign.left,
                                       styleName: TextStyleName.bold,
                                       typeName: TextTypeName.headline2,
@@ -171,7 +169,7 @@ class AppliedJobsPage extends StatelessWidget {
                                       space: 8.w,
                                     ),
                                     if (!GlobalHelper.isEmpty(
-                                      data.jobShift,
+                                      data?.jobShift,
                                     ))
                                       Container(
                                         padding: const EdgeInsets.all(8),
@@ -181,7 +179,7 @@ class AppliedJobsPage extends StatelessWidget {
                                           color: AppColors.danger50,
                                         ),
                                         child: IText.set(
-                                          text: data.jobShift?.shift ?? '',
+                                          text: data?.jobShift?.shift ?? '',
                                           textAlign: TextAlign.left,
                                           styleName: TextStyleName.bold,
                                           typeName: TextTypeName.caption2,
@@ -191,7 +189,7 @@ class AppliedJobsPage extends StatelessWidget {
                                   ],
                                 ),
                                 if (!GlobalHelper.isEmpty(
-                                    data.company?.location)) ...[
+                                    data?.company?.location)) ...[
                                   SpaceWidget(
                                     space: 8.h,
                                   ),
@@ -199,7 +197,7 @@ class AppliedJobsPage extends StatelessWidget {
                                     width: double.infinity,
                                     child: IText.set(
                                       text:
-                                          '${data.company?.location ?? ''} ${data.company?.location2 ?? ''}',
+                                          '${data?.company?.location ?? ''} ${data?.company?.location2 ?? ''}',
                                       textAlign: TextAlign.left,
                                       styleName: TextStyleName.regular,
                                       typeName: TextTypeName.caption1,
@@ -208,7 +206,7 @@ class AppliedJobsPage extends StatelessWidget {
                                   ),
                                 ],
                                 if (!GlobalHelper.isEmptyList(
-                                    data.jobsTag)) ...[
+                                    data?.jobsTag)) ...[
                                   SpaceWidget(
                                     space: 8.h,
                                   ),
@@ -216,16 +214,14 @@ class AppliedJobsPage extends StatelessWidget {
                                     width: double.infinity,
                                     child: Wrap(
                                       children: List.generate(
-                                        data.jobsTag!.length > 2
+                                        (data?.jobsTag ?? []).length > 2
                                             ? 3
-                                            : data.jobsTag!.length,
+                                            : (data?.jobsTag ?? []).length,
                                         (i) => Container(
                                           decoration: BoxDecoration(
                                             color: AppColors.bg300,
-                                            boxShadow:
-                                                AppColors.defaultShadow,
-                                            borderRadius:
-                                                BorderRadius.circular(
+                                            boxShadow: AppColors.defaultShadow,
+                                            borderRadius: BorderRadius.circular(
                                               8.r,
                                             ),
                                           ),
@@ -233,7 +229,7 @@ class AppliedJobsPage extends StatelessWidget {
                                               right: 8.w, bottom: 8.w),
                                           padding: const EdgeInsets.all(8),
                                           child: IText.set(
-                                            text: data.jobsTag![i].name,
+                                            text: data?.jobsTag?[i].name ?? '',
                                             textAlign: TextAlign.left,
                                             styleName: TextStyleName.regular,
                                             typeName: TextTypeName.caption2,
@@ -244,7 +240,7 @@ class AppliedJobsPage extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-                                if (!(data.hideSalary ?? true)) ...[
+                                if (!(data?.hideSalary ?? true)) ...[
                                   SpaceWidget(
                                     space: 8.h,
                                   ),
@@ -252,7 +248,7 @@ class AppliedJobsPage extends StatelessWidget {
                                     children: [
                                       IText.set(
                                         text:
-                                            data.currency?.currencyIcon ?? '',
+                                            data?.currency?.currencyIcon ?? '',
                                         textAlign: TextAlign.left,
                                         styleName: TextStyleName.regular,
                                         typeName: TextTypeName.caption1,
@@ -264,7 +260,7 @@ class AppliedJobsPage extends StatelessWidget {
                                       ),
                                       IText.set(
                                         text:
-                                            (data.salaryFrom ?? 0).toString(),
+                                            (data?.salaryFrom ?? 0).toString(),
                                         textAlign: TextAlign.left,
                                         styleName: TextStyleName.regular,
                                         typeName: TextTypeName.caption1,
@@ -278,7 +274,7 @@ class AppliedJobsPage extends StatelessWidget {
                                         color: AppColors.textPrimary,
                                       ),
                                       IText.set(
-                                        text: (data.salaryTo ?? 0).toString(),
+                                        text: (data?.salaryTo ?? 0).toString(),
                                         textAlign: TextAlign.left,
                                         styleName: TextStyleName.regular,
                                         typeName: TextTypeName.caption1,
@@ -301,7 +297,8 @@ class AppliedJobsPage extends StatelessWidget {
                                     ),
                                     IText.set(
                                       text: timeago.format(
-                                        DateTime.parse(data.createdAt!),
+                                        DateTime.parse(data?.createdAt ??
+                                            DateTime.now().toString()),
                                       ),
                                       textAlign: TextAlign.left,
                                       styleName: TextStyleName.regular,

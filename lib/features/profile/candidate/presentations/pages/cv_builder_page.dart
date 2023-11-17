@@ -1,11 +1,10 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
@@ -43,10 +42,16 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
       delay: const Duration(milliseconds: 100),
     );
 
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+
     if (image != null) {
       final result = await ImageGallerySaver.saveImage(image);
-      if(result['isSuccess']){
-        LoadingDialog.showSuccess(message: 'CV exported successfuly and saved on your galery');
+      if (result['isSuccess']) {
+        LoadingDialog.showSuccess(
+            message: 'CV exported successfuly and saved on your galery');
       }
     }
   }

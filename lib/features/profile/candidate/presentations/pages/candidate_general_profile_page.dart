@@ -330,10 +330,10 @@ class _CandidateGeneralProfilePageState
                       controller: phoneController,
                       dropdownIconPosition: IconPosition.leading,
                       validator: (val) {
-                        if (val!.number.length < 9) {
-                          return 'Invalid Phone Number, minimum length is 9 digits';
-                        } else if (val.number.length > 9) {
-                          return 'Invalid Phone Number, maximum length is 9 digits';
+                        if (val!.number.length < 10) {
+                          return 'Invalid Phone Number, minimum length is 10 digits';
+                        } else if (val.number.length > 10) {
+                          return 'Invalid Phone Number, maximum length is 10 digits';
                         }
                         return null;
                       },

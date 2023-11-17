@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
@@ -47,10 +46,10 @@ class ConfirmDialogBottomSheet extends StatelessWidget {
           ),
           SpaceWidget(space: 16.h),
           IText.set(
-            text: caption,
-            styleName: TextStyleName.regular,
-            color: AppColors.textPrimary100,
-          ),
+              text: caption,
+              styleName: TextStyleName.regular,
+              color: AppColors.textPrimary100,
+              textAlign: TextAlign.center),
           SpaceWidget(space: 32.h),
           SizedBox(
             width: double.infinity,

@@ -219,7 +219,9 @@ class _EmployerPageState extends State<EmployerPage> {
                   CardMenuItem(
                     title: 'Jobs',
                     icon: AssetsConstant.svgAssetsSaveJobs,
-                    onTap: () {},
+                    onTap: () {
+                      AutoRouter.of(context).push(const EmployerJobRoute());
+                    },
                   ),
                   CardMenuItem(
                     title: 'Job Stages',

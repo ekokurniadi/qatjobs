@@ -16,6 +16,7 @@ import 'package:qatjobs/features/connectivity/presentations/bloc/connectivity_bl
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job_category/presentations/bloc/job_category_bloc.dart';
+import 'package:qatjobs/features/job_stages/presentations/cubit/job_stages_cubit.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
@@ -85,6 +86,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (context) => getIt<EmployerCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<JobStagesCubit>(),
         ),
       ],
       child: BlocListener<ConnectivityBloc, ConnectivityState>(

@@ -5,6 +5,7 @@ import "package:qatjobs/features/company/data/models/company_model.codegen.dart"
 import "package:qatjobs/features/currency/data/models/currency_model.codegen.dart";
 import "package:qatjobs/features/degree_level/data/models/degree_level_model.codegen.dart";
 import "package:qatjobs/features/functional_area/data/models/functional_area_model.codegen.dart";
+import "package:qatjobs/features/job/data/models/applied_job_model.codegen.dart";
 import "package:qatjobs/features/job_category/data/models/job_category_model.codegen.dart";
 import "package:qatjobs/features/job_shift/data/models/job_shift_model.codegen.dart";
 import "package:qatjobs/features/job_tags/data/models/job_tags_model.codegen.dart";
@@ -58,6 +59,8 @@ class JobModel with _$JobModel {
     DegreeLevelModel? degreeLevel,
     CareerLevelModel? careerLevel,
     FunctionalAreaModel? functionalArea,
+    dynamic totalAppliedJobs,
+    List<AppliedJobModel>? appliedJobs,
   }) = _JobModel;
 
   factory JobModel.fromJson(Map<String, dynamic> json) =>

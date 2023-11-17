@@ -9,6 +9,7 @@ import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/dropdown_search_widget.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/employer_type/data/models/employer_type_model.codegen.dart';
@@ -91,6 +92,14 @@ class _ProfilePageState extends State<ProfilePage> {
             websiteController.text = state.companyModel.website ?? '';
             faxController.text = state.companyModel.fax ?? '';
             setState(() {});
+          } else if (state.status ==
+              EmployerStatus.updateProfileCompanySuccess) {
+            LoadingDialog.dismiss();
+            LoadingDialog.showSuccess(message: state.message);
+          } else if (state.status == EmployerStatus.loading) {
+            LoadingDialog.show(message: 'Loading ...');
+          } else {
+            LoadingDialog.dismiss();
           }
         },
         child: SingleChildScrollView(
@@ -132,10 +141,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       controller: phoneController,
                       dropdownIconPosition: IconPosition.leading,
                       validator: (val) {
-                        if (val!.number.length < 9) {
-                          return 'Invalid Phone Number, minimum length is 9 digits';
-                        } else if (val.number.length > 9) {
-                          return 'Invalid Phone Number, maximum length is 9 digits';
+                        if (val!.number.length < 10) {
+                          return 'Invalid Phone Number, minimum length is 10 digits';
+                        } else if (val.number.length > 10) {
+                          return 'Invalid Phone Number, maximum length is 10 digits';
                         }
                         return null;
                       },

@@ -16,6 +16,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
     this.alwaysShowLabel = false,
     this.label,
     this.isRequired = false,
+    this.showSearchBox = true,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
@@ -25,6 +26,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
   final T? selectedItem;
   final bool alwaysShowLabel;
   final bool isRequired;
+  final bool showSearchBox;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +43,9 @@ class DropdownSearchWidget<T> extends StatelessWidget {
               return null;
             }
           : null,
-      popupProps: const PopupPropsMultiSelection.menu(
+      popupProps: PopupPropsMultiSelection.menu(
         fit: FlexFit.loose,
-        showSearchBox: true,
+        showSearchBox: showSearchBox,
         searchDelay: Duration.zero,
       ),
       dropdownDecoratorProps: DropDownDecoratorProps(
@@ -61,14 +63,33 @@ class DropdownSearchWidget<T> extends StatelessWidget {
           contentPadding: defaultPadding,
           floatingLabelBehavior:
               alwaysShowLabel ? FloatingLabelBehavior.always : null,
-          label: GlobalHelper.isEmpty(label)
-              ? null
-              : IText.set(
-                  text: label!,
-                  typeName: TextTypeName.headline3,
-                  styleName: TextStyleName.regular,
-                  color: AppColors.textPrimary,
-                ),
+          label: label != null
+              ? RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: label!,
+                        style: IText.set(
+                          text: label!,
+                          typeName: TextTypeName.headline3,
+                          styleName: TextStyleName.regular,
+                          color: AppColors.textPrimary,
+                        ).style,
+                      ),
+                      if (isRequired)
+                        TextSpan(
+                          text: ' *',
+                          style: IText.set(
+                            text: '*',
+                            typeName: TextTypeName.headline1,
+                            styleName: TextStyleName.regular,
+                            color: AppColors.danger100,
+                          ).style,
+                        ),
+                    ],
+                  ),
+                )
+              : null,
           hintStyle: IText.set(
             text: '',
             typeName: TextTypeName.headline3,
@@ -97,6 +118,7 @@ class DropdownSearchMultiSelectWidget<T> extends StatelessWidget {
     required this.selectedItem,
     this.alwaysShowLabel = false,
     this.label,
+    this.isRequired = false,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
@@ -105,6 +127,7 @@ class DropdownSearchMultiSelectWidget<T> extends StatelessWidget {
   final List<T> selectedItem;
   final bool alwaysShowLabel;
   final String? label;
+  final bool isRequired;
 
   @override
   Widget build(BuildContext context) {
@@ -133,14 +156,33 @@ class DropdownSearchMultiSelectWidget<T> extends StatelessWidget {
           contentPadding: defaultPadding,
           floatingLabelBehavior:
               alwaysShowLabel ? FloatingLabelBehavior.always : null,
-          label: GlobalHelper.isEmpty(label)
-              ? null
-              : IText.set(
-                  text: label!,
-                  typeName: TextTypeName.headline3,
-                  styleName: TextStyleName.regular,
-                  color: AppColors.textPrimary,
-                ),
+          label: label != null
+              ? RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: label!,
+                        style: IText.set(
+                          text: label!,
+                          typeName: TextTypeName.headline3,
+                          styleName: TextStyleName.regular,
+                          color: AppColors.textPrimary,
+                        ).style,
+                      ),
+                      if (isRequired)
+                        TextSpan(
+                          text: ' *',
+                          style: IText.set(
+                            text: '*',
+                            typeName: TextTypeName.headline1,
+                            styleName: TextStyleName.regular,
+                            color: AppColors.danger100,
+                          ).style,
+                        ),
+                    ],
+                  ),
+                )
+              : null,
           hintStyle: IText.set(
             text: '',
             typeName: TextTypeName.headline3,

@@ -13,7 +13,7 @@ class AppliedJobModel with _$AppliedJobModel {
     String? notes,
     required int status,
     required String resumeUrl,
-    required JobModel job,
+    JobModel? job,
     JobStage? jobStage,
   }) = _AppliedJobModel;
 

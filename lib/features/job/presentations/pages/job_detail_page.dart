@@ -108,16 +108,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             height: 100.h,
                             child: ZoomTapAnimation(
                               onTap: () {
-                                if(widget.jobModel.company != null){
+                                if (widget.jobModel.company != null) {
                                   Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        CompanyDetailPage(company: widget.jobModel.company!),
-                                  ),
-                                );
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CompanyDetailPage(
+                                          company: widget.jobModel.company!),
+                                    ),
+                                  );
                                 }
-                                
                               },
                               child: Container(
                                 width: 100.w,
@@ -560,7 +559,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 if (jobState.appliedJobs.any((element) =>
-                                    element.job.id == widget.jobModel.id)) {
+                                    element.job?.id == widget.jobModel.id)) {
                                   LoadingDialog.showError(
                                     message: 'This job Already applied',
                                   );

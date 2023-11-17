@@ -7,7 +7,10 @@ import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
+import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/profile/employer/data/models/job_request_params.codegen.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/change_password_usecase.dart';
+import 'package:qatjobs/features/profile/employer/domain/usecases/update_job_status_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_profile_usecase.dart';
 
 abstract class EmployerRemoteDataSource {
@@ -21,6 +24,10 @@ abstract class EmployerRemoteDataSource {
     ChangePasswordRequestParams params,
   );
   Future<Either<Failures, bool>> updateCompanyProfile(CompanyModel params);
+  Future<Either<Failures, List<JobModel>>> getJobs(JobRequestParams params);
+  Future<Either<Failures, bool>> updateJobStatus(
+    UpdateJobStatusParams params,
+  );
 }
 
 @LazySingleton(as: EmployerRemoteDataSource)
@@ -158,22 +165,85 @@ class EmployerRemoteDataSourceImpl implements EmployerRemoteDataSource {
       newParam['phone'] = params.user?.phone ?? '';
       newParam['ceo'] = params.ceo ?? '';
       newParam['details'] = params.details ?? 'xxx';
-      newParam['industry_id'] = params.industryId ?? 0;
-      newParam['ownership_type_id'] = params.ownershipTypeId ?? 0;
-      newParam['established_in'] = params.establishedIn ?? 0;
+      newParam['industry_id'] = (params.industryId ?? 0).toString();
+      newParam['ownership_type_id'] = (params.ownershipTypeId ?? 0).toString();
+      newParam['established_in'] = (params.establishedIn ?? 0).toString();
       newParam['website'] = params.website ?? '';
       newParam['location'] = params.location ?? '';
-      newParam['no_of_offices'] = params.noOfOffices ?? 0;
+      newParam['no_of_offices'] = (params.noOfOffices ?? 0).toString();
       newParam['facebook_url'] = params.user?.facebookUrl ?? '';
       newParam['twitter_url'] = params.user?.twitterUrl ?? '';
       newParam['linkedin_url'] = params.user?.linkedinUrl ?? '';
       newParam['google_plus_url'] = params.user?.googlePlusUrl ?? '';
       newParam['pinterest_url'] = params.user?.pinterestUrl ?? '';
 
-      final formData = FormData.fromMap(newParam);
       final response = await _dio.put(
         URLConstant.employerProfileCompany,
-        data: formData,
+        data: newParam,
+      );
+      if (response.isOk) {
+        return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<JobModel>>> getJobs(
+      JobRequestParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.employerJobs,
+        data: params.toJson(),
+      );
+      if (response.isOk) {
+        return right(
+            List.from(response.data['data'].map((e) => JobModel.fromJson(e))));
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> updateJobStatus(
+      UpdateJobStatusParams params) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.updateJobsStatus(params),
       );
       if (response.isOk) {
         return right(true);

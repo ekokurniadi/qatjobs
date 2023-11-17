@@ -39,11 +39,15 @@ class DioHelper {
   static setDioHeader(String? token) {
     dio!.options.headers = {HttpHeaders.authorizationHeader: 'Bearer $token'};
     dio!.options.headers['X-Requested-With'] = 'XMLHttpRequest';
+    dio!.options.headers['Content-Type'] = "application/x-www-form-urlencoded";
     log('token user: $token');
   }
 
   static String _handleError(int? statusCode, Response? error) {
-   return error?.data['message'] ?? 'Something when wrong';
+    if (error?.data.containsKey("email")) {
+      return error?.data['email'][0].toString() ?? 'Something when wrong';
+    }
+    return error?.data['message'] ?? 'Something when wrong';
   }
 
   static String formatException(DioError dioError) {
