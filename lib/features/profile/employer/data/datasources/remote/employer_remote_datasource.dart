@@ -30,6 +30,9 @@ abstract class EmployerRemoteDataSource {
     UpdateJobStatusParams params,
   );
   Future<Either<Failures, List<JobApplicationModel>>> getJobApplicant(int id);
+  Future<Either<Failures, bool>> updateJob(
+    JobModel params,
+  );
 }
 
 @LazySingleton(as: EmployerRemoteDataSource)
@@ -281,6 +284,57 @@ class EmployerRemoteDataSourceImpl implements EmployerRemoteDataSource {
       if (response.isOk) {
         return right(List.from(
             response.data['data'].map((e) => JobApplicationModel.fromJson(e))));
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, bool>> updateJob(
+    JobModel params,
+  ) async {
+    try {
+      final newParam = <String, dynamic>{};
+      newParam['job_title'] = params.jobTitle;
+      newParam['currency_id'] = params.currencyId;
+      newParam['salary_period_id'] = params.salaryPeriodId;
+      newParam['job_type_id'] = params.jobTypeId;
+      newParam['functional_area_id'] = params.functionalAreaId;
+      newParam['position'] = params.position;
+      newParam['experience'] = params.experience;
+      newParam['job_category_id'] = params.jobCategoryId;
+      newParam['job_category_id'] = params.jobCategoryId;
+      newParam['salary_from'] = params.salaryFrom;
+      newParam['salary_to'] = params.salaryTo;
+      newParam['job_expiry_date'] = params.jobExpiryDate;
+      newParam['job_shift_id'] = params.jobShiftId;
+      newParam['description'] = params.description;
+      newParam['hide_salary'] = params.hideSalary;
+      newParam['is_freelance'] = params.isFreelance;
+
+      final response = await _dio.put(
+        '${URLConstant.employerJobs}/${params.id}',
+        data: newParam,
+      );
+      if (response.isOk) {
+        return right(true);
       }
       return left(
         ServerFailure(

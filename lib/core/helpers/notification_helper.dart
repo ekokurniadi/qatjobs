@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file/open_file.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
@@ -71,5 +69,9 @@ class NotificationService {
       id,
       tag: 'download_tag',
     );
+  }
+
+  Future<void> cancelAll() async {
+    return notificationsPlugin.cancelAll();
   }
 }

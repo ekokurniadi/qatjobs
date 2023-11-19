@@ -25,4 +25,7 @@ abstract class EmployerRepository {
     UpdateJobStatusParams params,
   );
   Future<Either<Failures, List<JobApplicationModel>>> getJobApplicant(int id);
+  Future<Either<Failures, bool>> updateJob(
+    JobModel params,
+  );
 }

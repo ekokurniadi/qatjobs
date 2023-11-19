@@ -1,23 +1,22 @@
-import 'dart:math';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/constant/global_constant.dart';
+import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
+import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/helpers/file_downloader_helper.dart';
-import 'package:qatjobs/core/helpers/global_helper.dart';
-import 'package:qatjobs/core/helpers/html_parse_helper.dart';
 import 'package:qatjobs/core/helpers/notification_helper.dart';
-import 'package:qatjobs/core/helpers/url_launcher_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
+import 'package:qatjobs/core/widget/confirm_dialog_bottom_sheet.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
+import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/widget_chip.dart';
+import 'package:qatjobs/features/job_stages/presentations/pages/job_stages_list_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
 
 class JobApplicationPage extends StatefulWidget {
@@ -36,6 +35,102 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
   void initState() {
     context.read<EmployerCubit>().getApplicant(widget.id);
     super.initState();
+  }
+
+  Future<void> updateStatus({
+    required int applicationsId,
+    required int jobId,
+    required int status,
+  }) async {
+    try {
+      LoadingDialog.show(message: 'Loading ...');
+      final result = await DioHelper.dio!.post(
+          '/employer/jobs/applications/$applicationsId/status/$status',
+          data: {'jobId': jobId});
+
+      if (result.isOk) {
+        LoadingDialog.dismiss();
+        LoadingDialog.showSuccess(message: result.data['message']);
+        context.read<EmployerCubit>().getApplicant(widget.id);
+      } else {
+        LoadingDialog.dismiss();
+        LoadingDialog.showError(message: result.data['message']);
+      }
+    } on DioError catch (e) {
+      final msg = DioHelper.formatException(e);
+      LoadingDialog.dismiss();
+      LoadingDialog.showError(
+        message: msg,
+      );
+    }
+  }
+
+  Future<void> delete({
+    required int applicationsId,
+    required int jobId,
+  }) async {
+    try {
+      LoadingDialog.show(message: 'Loading ...');
+      final result = await DioHelper.dio!.delete(
+          '/employer/jobs/applications/$applicationsId',
+          data: {'jobId': jobId});
+
+      if (result.isOk) {
+        LoadingDialog.dismiss();
+        LoadingDialog.showSuccess(message: result.data['message']);
+        await Future.delayed(
+          const Duration(seconds: 1),
+          () {
+            context.read<EmployerCubit>().getApplicant(widget.id);
+          },
+        );
+      } else {
+        LoadingDialog.dismiss();
+        LoadingDialog.showError(message: result.data['message']);
+      }
+    } on DioError catch (e) {
+      final msg = DioHelper.formatException(e);
+      LoadingDialog.dismiss();
+      LoadingDialog.showSuccess(
+        message: msg,
+      );
+    }
+  }
+
+  Future<void> changeJobStages({
+    required int applicationsId,
+    required int jobstageId,
+  }) async {
+    try {
+      LoadingDialog.show(message: 'Loading ...');
+      final result = await DioHelper.dio!.post(
+        '/employer/jobs/applications/$applicationsId/job-stage',
+        data: {
+          'job_application_id': applicationsId,
+          'job_stage': jobstageId,
+        },
+      );
+
+      if (result.isOk) {
+        LoadingDialog.dismiss();
+        LoadingDialog.showSuccess(message: result.data['message']);
+        await Future.delayed(
+          const Duration(seconds: 1),
+          () {
+            context.read<EmployerCubit>().getApplicant(widget.id);
+          },
+        );
+      } else {
+        LoadingDialog.dismiss();
+        LoadingDialog.showError(message: result.data['message']);
+      }
+    } on DioError catch (e) {
+      final msg = DioHelper.formatException(e);
+      LoadingDialog.dismiss();
+      LoadingDialog.showSuccess(
+        message: msg,
+      );
+    }
   }
 
   @override
@@ -100,7 +195,7 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                       ),
                                     ),
                                     PopupMenuItem(
-                                      value: 'job Stages',
+                                      value: 'job-stages',
                                       child: IText.set(
                                         text: 'Job Stages',
                                         textAlign: TextAlign.left,
@@ -144,45 +239,162 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                 icon: const Icon(Icons.more_vert),
                                 onSelected: (value) async {
                                   switch (value) {
-                                    case 'edit':
-                                      // AutoRouter.of(context).push(
-                                      //   UpdateJobRoute(
-                                      //     job: data,
-                                      //   ),
-                                      // );
-
+                                    case 'job-stages':
+                                      final result = await showDialog<int>(
+                                        context: context,
+                                        builder: (context) {
+                                          return const Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(32),
+                                                topLeft: Radius.circular(32),
+                                              ),
+                                            ),
+                                            child: JobStagesListPage(
+                                              isAsOption: true,
+                                            ),
+                                          );
+                                        },
+                                      );
+                                      if (result != null) {
+                                        await changeJobStages(
+                                          applicationsId:
+                                              state.jobApplicants[index].id,
+                                          jobstageId: result,
+                                        );
+                                      }
                                       break;
-                                    case 'applications':
-                                      // AutoRouter.of(context).push(
-                                      //   JobApplicationRoute(
-                                      //     id: data.id ?? 0,
-                                      //   ),
-                                      // );
-
+                                    case 'shortlisted':
+                                      await showModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(32),
+                                            topLeft: Radius.circular(32),
+                                          ),
+                                        ),
+                                        context: context,
+                                        builder: (context) {
+                                          return ConfirmDialogBottomSheet(
+                                            title: 'Update Job Applications?',
+                                            caption:
+                                                'Are you sure you want to change this applications to Shortlisted?',
+                                            onTapCancel: () =>
+                                                Navigator.pop(context),
+                                            onTapContinue: () async {
+                                              Navigator.pop(context);
+                                              await updateStatus(
+                                                applicationsId: state
+                                                    .jobApplicants[index].id,
+                                                jobId: state
+                                                    .jobApplicants[index]
+                                                    .job
+                                                    .id!,
+                                                status: GlobalConstant
+                                                    .appliedOnGoing,
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
                                       break;
+                                    case 'selected':
+                                      await showModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(32),
+                                            topLeft: Radius.circular(32),
+                                          ),
+                                        ),
+                                        context: context,
+                                        builder: (context) {
+                                          return ConfirmDialogBottomSheet(
+                                            title: 'Update Job Applications?',
+                                            caption:
+                                                'Are you sure you want to change this applications to Selected ?',
+                                            onTapCancel: () =>
+                                                Navigator.pop(context),
+                                            onTapContinue: () async {
+                                              Navigator.pop(context);
+                                              await updateStatus(
+                                                applicationsId: state
+                                                    .jobApplicants[index].id,
+                                                jobId: state
+                                                    .jobApplicants[index]
+                                                    .job
+                                                    .id!,
+                                                status:
+                                                    GlobalConstant.appliedHired,
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                      break;
+                                    case 'rejected':
+                                      await showModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(32),
+                                            topLeft: Radius.circular(32),
+                                          ),
+                                        ),
+                                        context: context,
+                                        builder: (context) {
+                                          return ConfirmDialogBottomSheet(
+                                            title: 'Decline Job Applications?',
+                                            caption:
+                                                'Are you sure to decline this applications?',
+                                            onTapCancel: () =>
+                                                Navigator.pop(context),
+                                            onTapContinue: () async {
+                                              Navigator.pop(context);
+                                              await updateStatus(
+                                                applicationsId: state
+                                                    .jobApplicants[index].id,
+                                                jobId: state
+                                                    .jobApplicants[index]
+                                                    .job
+                                                    .id!,
+                                                status: GlobalConstant
+                                                    .appliedDeclined,
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                      break;
+
                                     case 'delete':
-                                    // await showModalBottomSheet(
-                                    //   shape: const RoundedRectangleBorder(
-                                    //     borderRadius: BorderRadius.only(
-                                    //       topRight: Radius.circular(32),
-                                    //       topLeft: Radius.circular(32),
-                                    //     ),
-                                    //   ),
-                                    //   context: context,
-                                    //   builder: (context) {
-                                    //     return ConfirmDialogBottomSheet(
-                                    //       title: 'Remove Favorite Job ?',
-                                    //       caption:
-                                    //           'Are you sure you want to delete ${data.jobTitle}?',
-                                    //       onTapCancel: () =>
-                                    //           Navigator.pop(context),
-                                    //       onTapContinue: () {
-                                    //         Navigator.pop(context);
-                                    //       },
-                                    //     );
-                                    //   },
-                                    // );
-                                    // break;
+                                      await showModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(32),
+                                            topLeft: Radius.circular(32),
+                                          ),
+                                        ),
+                                        context: context,
+                                        builder: (context) {
+                                          return ConfirmDialogBottomSheet(
+                                            title: 'Delete Applications ?',
+                                            caption:
+                                                'Are you sure you want to delete this job application',
+                                            onTapCancel: () =>
+                                                Navigator.pop(context),
+                                            onTapContinue: () async {
+                                              Navigator.pop(context);
+                                              await delete(
+                                                applicationsId: state
+                                                    .jobApplicants[index].id,
+                                                jobId: state
+                                                    .jobApplicants[index]
+                                                    .job
+                                                    .id!,
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                      break;
                                     default:
                                       break;
                                   }
@@ -191,6 +403,19 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                             ],
                           ),
                           const SpaceWidget(),
+                          if (state.jobApplicants[index].jobStage != null)
+                            Row(
+                              children: [
+                                IText.set(
+                                  text: 'Job Stages : ',
+                                ),
+                                IText.set(
+                                  text: state.jobApplicants[index].jobStage
+                                          ?.name ??
+                                      '',
+                                ),
+                              ],
+                            ),
                           Row(
                             children: [
                               IText.set(

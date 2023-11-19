@@ -213,7 +213,7 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
       req['job_alert'] = params.jobTypes.toString();
       req['job_types'] =
           List<String>.from(params.jobAlerts.map((e) => e.toString()));
-      print(req);
+
       final response = await _dio.post(
         URLConstant.candidateJobAlert,
         data: req,

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/profile_candidate_models.codegen.dart';
 import 'package:qatjobs/features/users/domain/entitites/users_entity.codegen.dart';
 
 part "users_model.codegen.freezed.dart";
@@ -34,6 +35,7 @@ class UserModel with _$UserModel {
     String? avatar,
     List<Map<String, dynamic>>? media,
     List<RoleModel>? roles,
+    ProfileCandidateModels? candidate,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

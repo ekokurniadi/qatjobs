@@ -12,6 +12,7 @@ import 'package:qatjobs/features/profile/employer/domain/usecases/get_job_applic
 import 'package:qatjobs/features/profile/employer/domain/usecases/get_jobs_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/get_profile_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_job_status_usecase.dart';
+import 'package:qatjobs/features/profile/employer/domain/usecases/update_job_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_profile_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_company_profile_usecase.dart';
 
@@ -27,6 +28,8 @@ class EmployerCubit extends Cubit<EmployerState> {
   final GetJobsEmployerUserCase _getJobsEmployerUserCase;
   final UpdateJobStatus _updateJobStatus;
   final GetJobApplicantCase _getJobApplicantCase;
+  final UpdateJobUseCase _updateJobUseCase;
+
   EmployerCubit(
     this._getProfileEmployerUserCase,
     this._employerUpdateProfile,
@@ -35,7 +38,29 @@ class EmployerCubit extends Cubit<EmployerState> {
     this._getJobsEmployerUserCase,
     this._updateJobStatus,
     this._getJobApplicantCase,
+    this._updateJobUseCase,
   ) : super(EmployerState.initial());
+
+  Future<void> updateJobUseCase(JobModel params) async {
+    emit(state.copyWith(status: EmployerStatus.loading));
+
+    final result = await _updateJobUseCase(params);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          message: l.errorMessage,
+          status: EmployerStatus.failure,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: EmployerStatus.updateJob,
+          message: 'Success Update Job',
+        ),
+      ),
+    );
+  }
 
   Future<void> getApplicant(int id) async {
     emit(state.copyWith(status: EmployerStatus.loading));

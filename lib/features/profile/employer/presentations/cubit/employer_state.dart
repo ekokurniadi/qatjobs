@@ -8,6 +8,7 @@ enum EmployerStatus {
   updateProfileCompanySuccess,
   changePasswordSuccess,
   updateJobStatus,
+  updateJob,
   getJobApplicant,
   failure,
   jobLoaded,

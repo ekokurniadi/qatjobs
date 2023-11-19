@@ -23,6 +23,7 @@ import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_profile_usecase.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
+import 'package:qatjobs/features/profile/employer/presentations/pages/employer_followers_page.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -229,13 +230,20 @@ class _EmployerPageState extends State<EmployerPage> {
                     title: 'Job Stages',
                     icon: AssetsConstant.svgAssetsWorkExperience,
                     onTap: () {
-                      AutoRouter.of(context).push(const JobStagesListRoute());
+                      AutoRouter.of(context).push(JobStagesListRoute());
                     },
                   ),
                   CardMenuItem(
                     title: 'Followers',
                     icon: AssetsConstant.svgAssetsAppreciate,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EmployerFollowersPage(),
+                        ),
+                      );
+                    },
                   ),
                   CardMenuItem(
                     title: 'About Us',

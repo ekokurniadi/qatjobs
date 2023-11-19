@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:open_file/open_file.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
+import 'package:qatjobs/core/helpers/file_downloader_helper.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
+import 'package:qatjobs/core/helpers/notification_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -16,8 +21,12 @@ import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
 import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
+import 'package:qatjobs/features/profile/candidate/data/models/cv_builder_models.codegen.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/cv_builder_pdf_preview.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/pages/cv_pdf_generator.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CvBuilderPage extends StatefulWidget {
   const CvBuilderPage({super.key});
@@ -37,22 +46,53 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
     super.initState();
   }
 
-  Future<void> exportCV(BuildContext context) async {
-    final image = await screenshotController.capture(
-      delay: const Duration(milliseconds: 100),
+  Future<void> exportCV(
+    BuildContext parentcontext,
+    String mode,
+    CvBuilderResponseModels data,
+  ) async {
+    LoadingDialog.show(message: 'Loading ...');
+    final result = await CvPdfGenerator().generate(
+      data,
+      parentcontext,
     );
-
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-
-    if (image != null) {
-      final result = await ImageGallerySaver.saveImage(image);
-      if (result['isSuccess']) {
-        LoadingDialog.showSuccess(
-            message: 'CV exported successfuly and saved on your galery');
+    LoadingDialog.dismiss();
+    if (mode == 'preview') {
+      if (result != null) {
+        LoadingDialog.dismiss();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (parentcontext) {
+              return CVBuilderPdfPreview(document: result);
+            },
+          ),
+        );
       }
+    } else if (mode == 'export') {
+      NotificationService().showNotification(
+        id: 2,
+        title: 'CV Builder',
+        body: 'Exporting your CV',
+      );
+
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+      final basePath = await FileDownloaderHelper.getDownloadPath();
+      String savePath = path.join(
+        basePath ?? '',
+        '${DateTime.now().millisecondsSinceEpoch}.pdf',
+      );
+      final file = File(savePath);
+      final savedFile = await file.writeAsBytes(result!);
+      NotificationService().showNotification(
+        id: 2,
+        title: 'CV Builder',
+        body: 'Exporting your CV Complete',
+        payLoad: savedFile.path,
+      );
     }
   }
 
@@ -72,44 +112,48 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: defaultPadding,
-            child: BlocBuilder<ProfileCandidateBloc, ProfileCandidateState>(
-              builder: (context, state) {
-                return state.cvBuilder.fold(
-                  () => const SizedBox(),
-                  (a) {
-                    return a.fold(
-                      (l) => const SizedBox(),
-                      (data) {
-                        return Screenshot(
-                          controller: screenshotController,
-                          child: Container(
-                            color: AppColors.bg300,
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: defaultPadding,
-                                  decoration: BoxDecoration(
-                                    borderRadius: defaultRadius,
-                                    boxShadow: AppColors.defaultShadow,
-                                    color: AppColors.bg200,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          ClipOval(
+          child: BlocBuilder<ProfileCandidateBloc, ProfileCandidateState>(
+            builder: (context, state) {
+              return state.cvBuilder.fold(
+                () => const SizedBox(),
+                (a) {
+                  return a.fold(
+                    (l) => const SizedBox(),
+                    (data) {
+                      return Screenshot(
+                        controller: screenshotController,
+                        child: Container(
+                          padding: defaultPadding,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                  color: AppColors.bg200,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: AppColors.neutral,
+                                            ),
+                                          ),
+                                          child: ClipOval(
                                             child: CustomImageNetwork(
                                               width: 90.w,
                                               fit: BoxFit.cover,
                                               imageUrl:
-                                                  data.candidate.user.avatar ??
+                                                  data.candidate.user?.avatar ??
                                                       '',
                                               customErrorWidget: Center(
                                                 child: SvgPicture.asset(
@@ -120,53 +164,75 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                               isLoaderShimmer: true,
                                             ),
                                           ),
-                                          SizedBox(width: 16.w),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SectionTitleWidget(
-                                                  title: data.candidate.user
-                                                          .fullName ??
-                                                      '',
+                                        ),
+                                        SizedBox(width: 16.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SectionTitleWidget(
+                                                title: data.candidate.user
+                                                        ?.fullName ??
+                                                    '',
+                                              ),
+                                              SocialMediaCardInfo(
+                                                icon: FaIcon(
+                                                  FontAwesomeIcons.envelope,
+                                                  color: AppColors.warning,
+                                                  size: 12.sp,
                                                 ),
-                                                IText.set(
-                                                  text: data.candidate.user
-                                                          .email ??
-                                                      '',
+                                                title: '',
+                                                value: data.candidate.user
+                                                        ?.email ??
+                                                    '-',
+                                                boldValue: false,
+                                              ),
+                                              SocialMediaCardInfo(
+                                                icon: FaIcon(
+                                                  FontAwesomeIcons.phone,
+                                                  color: AppColors.warning,
+                                                  size: 12.sp,
                                                 ),
-                                                IText.set(
-                                                  text: data.candidate.user
-                                                          .phone ??
-                                                      '',
-                                                )
-                                              ],
-                                            ),
+                                                title: '',
+                                                value: data.candidate.user
+                                                        ?.phone ??
+                                                    '-',
+                                                boldValue: false,
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                const SpaceWidget(),
-                                Container(
-                                  width: double.infinity,
-                                  padding: defaultPadding,
-                                  decoration: BoxDecoration(
-                                    borderRadius: defaultRadius,
-                                    boxShadow: AppColors.defaultShadow,
-                                    color: AppColors.bg200,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SectionTitleWidget(
-                                        title: 'Skill',
-                                        textColor: AppColors.primary,
+                              ),
+                              const SpaceWidget(),
+                              Container(
+                                width: double.infinity,
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                  color: AppColors.bg200,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SectionTitleWidget(
+                                      title: 'Skill',
+                                      textColor: AppColors.primary,
+                                    ),
+                                    const Divider(),
+                                    if (GlobalHelper.isEmptyList(
+                                        data.candidateSkill))
+                                      IText.set(
+                                        text:
+                                            'No data show here, please add your skill',
                                       ),
-                                      const Divider(),
+                                    if (!GlobalHelper.isEmptyList(
+                                        data.candidateSkill))
                                       ListView.builder(
                                         physics:
                                             const NeverScrollableScrollPhysics(),
@@ -197,33 +263,40 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                           );
                                         },
                                       )
-                                    ],
-                                  ),
+                                  ],
                                 ),
-                                const SpaceWidget(),
-                                Container(
-                                  width: double.infinity,
-                                  padding: defaultPadding,
-                                  decoration: BoxDecoration(
-                                    borderRadius: defaultRadius,
-                                    boxShadow: AppColors.defaultShadow,
-                                    color: AppColors.bg200,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SectionTitleWidget(
-                                        title: 'Education',
-                                        textColor: AppColors.primary,
+                              ),
+                              const SpaceWidget(),
+                              Container(
+                                width: double.infinity,
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                  color: AppColors.bg200,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SectionTitleWidget(
+                                      title: 'Education',
+                                      textColor: AppColors.primary,
+                                    ),
+                                    const Divider(),
+                                    if (GlobalHelper.isEmptyList(
+                                        data.candidate.educations))
+                                      IText.set(
+                                        text:
+                                            'No data show here, please add your educations',
                                       ),
-                                      const Divider(),
+                                    if (!GlobalHelper.isEmptyList(
+                                        data.candidate.educations))
                                       ListView.builder(
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
                                         itemCount:
-                                            data.candidate.educations.length,
+                                            data.candidate.educations?.length,
                                         itemBuilder: (context, index) {
                                           return Padding(
                                             padding:
@@ -231,20 +304,90 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                             child: SizedBox(
                                               width: double.infinity,
                                               child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Icon(
-                                                    Icons.circle,
-                                                    color: AppColors.warning,
-                                                    size: 12.sp,
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                      top: 4.h,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.circle,
+                                                      color: AppColors.warning,
+                                                      size: 12.sp,
+                                                    ),
                                                   ),
                                                   SizedBox(width: 8.w),
-                                                  IText.set(
-                                                    text: data
-                                                            .candidate
-                                                            .educations[index]
-                                                            .degreeLevel
-                                                            ?.name ??
-                                                        '',
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          IText.set(
+                                                            text:
+                                                                'Institute : ',
+                                                          ),
+                                                          IText.set(
+                                                            text: data
+                                                                    .candidate
+                                                                    .educations?[
+                                                                        index]
+                                                                    .institute ??
+                                                                '',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          IText.set(
+                                                            text:
+                                                                'Degree Level : ',
+                                                          ),
+                                                          IText.set(
+                                                            text: data
+                                                                    .candidate
+                                                                    .educations?[
+                                                                        index]
+                                                                    .degreeLevel
+                                                                    ?.name ??
+                                                                '',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          IText.set(
+                                                            text: 'Result : ',
+                                                          ),
+                                                          IText.set(
+                                                            text: data
+                                                                    .candidate
+                                                                    .educations?[
+                                                                        index]
+                                                                    .result ??
+                                                                '',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          IText.set(
+                                                            text: 'Year : ',
+                                                          ),
+                                                          IText.set(
+                                                            text: (data
+                                                                        .candidate
+                                                                        .educations?[
+                                                                            index]
+                                                                        .year ??
+                                                                    0)
+                                                                .toString(),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   )
                                                 ],
                                               ),
@@ -252,33 +395,40 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                           );
                                         },
                                       )
-                                    ],
-                                  ),
+                                  ],
                                 ),
-                                const SpaceWidget(),
-                                Container(
-                                  width: double.infinity,
-                                  padding: defaultPadding,
-                                  decoration: BoxDecoration(
-                                    borderRadius: defaultRadius,
-                                    boxShadow: AppColors.defaultShadow,
-                                    color: AppColors.bg200,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SectionTitleWidget(
-                                        title: 'Experiences',
-                                        textColor: AppColors.primary,
+                              ),
+                              const SpaceWidget(),
+                              Container(
+                                width: double.infinity,
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                  color: AppColors.bg200,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SectionTitleWidget(
+                                      title: 'Experiences',
+                                      textColor: AppColors.primary,
+                                    ),
+                                    const Divider(),
+                                    if (GlobalHelper.isEmptyList(
+                                        data.candidate.experiences))
+                                      IText.set(
+                                        text:
+                                            'No data show here, please add your experiences',
                                       ),
-                                      const Divider(),
+                                    if (!GlobalHelper.isEmptyList(
+                                        data.candidate.experiences))
                                       ListView.builder(
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
                                         itemCount:
-                                            data.candidate.experiences.length,
+                                            data.candidate.experiences!.length,
                                         itemBuilder: (context, index) {
                                           return Padding(
                                             padding:
@@ -305,7 +455,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                                       IText.set(
                                                         text: data
                                                             .candidate
-                                                            .experiences[index]
+                                                            .experiences![index]
                                                             .experienceTitle,
                                                         styleName:
                                                             TextStyleName.bold,
@@ -313,7 +463,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                                       IText.set(
                                                         text: data
                                                             .candidate
-                                                            .experiences[index]
+                                                            .experiences![index]
                                                             .company,
                                                       ),
                                                       Row(
@@ -323,7 +473,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                                                 .formatdMy(
                                                               data
                                                                   .candidate
-                                                                  .experiences[
+                                                                  .experiences![
                                                                       index]
                                                                   .startDate,
                                                             ),
@@ -334,7 +484,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                                           IText.set(
                                                             text: data
                                                                     .candidate
-                                                                    .experiences[
+                                                                    .experiences![
                                                                         index]
                                                                     .currentlyWorking
                                                                 ? 'Present'
@@ -342,7 +492,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                                                     .formatdMy(
                                                                     data
                                                                         .candidate
-                                                                        .experiences[
+                                                                        .experiences![
                                                                             index]
                                                                         .endDate,
                                                                   ),
@@ -357,39 +507,226 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                           );
                                         },
                                       )
-                                    ],
-                                  ),
-                                )
-                              ],
+                                  ],
+                                ),
+                              ),
+                              const SpaceWidget(),
+                              Container(
+                                width: double.infinity,
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                  color: AppColors.bg200,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SectionTitleWidget(
+                                      title: 'Social Media',
+                                      textColor: AppColors.primary,
+                                    ),
+                                    const Divider(),
+                                    SocialMediaCardInfo(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.facebook,
+                                        color: AppColors.warning,
+                                        size: 28.sp,
+                                      ),
+                                      title: 'Facebook',
+                                      value: data.candidate.user?.facebookUrl ??
+                                          '-',
+                                    ),
+                                    const SpaceWidget(),
+                                    SocialMediaCardInfo(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.linkedin,
+                                        color: AppColors.warning,
+                                        size: 28.sp,
+                                      ),
+                                      title: 'Linkedin',
+                                      value: data.candidate.user?.linkedinUrl ??
+                                          '-',
+                                    ),
+                                    const SpaceWidget(),
+                                    SocialMediaCardInfo(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.xTwitter,
+                                        color: AppColors.warning,
+                                        size: 28.sp,
+                                      ),
+                                      title: 'Twitter',
+                                      value: data.candidate.user?.twitterUrl ??
+                                          '-',
+                                    ),
+                                    const SpaceWidget(),
+                                    SocialMediaCardInfo(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.googlePlus,
+                                        color: AppColors.warning,
+                                        size: 28.sp,
+                                      ),
+                                      title: 'Google+',
+                                      value:
+                                          data.candidate.user?.googlePlusUrl ??
+                                              '-',
+                                    ),
+                                    const SpaceWidget(),
+                                    SocialMediaCardInfo(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.pinterest,
+                                        color: AppColors.warning,
+                                        size: 28.sp,
+                                      ),
+                                      title: 'Pinterest',
+                                      value:
+                                          data.candidate.user?.pinterestUrl ??
+                                              '-',
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+      bottomNavigationBar:
+          BlocBuilder<ProfileCandidateBloc, ProfileCandidateState>(
+        builder: (context, state) {
+          return state.cvBuilder.fold(() => const SizedBox(), (a) {
+            return a.fold(
+              (l) => const SizedBox(),
+              (data) {
+                return Container(
+                  padding: defaultPadding,
+                  decoration: BoxDecoration(
+                    color: AppColors.bg200,
+                    boxShadow: AppColors.defaultShadow,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondary,
+                            ),
+                            onPressed: () async {
+                              await exportCV(
+                                context,
+                                'preview',
+                                data,
+                              );
+                            },
+                            child: IText.set(
+                              text: 'PREVIEW',
+                              styleName: TextStyleName.semiBold,
+                              color: AppColors.textPrimary100,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: SizedBox(
+                          height: 50.h,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await exportCV(
+                                context,
+                                'export',
+                                data,
+                              );
+                            },
+                            child: const Text('EXPORT'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
-            ),
-          ),
-        ),
+            );
+          });
+        },
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.bg200,
-          boxShadow: AppColors.defaultShadow,
-        ),
-        child: Container(
+    );
+  }
+}
+
+class SocialMediaCardInfo extends StatelessWidget {
+  const SocialMediaCardInfo({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.value,
+    this.onTap,
+    this.boldValue = true,
+  });
+
+  final FaIcon icon;
+  final String title;
+  final String value;
+  final VoidCallback? onTap;
+  final bool? boldValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
           width: double.infinity,
-          height: 50.h,
-          margin: defaultPadding,
-          child: ElevatedButton(
-            onPressed: () async {
-              await exportCV(context);
-            },
-            child: const Text('EXPORT CV'),
+          child: Row(
+            children: [
+              icon,
+              SizedBox(width: 8.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (title != '')
+                    IText.set(
+                      text: title,
+                      styleName: TextStyleName.regular,
+                      typeName: TextTypeName.headline3,
+                      color: AppColors.textPrimary100,
+                    ),
+                  ZoomTapAnimation(
+                    onTap: onTap,
+                    child: Row(
+                      children: [
+                        IText.set(
+                          text: value,
+                          styleName: boldValue!
+                              ? TextStyleName.bold
+                              : TextStyleName.regular,
+                          typeName: TextTypeName.headline3,
+                          color: AppColors.textPrimary,
+                        ),
+                        if (onTap != null) ...[
+                          SizedBox(width: 8.w),
+                          FaIcon(
+                            FontAwesomeIcons.externalLink,
+                            size: 16.sp,
+                          )
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-      ),
+        )
+      ],
     );
   }
 }

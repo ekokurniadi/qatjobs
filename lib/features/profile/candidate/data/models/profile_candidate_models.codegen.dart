@@ -1,4 +1,5 @@
 import "package:freezed_annotation/freezed_annotation.dart";
+import "package:qatjobs/features/functional_area/data/models/functional_area_model.codegen.dart";
 import "package:qatjobs/features/jobs_skill/data/models/jobs_skill_model.codegen.dart";
 import "package:qatjobs/features/profile/candidate/domain/entities/profile_candidate_entity.codegen.dart";
 import "package:qatjobs/features/users/data/models/users_model.codegen.dart";
@@ -30,6 +31,7 @@ class ProfileCandidateModels with _$ProfileCandidateModels {
     dynamic jobAlert,
     String? candidateUrl,
     UserModel? user,
+    FunctionalAreaModel? functionalArea,
     @Default([]) List<JobsSkillModel> candidateSkill,
   }) = _ProfileCandidateModels;
 

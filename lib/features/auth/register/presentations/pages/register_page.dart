@@ -1,11 +1,16 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:qatjobs/core/constant/static_content.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
+import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
+import 'package:qatjobs/core/widget/section_title_widget.dart';
+import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/register_usecase.dart';
 import 'package:qatjobs/injector.dart';
@@ -266,12 +271,51 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(width: 16.w),
                           Expanded(
                             child: SizedBox(
-                              child: IText.set(
-                                text:
-                                    'By signing up you agree to our Terms And Conditions & Privacy Policy',
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary100,
+                              child: Wrap(
+                                children: [
+                                  IText.set(
+                                    text: 'By signing up you agree to our ',
+                                    styleName: TextStyleName.regular,
+                                    typeName: TextTypeName.caption1,
+                                    color: AppColors.textPrimary100,
+                                  ),
+                                  InkWell(
+                                    onTap: () async {
+                                      await dialogStatic(
+                                        context,
+                                        StaticContent.termAndCondition,
+                                        title: 'Terms And Condition',
+                                      );
+                                    },
+                                    child: IText.set(
+                                      text: 'Terms And Conditions ',
+                                      styleName: TextStyleName.bold,
+                                      typeName: TextTypeName.caption1,
+                                      color: AppColors.danger100,
+                                    ),
+                                  ),
+                                  IText.set(
+                                    text: '&',
+                                    styleName: TextStyleName.regular,
+                                    typeName: TextTypeName.caption1,
+                                    color: AppColors.textPrimary100,
+                                  ),
+                                  InkWell(
+                                    onTap: () async {
+                                      await dialogStatic(
+                                        context,
+                                        StaticContent.privacyPolicy,
+                                        title: 'Privacy Policy',
+                                      );
+                                    },
+                                    child: IText.set(
+                                      text: ' Privacy Policy',
+                                      styleName: TextStyleName.bold,
+                                      typeName: TextTypeName.caption1,
+                                      color: AppColors.danger100,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -374,6 +418,47 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<dynamic> dialogStatic(
+    BuildContext context,
+    String content, {
+    required String title,
+  }) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            padding: defaultPadding,
+            width: double.infinity,
+            color: AppColors.bg200,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SectionTitleWidget(
+                    title: title,
+                  ),
+                  const SpaceWidget(),
+                  Html(
+                    data: content,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Yes, i understand',
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

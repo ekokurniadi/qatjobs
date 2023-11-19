@@ -17,7 +17,11 @@ import 'package:qatjobs/features/job_stages/presentations/cubit/job_stages_cubit
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class JobStagesListPage extends StatefulWidget {
-  const JobStagesListPage({super.key});
+  const JobStagesListPage({
+    super.key,
+    this.isAsOption = false,
+  });
+  final bool isAsOption;
 
   @override
   State<JobStagesListPage> createState() => _JobStagesListPageState();
@@ -34,7 +38,7 @@ class _JobStagesListPageState extends State<JobStagesListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg300,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Job Stages',
         showLeading: true,
       ),
@@ -133,91 +137,101 @@ class _JobStagesListPageState extends State<JobStagesListPage> {
                           shrinkWrap: true,
                           itemCount: state.stages.length,
                           itemBuilder: (context, index) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 16.w),
-                              padding: defaultPadding,
-                              decoration: BoxDecoration(
-                                color: AppColors.bg200,
-                                borderRadius: defaultRadius,
-                                boxShadow: AppColors.defaultShadow,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                            return InkWell(
+                              onTap: widget.isAsOption
+                                  ? () {
+                                      Navigator.pop(
+                                          context, state.stages[index].id);
+                                    }
+                                  : null,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                                padding: defaultPadding,
+                                decoration: BoxDecoration(
+                                  color: AppColors.bg200,
+                                  borderRadius: defaultRadius,
+                                  boxShadow: AppColors.defaultShadow,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          IText.set(
+                                            text: state.stages[index].name,
+                                            styleName: TextStyleName.semiBold,
+                                            color: AppColors.primary,
+                                          ),
+                                          IText.set(
+                                            text: HtmlParseHelper
+                                                .stripHtmlIfNeeded(
+                                              state.stages[index].description,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
                                       children: [
-                                        IText.set(
-                                          text: state.stages[index].name,
-                                          styleName: TextStyleName.semiBold,
-                                          color: AppColors.primary,
+                                        IconButton(
+                                          onPressed: () {
+                                            AutoRouter.of(context).push(
+                                              FormJobStagesRoute(
+                                                isEdit: true,
+                                                jobStages: state.stages[index],
+                                              ),
+                                            );
+                                          },
+                                          icon: SvgPicture.asset(
+                                            AssetsConstant.svgAssetsEdit,
+                                            color: AppColors.warning,
+                                          ),
                                         ),
-                                        IText.set(
-                                          text:
-                                              HtmlParseHelper.stripHtmlIfNeeded(
-                                            state.stages[index].description,
+                                        IconButton(
+                                          onPressed: () async {
+                                            await showModalBottomSheet(
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(32),
+                                                  topLeft: Radius.circular(32),
+                                                ),
+                                              ),
+                                              context: context,
+                                              builder: (context) {
+                                                return ConfirmDialogBottomSheet(
+                                                  title: 'Remove Job Stage ?',
+                                                  caption:
+                                                      'Are you sure you want to delete ${state.stages[index].name}?',
+                                                  onTapCancel: () =>
+                                                      Navigator.pop(context),
+                                                  onTapContinue: () {
+                                                    Navigator.pop(context);
+                                                    context
+                                                        .read<JobStagesCubit>()
+                                                        .delete(
+                                                          state
+                                                              .stages[index].id,
+                                                        );
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          icon: SvgPicture.asset(
+                                            AssetsConstant.svgAssetsDelete,
+                                            color: AppColors.danger100,
                                           ),
                                         )
                                       ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          AutoRouter.of(context).push(
-                                            FormJobStagesRoute(
-                                              isEdit: true,
-                                              jobStages: state.stages[index],
-                                            ),
-                                          );
-                                        },
-                                        icon: SvgPicture.asset(
-                                          AssetsConstant.svgAssetsEdit,
-                                          color: AppColors.warning,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () async {
-                                          await showModalBottomSheet(
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(32),
-                                                topLeft: Radius.circular(32),
-                                              ),
-                                            ),
-                                            context: context,
-                                            builder: (context) {
-                                              return ConfirmDialogBottomSheet(
-                                                title: 'Remove Job Stage ?',
-                                                caption:
-                                                    'Are you sure you want to delete ${state.stages[index].name}?',
-                                                onTapCancel: () =>
-                                                    Navigator.pop(context),
-                                                onTapContinue: () {
-                                                  Navigator.pop(context);
-                                                  context
-                                                      .read<JobStagesCubit>()
-                                                      .delete(
-                                                        state.stages[index].id,
-                                                      );
-                                                },
-                                              );
-                                            },
-                                          );
-                                        },
-                                        icon: SvgPicture.asset(
-                                          AssetsConstant.svgAssetsDelete,
-                                          color: AppColors.danger100,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           },

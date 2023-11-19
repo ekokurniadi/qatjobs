@@ -8,6 +8,7 @@ import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/constant/global_constant.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -47,71 +48,72 @@ class _EmployerJobPageState extends State<EmployerJobPage> {
         title: 'Jobs',
         showLeading: true,
       ),
-      body: PullToRefreshWidget(
-        onRefresh: () async {
-          context.read<EmployerCubit>().getJobs(
-                JobRequestParams(page: 1),
-                isReset: true,
-              );
+      body: BlocListener<EmployerCubit, EmployerState>(
+        listener: (context, state) {
+          if (state.status == EmployerStatus.updateJobStatus) {
+            LoadingDialog.dismiss();
+            LoadingDialog.showSuccess(message: state.message);
+            context.read<EmployerCubit>().getJobs(
+                  JobRequestParams(),
+                  isReset: true,
+                );
+          } else if (state.status == EmployerStatus.loading) {
+            LoadingDialog.show(message: 'Loading ...');
+          } else if (state.status == EmployerStatus.failure) {
+            LoadingDialog.dismiss();
+            LoadingDialog.showError(message: state.message);
+          } else {
+            LoadingDialog.dismiss();
+          }
         },
-        child: BlocListener<EmployerCubit, EmployerState>(
-          listener: (context, state) {
-            if (state.status == EmployerStatus.updateJobStatus) {
-              LoadingDialog.dismiss();
-              LoadingDialog.showSuccess(message: state.message);
-              context.read<EmployerCubit>().getJobs(
-                    JobRequestParams(),
-                    isReset: true,
-                  );
-            } else if (state.status == EmployerStatus.loading) {
-              LoadingDialog.show(message: 'Loading ...');
-            } else if (state.status == EmployerStatus.failure) {
-              LoadingDialog.dismiss();
-              LoadingDialog.showError(message: state.message);
-            } else {
-              LoadingDialog.dismiss();
-            }
-          },
-          child: Padding(
-            padding: defaultPadding,
-            child: Column(
-              children: [
-                CustomTextField(
-                  placeholder: 'Search Job',
-                  onChange: (val) {
-                    if (val.isEmpty) {
-                      context.read<EmployerCubit>().getJobs(
-                            JobRequestParams(page: 1),
-                            isReset: true,
-                          );
-                    } else {
-                      context.read<EmployerCubit>().searchJobs(
-                            JobRequestParams(
-                              q: val,
-                              perPage: null,
-                              page: 1,
-                            ),
-                            isReset: true,
-                          );
-                    }
-                  },
-                ),
-                const SpaceWidget(),
-                Flexible(
-                  child: BlocBuilder<EmployerCubit, EmployerState>(
-                    builder: (context, state) {
-                      return state.jobs.isNotEmpty
-                          ? LazyLoadScrollView(
-                              onEndOfPage: () {
-                                if (!state.hasReachMax) {
-                                  context.read<EmployerCubit>().getJobs(
-                                        JobRequestParams(
-                                          page: state.currentPage + 1,
-                                        ),
-                                      );
-                                }
+        child: Padding(
+          padding: defaultPadding,
+          child: Column(
+            children: [
+              CustomTextField(
+                placeholder: 'Search Job',
+                onChange: (val) {
+                  if (val.isEmpty) {
+                    context.read<EmployerCubit>().getJobs(
+                          JobRequestParams(page: 1),
+                          isReset: true,
+                        );
+                  } else {
+                    context.read<EmployerCubit>().searchJobs(
+                          JobRequestParams(
+                            q: val,
+                            perPage: null,
+                            page: 1,
+                          ),
+                          isReset: true,
+                        );
+                  }
+                },
+              ),
+              const SpaceWidget(),
+              Flexible(
+                child: BlocBuilder<EmployerCubit, EmployerState>(
+                  builder: (context, state) {
+                    return state.jobs.isNotEmpty
+                        ? LazyLoadScrollView(
+                            onEndOfPage: () {
+                              if (!state.hasReachMax) {
+                                context.read<EmployerCubit>().getJobs(
+                                      JobRequestParams(
+                                        page: state.currentPage + 1,
+                                      ),
+                                    );
+                              }
+                            },
+                            child: PullToRefreshWidget(
+                              onRefresh: () async {
+                                context.read<EmployerCubit>().getJobs(
+                                      JobRequestParams(page: 1),
+                                      isReset: true,
+                                    );
                               },
                               child: ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemCount: state.jobs.length,
                                 itemBuilder: (context, index) {
@@ -180,21 +182,26 @@ class _EmployerJobPageState extends State<EmployerJobPage> {
                                                     ] else if (data.status ==
                                                         GlobalConstant
                                                             .jobStatusLive) ...[
-                                                      PopupMenuItem(
-                                                        value: 'applications',
-                                                        child: IText.set(
-                                                          text: 'Applications',
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          styleName:
-                                                              TextStyleName
-                                                                  .semiBold,
-                                                          typeName: TextTypeName
-                                                              .headline3,
-                                                          color: AppColors
-                                                              .textPrimary100,
+                                                      if (!GlobalHelper
+                                                          .isEmptyList(
+                                                              data.appliedJobs))
+                                                        PopupMenuItem(
+                                                          value: 'applications',
+                                                          child: IText.set(
+                                                            text:
+                                                                'Applications',
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                            styleName:
+                                                                TextStyleName
+                                                                    .semiBold,
+                                                            typeName:
+                                                                TextTypeName
+                                                                    .headline3,
+                                                            color: AppColors
+                                                                .textPrimary100,
+                                                          ),
                                                         ),
-                                                      ),
                                                       PopupMenuItem(
                                                         value: 'edit',
                                                         child: IText.set(
@@ -530,35 +537,35 @@ class _EmployerJobPageState extends State<EmployerJobPage> {
                                   );
                                 },
                               ),
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(AssetsConstant.illusJobEmpty),
-                                const SpaceWidget(),
-                                IText.set(
-                                  text: 'Job is empty',
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.medium,
-                                  typeName: TextTypeName.large,
-                                  color: AppColors.textPrimary,
-                                  lineHeight: 1.2.h,
-                                ),
-                                const SpaceWidget(),
-                                IText.set(
-                                  text: 'Please check your keyword or filters',
-                                  textAlign: TextAlign.left,
-                                  styleName: TextStyleName.regular,
-                                  typeName: TextTypeName.caption1,
-                                  color: AppColors.textPrimary100,
-                                )
-                              ],
-                            );
-                    },
-                  ),
-                )
-              ],
-            ),
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(AssetsConstant.illusJobEmpty),
+                              const SpaceWidget(),
+                              IText.set(
+                                text: 'Job is empty',
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.medium,
+                                typeName: TextTypeName.large,
+                                color: AppColors.textPrimary,
+                                lineHeight: 1.2.h,
+                              ),
+                              const SpaceWidget(),
+                              IText.set(
+                                text: 'Please check your keyword or filters',
+                                textAlign: TextAlign.left,
+                                styleName: TextStyleName.regular,
+                                typeName: TextTypeName.caption1,
+                                color: AppColors.textPrimary100,
+                              )
+                            ],
+                          );
+                  },
+                ),
+              )
+            ],
           ),
         ),
       ),

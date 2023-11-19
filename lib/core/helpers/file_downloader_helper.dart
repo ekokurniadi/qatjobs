@@ -19,7 +19,7 @@ class FileDownloaderHelper {
         await Permission.storage.request();
       }
 
-      final basePath = await _getDownloadPath();
+      final basePath = await getDownloadPath();
       String savePath = join(basePath ?? '', name);
       File file = File(savePath);
 
@@ -49,7 +49,7 @@ class FileDownloaderHelper {
     }
   }
 
-  static Future<String?> _getDownloadPath() async {
+  static Future<String?> getDownloadPath() async {
     Directory? directory;
     try {
       if (Platform.isIOS) {

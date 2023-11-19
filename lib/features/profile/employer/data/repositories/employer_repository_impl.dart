@@ -60,4 +60,9 @@ class EmployerRepositoryImpl implements EmployerRepository {
       int id) async {
     return await _dataSource.getJobApplicant(id);
   }
+
+  @override
+  Future<Either<Failures, bool>> updateJob(JobModel params) async {
+    return await _dataSource.updateJob(params);
+  }
 }

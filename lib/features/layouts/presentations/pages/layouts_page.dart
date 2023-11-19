@@ -14,6 +14,7 @@ import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job/presentations/pages/jobs_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
+import 'package:qatjobs/features/notification/presentations/cubit/notification_cubit.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/employer_page.dart';
@@ -32,6 +33,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
   @override
   void initState() {
     context.read<UserBloc>().add(const UserEvent.getLogedinUser());
+    context.read<NotificationCubit>().getNotif();
     super.initState();
   }
 
@@ -82,11 +84,14 @@ class _LayoutsPageState extends State<LayoutsPage> {
                 type: BottomNavigationBarType.fixed,
                 showSelectedLabels: true,
                 showUnselectedLabels: true,
-                selectedItemColor: AppColors.warning,
+                selectedItemColor: AppColors.primary,
                 unselectedItemColor: AppColors.neutral50,
                 selectedFontSize: 12.sp,
                 unselectedFontSize: 12.sp,
                 onTap: (index) {
+                  if (!GlobalHelper.isEmpty(userState.user)) {
+                    context.read<NotificationCubit>().getNotif();
+                  }
                   if (index > 2 && GlobalHelper.isEmpty(userState.user)) {
                     AutoRouter.of(context).push(const LoginRoute());
                   } else if (index == 2) {
@@ -108,7 +113,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
                       AssetsConstant.svgAssetsBottomNavHome,
                       width: 28.w,
                       color: state.selectedMenuIndex == 0
-                          ? AppColors.warning
+                          ? AppColors.primary
                           : AppColors.neutral50,
                     ),
                   ),
@@ -118,7 +123,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
                       AssetsConstant.svgAssetsBottomNavFeeds,
                       width: 28.w,
                       color: state.selectedMenuIndex == 1
-                          ? AppColors.warning
+                          ? AppColors.primary
                           : AppColors.neutral50,
                     ),
                   ),
@@ -128,18 +133,40 @@ class _LayoutsPageState extends State<LayoutsPage> {
                       AssetsConstant.svgAssetsJobs,
                       width: 28.w,
                       color: state.selectedMenuIndex == 2
-                          ? AppColors.warning
+                          ? AppColors.primary
                           : AppColors.neutral50,
                     ),
                   ),
                   BottomNavigationBarItem(
                     label: 'Notification',
-                    icon: SvgPicture.asset(
-                      AssetsConstant.svgAssetsBottomNavNotification,
-                      width: 28.w,
-                      color: state.selectedMenuIndex == 3
-                          ? AppColors.warning
-                          : AppColors.neutral50,
+                    icon: BlocBuilder<NotificationCubit, NotificationState>(
+                      builder: (context, nState) {
+                        return Stack(
+                          children: [
+                            if (nState.notifications.isNotEmpty &&
+                                nState.notifications.any(
+                                  (element) =>
+                                      element.userId == userState.user?.id &&
+                                      element.readAt == null,
+                                ))
+                              Positioned(
+                                left: 1,
+                                child: Icon(
+                                  Icons.circle,
+                                  color: AppColors.danger100,
+                                  size: 10.sp,
+                                ),
+                              ),
+                            SvgPicture.asset(
+                              AssetsConstant.svgAssetsBottomNavNotification,
+                              width: 28.w,
+                              color: state.selectedMenuIndex == 3
+                                  ? AppColors.primary
+                                  : AppColors.neutral50,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   BottomNavigationBarItem(
@@ -148,7 +175,7 @@ class _LayoutsPageState extends State<LayoutsPage> {
                       AssetsConstant.svgAssetsBottomNavProfile,
                       width: 28.w,
                       color: state.selectedMenuIndex == 4
-                          ? AppColors.warning
+                          ? AppColors.primary
                           : AppColors.neutral50,
                     ),
                   ),
