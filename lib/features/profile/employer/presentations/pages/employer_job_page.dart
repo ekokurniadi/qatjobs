@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,8 +38,6 @@ class _EmployerJobPageState extends State<EmployerJobPage> {
         );
     super.initState();
   }
-
-  Timer? _debounce;
 
   @override
   Widget build(BuildContext context) {
@@ -240,6 +236,15 @@ class _EmployerJobPageState extends State<EmployerJobPage> {
                                                           .push(
                                                         UpdateJobRoute(
                                                           job: data,
+                                                        ),
+                                                      );
+
+                                                      break;
+                                                    case 'applications':
+                                                      AutoRouter.of(context)
+                                                          .push(
+                                                        JobApplicationRoute(
+                                                          id: data.id ?? 0,
                                                         ),
                                                       );
 

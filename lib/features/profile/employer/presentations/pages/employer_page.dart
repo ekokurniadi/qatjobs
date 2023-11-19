@@ -142,6 +142,8 @@ class _EmployerPageState extends State<EmployerPage> {
                                       children: [
                                         ClipOval(
                                           child: CustomImageNetwork(
+                                            loaderWidget:
+                                                const CircularProgressIndicator(),
                                             width: 90.w,
                                             fit: BoxFit.cover,
                                             imageUrl: state.companyModel.user
@@ -226,7 +228,9 @@ class _EmployerPageState extends State<EmployerPage> {
                   CardMenuItem(
                     title: 'Job Stages',
                     icon: AssetsConstant.svgAssetsWorkExperience,
-                    onTap: () {},
+                    onTap: () {
+                      AutoRouter.of(context).push(const JobStagesListRoute());
+                    },
                   ),
                   CardMenuItem(
                     title: 'Followers',

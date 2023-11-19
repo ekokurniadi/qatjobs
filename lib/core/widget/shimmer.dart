@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qatjobs/core/styles/color_name_style.dart';
 
 /// Shimmer widget with simple fade animation
 class Shimmer extends StatefulWidget {
@@ -56,7 +57,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.bg300,
           borderRadius: BorderRadius.circular(10),
         ),
       ),

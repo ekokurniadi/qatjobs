@@ -8,6 +8,7 @@ import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/profile/employer/data/models/job_application_models.codegen.dart';
 import 'package:qatjobs/features/profile/employer/data/models/job_request_params.codegen.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/change_password_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_job_status_usecase.dart';
@@ -28,6 +29,7 @@ abstract class EmployerRemoteDataSource {
   Future<Either<Failures, bool>> updateJobStatus(
     UpdateJobStatusParams params,
   );
+  Future<Either<Failures, List<JobApplicationModel>>> getJobApplicant(int id);
 }
 
 @LazySingleton(as: EmployerRemoteDataSource)
@@ -247,6 +249,38 @@ class EmployerRemoteDataSourceImpl implements EmployerRemoteDataSource {
       );
       if (response.isOk) {
         return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, List<JobApplicationModel>>> getJobApplicant(
+      int id) async {
+    try {
+      final response = await _dio.post(
+        URLConstant.employerJobApplicant(id),
+      );
+      if (response.isOk) {
+        return right(List.from(
+            response.data['data'].map((e) => JobApplicationModel.fromJson(e))));
       }
       return left(
         ServerFailure(

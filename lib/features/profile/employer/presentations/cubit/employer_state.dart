@@ -8,6 +8,7 @@ enum EmployerStatus {
   updateProfileCompanySuccess,
   changePasswordSuccess,
   updateJobStatus,
+  getJobApplicant,
   failure,
   jobLoaded,
 }
@@ -23,6 +24,7 @@ class EmployerState with _$EmployerState {
     required bool hasReachMax,
     required int currentPage,
     required String query,
+    required List<JobApplicationModel> jobApplicants,
   }) = _EmployerState;
 
   factory EmployerState.initial() => EmployerState(
@@ -34,5 +36,6 @@ class EmployerState with _$EmployerState {
         hasReachMax: false,
         currentPage: 1,
         query: '',
+        jobApplicants: [],
       );
 }

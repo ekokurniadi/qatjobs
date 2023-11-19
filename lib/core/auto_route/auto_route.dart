@@ -11,6 +11,8 @@ import 'package:qatjobs/features/job/presentations/pages/job_alert_page.dart';
 import 'package:qatjobs/features/job/presentations/pages/job_detail_page.dart';
 import 'package:qatjobs/features/job/presentations/widgets/job_filter.dart';
 import 'package:qatjobs/features/job_category/presentations/pages/job_category_page.dart';
+import 'package:qatjobs/features/job_stages/presentations/pages/form_job_stages_page.dart';
+import 'package:qatjobs/features/job_stages/presentations/pages/job_stages_list_page.dart';
 import 'package:qatjobs/features/layouts/presentations/pages/layouts_page.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_add_resume_page.dart';
@@ -23,6 +25,7 @@ import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate
 import 'package:qatjobs/features/profile/candidate/presentations/pages/cv_builder_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/change_password_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/employer_job_page.dart';
+import 'package:qatjobs/features/profile/employer/presentations/pages/job_application_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/profile_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/update_job_page.dart';
 import 'package:qatjobs/features/splash_screen/presentations/pages/splash_screen_page.dart';
@@ -115,6 +118,15 @@ import 'package:qatjobs/features/welcome_screen/presentations/pages/welcome_scre
     ),
     AutoRoute(
       page: UpdateJobPage,
+    ),
+    AutoRoute(
+      page: FormJobStagesPage,
+    ),
+    AutoRoute(
+      page: JobStagesListPage,
+    ),
+    AutoRoute(
+      page: JobApplicationPage,
     ),
   ],
 )

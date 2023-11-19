@@ -1,3 +1,6 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +26,7 @@ import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_c
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +39,9 @@ Future<void> main() async {
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ),
+  );
+  await FlutterDownloader.initialize(
+    debug: true,
   );
   runApp(const MainApp());
 }

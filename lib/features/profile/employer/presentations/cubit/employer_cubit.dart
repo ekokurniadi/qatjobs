@@ -5,8 +5,10 @@ import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/profile/employer/data/models/job_application_models.codegen.dart';
 import 'package:qatjobs/features/profile/employer/data/models/job_request_params.codegen.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/change_password_usecase.dart';
+import 'package:qatjobs/features/profile/employer/domain/usecases/get_job_applicant_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/get_jobs_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/get_profile_usecase.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/update_job_status_usecase.dart';
@@ -24,6 +26,7 @@ class EmployerCubit extends Cubit<EmployerState> {
   final EmployerUpdateProfileCompany _updateProfileCompany;
   final GetJobsEmployerUserCase _getJobsEmployerUserCase;
   final UpdateJobStatus _updateJobStatus;
+  final GetJobApplicantCase _getJobApplicantCase;
   EmployerCubit(
     this._getProfileEmployerUserCase,
     this._employerUpdateProfile,
@@ -31,7 +34,29 @@ class EmployerCubit extends Cubit<EmployerState> {
     this._updateProfileCompany,
     this._getJobsEmployerUserCase,
     this._updateJobStatus,
+    this._getJobApplicantCase,
   ) : super(EmployerState.initial());
+
+  Future<void> getApplicant(int id) async {
+    emit(state.copyWith(status: EmployerStatus.loading));
+
+    final result = await _getJobApplicantCase(id);
+
+    result.fold(
+      (l) => emit(
+        state.copyWith(
+          message: l.errorMessage,
+          status: EmployerStatus.failure,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          status: EmployerStatus.getJobApplicant,
+          jobApplicants: r,
+        ),
+      ),
+    );
+  }
 
   Future<void> updateJobStatus(UpdateJobStatusParams params) async {
     emit(state.copyWith(status: EmployerStatus.loading));

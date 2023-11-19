@@ -5,6 +5,7 @@ import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/profile/employer/data/datasources/remote/employer_remote_datasource.dart';
+import 'package:qatjobs/features/profile/employer/data/models/job_application_models.codegen.dart';
 import 'package:qatjobs/features/profile/employer/data/models/job_request_params.codegen.dart';
 import 'package:qatjobs/features/profile/employer/domain/repositories/employer_repository.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/change_password_usecase.dart';
@@ -52,5 +53,11 @@ class EmployerRepositoryImpl implements EmployerRepository {
   Future<Either<Failures, bool>> updateJobStatus(
       UpdateJobStatusParams params) async {
     return await _dataSource.updateJobStatus(params);
+  }
+
+  @override
+  Future<Either<Failures, List<JobApplicationModel>>> getJobApplicant(
+      int id) async {
+    return await _dataSource.getJobApplicant(id);
   }
 }

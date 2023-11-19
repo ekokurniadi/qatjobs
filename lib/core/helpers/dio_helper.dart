@@ -39,7 +39,6 @@ class DioHelper {
   static setDioHeader(String? token) {
     dio!.options.headers = {HttpHeaders.authorizationHeader: 'Bearer $token'};
     dio!.options.headers['X-Requested-With'] = 'XMLHttpRequest';
-    dio!.options.headers['Content-Type'] = "application/x-www-form-urlencoded";
     log('token user: $token');
   }
 

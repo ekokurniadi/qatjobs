@@ -84,7 +84,8 @@ class _CandidateResumePageState extends State<CandidateResumePage> {
                       children: [
                         InkWell(
                           onTap: () {
-                            AutoRouter.of(context).push(const CandidateAddResumeRoute());
+                            AutoRouter.of(context)
+                                .push(const CandidateAddResumeRoute());
                           },
                           child: ZoomTapAnimation(
                             child: Container(
@@ -228,16 +229,11 @@ class _CandidateResumePageState extends State<CandidateResumePage> {
                                               .customProperties['title'] +
                                           '.' +
                                           ext.split('.').last;
-                                      final downloaded =
-                                          await FileDownloaderHelper
-                                              .downloadTask(
+
+                                      await FileDownloaderHelper.downloadTask(
                                         state.resumes[index].originalUrl,
                                         fileName,
                                       );
-                                      if (downloaded != null) {
-                                        EasyLoading.dismiss();
-                                        await OpenFile.open(downloaded.path);
-                                      }
                                     },
                                     child: Row(
                                       children: [

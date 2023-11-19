@@ -78,15 +78,7 @@ class CustomImageNetwork extends StatelessWidget {
       child: CachedNetworkImage(
         placeholder: noLoader
             ? null
-            : (_, __) => Center(
-                  child: loaderWidget ??
-                      (isLoaderShimmer
-                          ? Shimmer(
-                              height: height,
-                              width: width,
-                            )
-                          : const CircularProgressIndicator()),
-                ),
+            : (_, __) => const Center(child: CircularProgressIndicator()),
         memCacheHeight: memCacheHeight,
         memCacheWidth: memCacheWidth,
         imageUrl: imageUrl,

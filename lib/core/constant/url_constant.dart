@@ -58,5 +58,7 @@ abstract class URLConstant {
   static const String employerJobs = '/employer/jobs';
   static String updateJobsStatus(UpdateJobStatusParams params) =>
       '/employer/jobs/${params.jobId}/status/${params.status}';
-  static const String employerJobStages = '/employer/jobs/stages/';
+  static const String employerJobStages = '/employer/jobs/stages';
+  static String employerJobApplicant(int id) =>
+      '/employer/jobs/$id/applications';
 }

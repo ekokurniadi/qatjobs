@@ -86,9 +86,13 @@ class JobStagesRemoteDataSourceImpl implements JobStagesRemoteDataSource {
   Future<Either<Failures, bool>> updateJobStages(
       JobStagesRequestParams params) async {
     try {
+      final newParams = {};
+      newParams['jobStageId'] = params.id;
+      newParams['name'] = params.name;
+      newParams['description'] = params.description;
       final response = await _dio.put(
         '${URLConstant.employerJobStages}/${params.id}',
-        data: params.toJson(),
+        data: newParams,
       );
       if (response.isOk) {
         return right(true);
