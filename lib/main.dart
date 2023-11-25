@@ -41,9 +41,7 @@ Future<void> main() async {
       statusBarColor: Colors.transparent,
     ),
   );
-  await FlutterDownloader.initialize(
-    debug: true,
-  );
+
   runApp(const MainApp());
 }
 

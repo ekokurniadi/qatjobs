@@ -17,6 +17,7 @@ import 'package:qatjobs/core/widget/card_menu_item.dart';
 import 'package:qatjobs/core/widget/confirm_dialog_bottom_sheet.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_cached_image_network.dart';
+import 'package:qatjobs/core/widget/dialog_logout.dart';
 import 'package:qatjobs/core/widget/image_picker_source_dialog.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/core/widget/pull_to_refresh_widget.dart';
@@ -167,6 +168,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                                         ClipOval(
                                           child: CustomImageNetwork(
                                             width: 90.w,
+                                            height: 90.w,
                                             fit: BoxFit.cover,
                                             imageUrl: userState.generalProfile
                                                     .user?.avatar ??
@@ -306,26 +308,12 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                     title: 'Logout',
                     icon: AssetsConstant.svgAssetsLogout,
                     onTap: () async {
-                      final result = await showModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(32),
-                            topLeft: Radius.circular(32),
-                          ),
-                        ),
-                        context: context,
-                        builder: (context) {
-                          return ConfirmDialogBottomSheet(
-                            title: 'Logout',
-                            caption:
-                                'Are you sure to logout from your account?',
-                            onTapCancel: () => Navigator.pop(context),
-                            onTapContinue: () async {
-                              Navigator.pop(context, true);
-                            },
-                          );
-                        },
+                      final result = await DialogLogout.show(
+                        context,
+                        onOk: () => Navigator.pop(context, true),
+                        onCancel: () => Navigator.pop(context),
                       );
+
                       if (result == true) {
                         await getIt<SharedPreferences>().remove(
                           AppConstant.prefKeyUserLogin,

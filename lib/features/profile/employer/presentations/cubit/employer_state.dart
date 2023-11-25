@@ -12,6 +12,7 @@ enum EmployerStatus {
   getJobApplicant,
   failure,
   jobLoaded,
+  getDetailCandidate,
 }
 
 @freezed
@@ -26,17 +27,18 @@ class EmployerState with _$EmployerState {
     required int currentPage,
     required String query,
     required List<JobApplicationModel> jobApplicants,
+    required CandidateDetail candidateDetail,
   }) = _EmployerState;
 
   factory EmployerState.initial() => EmployerState(
-        status: EmployerStatus.initial,
-        companyModel: CompanyModel(),
-        message: '',
-        jobs: [],
-        filteredJob: [],
-        hasReachMax: false,
-        currentPage: 1,
-        query: '',
-        jobApplicants: [],
-      );
+      status: EmployerStatus.initial,
+      companyModel: CompanyModel(),
+      message: '',
+      jobs: [],
+      filteredJob: [],
+      hasReachMax: false,
+      currentPage: 1,
+      query: '',
+      jobApplicants: [],
+      candidateDetail: CandidateDetail());
 }

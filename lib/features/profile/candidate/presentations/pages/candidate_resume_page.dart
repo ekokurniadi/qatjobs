@@ -9,6 +9,7 @@ import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/file_downloader_helper.dart';
+import 'package:qatjobs/core/helpers/notification_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
@@ -230,10 +231,21 @@ class _CandidateResumePageState extends State<CandidateResumePage> {
                                           '.' +
                                           ext.split('.').last;
 
-                                      await FileDownloaderHelper.downloadTask(
+                                      final result = await FileDownloaderHelper
+                                          .downloadTask(
                                         state.resumes[index].originalUrl,
                                         fileName,
                                       );
+
+                                      if (result != null) {
+                                        await NotificationService()
+                                            .showNotification(
+                                          id: 1,
+                                          title: 'Download Complete',
+                                          body: 'Show Files on Directory',
+                                          payLoad: result.path,
+                                        );
+                                      }
                                     },
                                     child: Row(
                                       children: [

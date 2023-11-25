@@ -41,13 +41,34 @@ class NotificationCubit extends Cubit<NotificationState> {
   Future<void> readAll() async {
     emit(state.copyWith(status: NotifStatus.loading));
     try {
-      final response =
-          await DioHelper.dio!.post('/employer/notifications/read-all');
+      final response = await DioHelper.dio!.post('/notifications/read-all');
       if (response.isOk) {
         emit(
           state.copyWith(
             status: NotifStatus.readAll,
             message: 'Read All Message',
+          ),
+        );
+      }
+    } on DioError catch (e) {
+      emit(
+        state.copyWith(
+          status: NotifStatus.failure,
+          message: DioHelper.formatException(e),
+        ),
+      );
+    }
+  }
+
+  Future<void> read(int id) async {
+    emit(state.copyWith(status: NotifStatus.loading));
+    try {
+      final response = await DioHelper.dio!.post('/notifications/$id/read');
+      if (response.isOk) {
+        emit(
+          state.copyWith(
+            status: NotifStatus.read,
+            message: 'Read Message Success',
           ),
         );
       }

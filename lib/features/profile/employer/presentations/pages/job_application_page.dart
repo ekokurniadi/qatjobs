@@ -1,7 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/global_constant.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
@@ -18,6 +21,7 @@ import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/job_stages/presentations/pages/job_stages_list_page.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
+import 'package:qatjobs/features/profile/employer/presentations/pages/slot_page.dart';
 
 class JobApplicationPage extends StatefulWidget {
   const JobApplicationPage({
@@ -36,6 +40,8 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     context.read<EmployerCubit>().getApplicant(widget.id);
     super.initState();
   }
+
+  List<PopupMenuItem> button = [];
 
   Future<void> updateStatus({
     required int applicationsId,
@@ -173,72 +179,201 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                               ),
                               PopupMenuButton(
                                 itemBuilder: (context) {
-                                  return [
-                                    PopupMenuItem(
-                                      value: 'view_candidate',
-                                      child: IText.set(
-                                        text: 'Candidate Profile',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                  if (![
+                                    GlobalConstant.appliedHired,
+                                    GlobalConstant.appliedDeclined,
+                                    GlobalConstant.appliedOnGoing
+                                  ].contains(
+                                      state.jobApplicants[index].status)) {
+                                    button = [
+                                      PopupMenuItem(
+                                        value: 'view_candidate',
+                                        child: IText.set(
+                                          text: 'Candidate Profile',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'shortlisted',
-                                      child: IText.set(
-                                        text: 'Shortlisted',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                      PopupMenuItem(
+                                        value: 'shortlisted',
+                                        child: IText.set(
+                                          text: 'Shortlisted',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'job-stages',
-                                      child: IText.set(
-                                        text: 'Job Stages',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                      PopupMenuItem(
+                                        value: 'rejected',
+                                        child: IText.set(
+                                          text: 'Rejected',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'selected',
-                                      child: IText.set(
-                                        text: 'Selected',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: IText.set(
+                                          text: 'Delete',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'rejected',
-                                      child: IText.set(
-                                        text: 'Rejected',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                    ];
+                                  } else if (state
+                                          .jobApplicants[index].status ==
+                                      GlobalConstant.appliedOnGoing) {
+                                    button = [
+                                      PopupMenuItem(
+                                        value: 'view_candidate',
+                                        child: IText.set(
+                                          text: 'Candidate Profile',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'delete',
-                                      child: IText.set(
-                                        text: 'Delete',
-                                        textAlign: TextAlign.left,
-                                        styleName: TextStyleName.semiBold,
-                                        typeName: TextTypeName.headline3,
-                                        color: AppColors.textPrimary100,
+                                      PopupMenuItem(
+                                        value: 'job-stages',
+                                        child: IText.set(
+                                          text: 'Job Stages',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
                                       ),
-                                    ),
-                                  ];
+                                      if (state.jobApplicants[index].jobStage !=
+                                          null) ...[
+                                        PopupMenuItem(
+                                          value: 'slot',
+                                          child: IText.set(
+                                            text: 'Slot',
+                                            textAlign: TextAlign.left,
+                                            styleName: TextStyleName.semiBold,
+                                            typeName: TextTypeName.headline3,
+                                            color: AppColors.textPrimary100,
+                                          ),
+                                        ),
+                                      ],
+                                      PopupMenuItem(
+                                        value: 'selected',
+                                        child: IText.set(
+                                          text: 'Selected',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'rejected',
+                                        child: IText.set(
+                                          text: 'Rejected',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: IText.set(
+                                          text: 'Delete',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                    ];
+                                  } else if (state
+                                          .jobApplicants[index].status ==
+                                      GlobalConstant.appliedHired) {
+                                    button = [
+                                      PopupMenuItem(
+                                        value: 'view_candidate',
+                                        child: IText.set(
+                                          text: 'Candidate Profile',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: IText.set(
+                                          text: 'Delete',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                    ];
+                                  } else {
+                                    button = [
+                                      PopupMenuItem(
+                                        value: 'view_candidate',
+                                        child: IText.set(
+                                          text: 'Candidate Profile',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: IText.set(
+                                          text: 'Delete',
+                                          textAlign: TextAlign.left,
+                                          styleName: TextStyleName.semiBold,
+                                          typeName: TextTypeName.headline3,
+                                          color: AppColors.textPrimary100,
+                                        ),
+                                      ),
+                                    ];
+                                  }
+                                  return button;
                                 },
                                 icon: const Icon(Icons.more_vert),
                                 onSelected: (value) async {
                                   switch (value) {
+                                    case 'slot':
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return JobSlots(
+                                                jobStage: state
+                                                    .jobApplicants[index]
+                                                    .jobStage);
+                                          },
+                                        ),
+                                      );
+                                      break;
+                                    case 'view_candidate':
+                                      if (state.jobApplicants[index].candidate
+                                              .user !=
+                                          null) {
+                                        AutoRouter.of(context).push(
+                                          CandidateDetailRoute(
+                                            userModel: state
+                                                .jobApplicants[index].candidate,
+                                          ),
+                                        );
+                                      }
+                                      break;
                                     case 'job-stages':
                                       final result = await showDialog<int>(
                                         context: context,

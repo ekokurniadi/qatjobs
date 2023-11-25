@@ -21,6 +21,7 @@ class NotificationService {
     var initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
+      macOS: initializationSettingsIOS,
     );
     await notificationsPlugin.initialize(
       initializationSettings,

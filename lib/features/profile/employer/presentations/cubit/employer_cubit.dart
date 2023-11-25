@@ -1,10 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:qatjobs/core/constant/url_constant.dart';
+import 'package:qatjobs/core/extensions/dio_response_extension.dart';
+import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/usecases/usecases.dart';
 import 'package:qatjobs/features/company/data/models/company_model.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
+import 'package:qatjobs/features/profile/employer/data/models/candidate_detail_model.dart';
 import 'package:qatjobs/features/profile/employer/data/models/job_application_models.codegen.dart';
 import 'package:qatjobs/features/profile/employer/data/models/job_request_params.codegen.dart';
 import 'package:qatjobs/features/profile/employer/domain/usecases/change_password_usecase.dart';
@@ -250,5 +255,33 @@ class EmployerCubit extends Cubit<EmployerState> {
         ),
       ),
     );
+  }
+
+  Future<void> getDetailCandidate(int candidateId) async {
+    emit(state.copyWith(
+      status: EmployerStatus.loading,
+      candidateDetail: CandidateDetail(),
+    ));
+
+    try {
+      final result = await DioHelper.dio!
+          .get(URLConstant.employerJobDetailCandidate(candidateId));
+
+      if (result.isOk) {
+        emit(
+          state.copyWith(
+            status: EmployerStatus.getDetailCandidate,
+            candidateDetail: CandidateDetail.fromJson(result.data),
+          ),
+        );
+      }
+    } on DioError catch (e) {
+      emit(
+        state.copyWith(
+          status: EmployerStatus.failure,
+          message: DioHelper.formatException(e),
+        ),
+      );
+    }
   }
 }

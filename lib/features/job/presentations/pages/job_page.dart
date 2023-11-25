@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
+import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/assets_constant.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
@@ -21,6 +22,7 @@ import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job/presentations/widgets/email_to_friend_dialog.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
+import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -41,6 +43,7 @@ class _JobPageState extends State<JobPage> {
     jobsBloc.add(
       JobsEvent.getJobs(JobFilterModel(), false),
     );
+
     super.initState();
   }
 
@@ -93,20 +96,34 @@ class _JobPageState extends State<JobPage> {
               ),
             ),
             const SpaceWidget(),
-            BlocBuilder(
-              bloc: jobsBloc,
-              builder: (context, JobsState state) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                  ),
-                  child: SectionTitleWidget(
-                    title: jobsBloc.isJobFilterNotEmpty(state.jobFilter)
-                        ? 'Job List (Filtered)'
-                        : 'Job List ',
-                  ),
-                );
+            BlocListener<UserBloc, UserState>(
+              listener: (context, state) {
+                if (state.user != null) {
+                  if (state.user!.roles!.isNotEmpty) {
+                    if (state.user!.roles!.first.name.toLowerCase() ==
+                        AppConstant.roleCandidate) {
+                      context
+                          .read<JobsBloc>()
+                          .add(const JobsEvent.getAppliedJob());
+                    }
+                  }
+                }
               },
+              child: BlocBuilder(
+                bloc: jobsBloc,
+                builder: (context, JobsState state) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                    ),
+                    child: SectionTitleWidget(
+                      title: jobsBloc.isJobFilterNotEmpty(state.jobFilter)
+                          ? 'Job List (Filtered)'
+                          : 'Job List ',
+                    ),
+                  );
+                },
+              ),
             ),
             Flexible(
               child: BlocBuilder(

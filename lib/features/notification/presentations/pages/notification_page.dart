@@ -41,7 +41,8 @@ class NotificationPage extends StatelessWidget {
         padding: defaultPadding,
         child: BlocListener<NotificationCubit, NotificationState>(
           listener: (context, state) {
-            if (state.status == NotifStatus.readAll) {
+            if (state.status == NotifStatus.readAll ||
+                state.status == NotifStatus.read) {
               context.read<NotificationCubit>().getNotif();
             }
           },
@@ -74,36 +75,43 @@ class NotificationPage extends StatelessWidget {
                         ],
                       ),
                     )
-                  : ListView.builder(
+                  : ListView.separated(
+                      separatorBuilder: (context, index) => const SpaceWidget(),
                       shrinkWrap: true,
                       itemCount: state.notifications.length,
                       itemBuilder: (context, index) {
-                        return Container(
-                          padding: defaultPadding,
-                          decoration: BoxDecoration(
-                            color: state.notifications[index].readAt == null
-                                ? AppColors.success
-                                : AppColors.bg200,
-                            boxShadow: AppColors.defaultShadow,
-                            borderRadius: defaultRadius,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IText.set(
-                                text: state.notifications[index].title,
-                                styleName: TextStyleName.bold,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.textPrimary100,
-                              ),
-                              IText.set(
-                                text: DateHelper.formatdMyHis(
-                                    state.notifications[index].createdAt ?? ''),
-                                styleName: TextStyleName.regular,
-                                typeName: TextTypeName.caption1,
-                                color: AppColors.neutral100,
-                              )
-                            ],
+                        return InkWell(
+                          onTap: () {
+                            context
+                                .read<NotificationCubit>()
+                                .read(state.notifications[index].id);
+                          },
+                          child: Container(
+                            padding: defaultPadding,
+                            decoration: BoxDecoration(
+                              color: AppColors.bg200,
+                              boxShadow: AppColors.defaultShadow,
+                              borderRadius: defaultRadius,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                IText.set(
+                                  text: state.notifications[index].title,
+                                  styleName: TextStyleName.bold,
+                                  typeName: TextTypeName.caption1,
+                                  color: AppColors.textPrimary100,
+                                ),
+                                IText.set(
+                                  text: DateHelper.formatdMyHis(
+                                      state.notifications[index].createdAt ??
+                                          ''),
+                                  styleName: TextStyleName.regular,
+                                  typeName: TextTypeName.caption1,
+                                  color: AppColors.neutral100,
+                                )
+                              ],
+                            ),
                           ),
                         );
                       },

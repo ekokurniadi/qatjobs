@@ -51,7 +51,7 @@ abstract class URLConstant {
 
   // EMPLOYER
   static const String employerFollowers = '/employer/followers';
-  static const String employerNotification = '/employer/notifications';
+  static const String employerNotification = '/notifications';
   static const String employerProfile = '/employer/profiles';
   static const String employerProfileCompany = '/employer/company';
   static const String employerProfileUpdate = '/employer/profiles/update';
@@ -63,4 +63,6 @@ abstract class URLConstant {
   static const String employerJobStages = '/employer/jobs/stages';
   static String employerJobApplicant(int id) =>
       '/employer/jobs/$id/applications';
+  static String employerJobDetailCandidate(int id) =>
+      '/employer/candidates/detail/$id';
 }

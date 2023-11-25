@@ -1,6 +1,6 @@
 part of 'notification_cubit.dart';
 
-enum NotifStatus { initial, loading, complete, failure, readAll }
+enum NotifStatus { initial, loading, complete, failure, readAll, read }
 
 @freezed
 class NotificationState with _$NotificationState {
