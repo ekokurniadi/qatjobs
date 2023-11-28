@@ -8,11 +8,11 @@ class AppConstant {
   static const String prefEmailKey = 'email';
   static const String prefPasswordKey = 'password';
   static const String prefSelectedRoledKey = 'selected_role';
+  static const String prefIsProfileComplete = 'is_profile_complete';
 
   // ROLE
   static const String roleCandidate = 'candidate';
   static const String roleEmployer = 'employer';
-
 
   // MIME TYPE
   static const String mimeTypePDF = 'pdf';
