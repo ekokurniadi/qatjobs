@@ -17,6 +17,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
     this.label,
     this.isRequired = false,
     this.showSearchBox = true,
+    this.disabledItemFn,
   });
   final List<T> items;
   final String Function(T)? itemAsString;
@@ -27,6 +28,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
   final bool alwaysShowLabel;
   final bool isRequired;
   final bool showSearchBox;
+  final bool Function(T)? disabledItemFn;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,7 @@ class DropdownSearchWidget<T> extends StatelessWidget {
             }
           : null,
       popupProps: PopupPropsMultiSelection.menu(
+        disabledItemFn: disabledItemFn,
         fit: FlexFit.loose,
         showSearchBox: showSearchBox,
         searchDelay: Duration.zero,

@@ -1,5 +1,3 @@
-import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +22,10 @@ import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.da
 import 'package:qatjobs/features/notification/presentations/cubit/notification_cubit.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
+import 'package:qatjobs/features/slots/presentations/cubit/slots_cubit.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,6 +96,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (context) => getIt<NotificationCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<SlotsCubit>(),
         ),
       ],
       child: BlocListener<ConnectivityBloc, ConnectivityState>(

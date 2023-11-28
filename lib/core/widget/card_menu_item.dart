@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
-import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CardMenuItem extends StatelessWidget {
   const CardMenuItem({
@@ -22,7 +20,7 @@ class CardMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ZoomTapAnimation(
+    return InkWell(
       onTap: onTap,
       child: Container(
         width: double.infinity,

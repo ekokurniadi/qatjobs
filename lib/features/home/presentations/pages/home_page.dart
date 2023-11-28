@@ -31,7 +31,6 @@ import 'package:qatjobs/features/job_category/data/models/job_category_model.cod
 import 'package:qatjobs/features/job_category/presentations/widgets/card_category.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/plan/data/models/plan_model.codegen.dart';
-import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class HomePage extends StatefulWidget {

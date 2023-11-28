@@ -18,7 +18,6 @@ import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
 import 'package:qatjobs/features/job/presentations/pages/candidate_job_slots_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class AppliedJobsPage extends StatelessWidget {
   const AppliedJobsPage({super.key});

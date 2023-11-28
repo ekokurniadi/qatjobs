@@ -22,7 +22,6 @@ import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/widget_chip.dart';
 import 'package:qatjobs/features/company/presentations/pages/company_detail_page.dart';
-import 'package:qatjobs/features/job/data/models/job_filter.codegen.dart';
 import 'package:qatjobs/features/job/data/models/job_model.codegen.dart';
 import 'package:qatjobs/features/job/domain/usecases/save_to_favorite_job_usecase.dart';
 import 'package:qatjobs/features/job/presentations/bloc/bloc/jobs_bloc.dart';
@@ -644,21 +643,33 @@ class _JobDetailPageState extends State<JobDetailPage> {
                                             : 'Apply Now',
                                       ),
                                     )
-                                  : ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primary,
-                                      ),
-                                      onPressed: () async {
-                                        await AutoRouter.of(context).push(
-                                            UpdateJobRoute(job: jobModel!));
-                                        await getJobDetail(
-                                          jobId: widget.jobModel.id ?? 0,
-                                        );
-                                      },
-                                      child: const Text(
-                                        'Edit',
-                                      ),
-                                    ),
+                                  : jobModel?.company?.user?.id ==
+                                          userState.user?.id
+                                      ? ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.primary,
+                                          ),
+                                          onPressed: () async {
+                                            await AutoRouter.of(context).push(
+                                                UpdateJobRoute(job: jobModel!));
+                                            await getJobDetail(
+                                              jobId: widget.jobModel.id ?? 0,
+                                            );
+                                          },
+                                          child: const Text(
+                                            'Edit',
+                                          ),
+                                        )
+                                      : SizedBox(
+                                          height: 50,
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Back'),
+                                          ),
+                                        ),
                             );
                           },
                         ),

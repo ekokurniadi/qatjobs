@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
-import 'package:qatjobs/core/constant/app_constant.dart';
 import 'package:qatjobs/core/constant/global_constant.dart';
 import 'package:qatjobs/core/extensions/dio_response_extension.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
@@ -16,10 +16,12 @@ import 'package:qatjobs/core/styles/resolution_style.dart';
 import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/confirm_dialog_bottom_sheet.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
+import 'package:qatjobs/core/widget/dropdown_search_widget.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
+import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/core/widget/widget_chip.dart';
-import 'package:qatjobs/features/job_stages/presentations/pages/job_stages_list_page.dart';
+import 'package:qatjobs/features/job_stages/presentations/cubit/job_stages_cubit.dart';
 import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/slot_page.dart';
 
@@ -97,7 +99,7 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     } on DioError catch (e) {
       final msg = DioHelper.formatException(e);
       LoadingDialog.dismiss();
-      LoadingDialog.showSuccess(
+      LoadingDialog.showError(
         message: msg,
       );
     }
@@ -355,9 +357,12 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                         MaterialPageRoute(
                                           builder: (context) {
                                             return JobSlots(
-                                                jobStage: state
-                                                    .jobApplicants[index]
-                                                    .jobStage);
+                                              jobStage: state
+                                                  .jobApplicants[index]
+                                                  .jobStage,
+                                              applicantId:
+                                                  state.jobApplicants[index].id,
+                                            );
                                           },
                                         ),
                                       );
@@ -375,18 +380,62 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                       }
                                       break;
                                     case 'job-stages':
+                                      context.read<JobStagesCubit>().get();
                                       final result = await showDialog<int>(
                                         context: context,
                                         builder: (context) {
-                                          return const Dialog(
+                                          return Dialog(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(32),
-                                                topLeft: Radius.circular(32),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(8.r),
                                               ),
                                             ),
-                                            child: JobStagesListPage(
-                                              isAsOption: true,
+                                            child: Container(
+                                              padding: defaultPadding,
+                                              decoration: BoxDecoration(
+                                                color: AppColors.bg200,
+                                                borderRadius: defaultRadius,
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const SectionTitleWidget(
+                                                      title:
+                                                          'Select Job Stage'),
+                                                  BlocBuilder<JobStagesCubit,
+                                                      JobStagesState>(
+                                                    builder: (context, jState) {
+                                                      return DropdownSearchWidget(
+                                                        showSearchBox: true,
+                                                        alwaysShowLabel: true,
+                                                        isRequired: true,
+                                                        items: jState.stages,
+                                                        hintText:
+                                                            'Select Job Stage',
+                                                        onChanged: (val) {
+                                                          Navigator.pop(
+                                                            context,
+                                                            val?.id,
+                                                          );
+                                                        },
+                                                        itemAsString: (p0) =>
+                                                            p0.name,
+                                                        selectedItem: jState
+                                                            .stages
+                                                            .firstWhereOrNull(
+                                                          (e) =>
+                                                              e.id ==
+                                                              state
+                                                                  .jobApplicants[
+                                                                      index]
+                                                                  .jobStage
+                                                                  ?.id,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           );
                                         },
@@ -622,7 +671,7 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
               );
             },
             separatorBuilder: (context, index) {
-              return Container();
+              return const SpaceWidget();
             },
           );
         },

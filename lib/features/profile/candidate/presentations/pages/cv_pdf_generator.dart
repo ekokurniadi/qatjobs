@@ -7,7 +7,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
-import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/features/profile/candidate/data/models/cv_builder_models.codegen.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';

@@ -65,4 +65,6 @@ abstract class URLConstant {
       '/employer/jobs/$id/applications';
   static String employerJobDetailCandidate(int id) =>
       '/employer/candidates/detail/$id';
+  static String employerJobSlots(int id) =>
+      '/employer/jobs/applications/$id/slots';
 }

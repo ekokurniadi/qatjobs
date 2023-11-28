@@ -1,6 +1,9 @@
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file/open_file.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
+import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
+import 'package:qatjobs/injector.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -31,7 +34,11 @@ class NotificationService {
         final payloadData = notificationResponse.payload;
 
         if (!GlobalHelper.isEmpty(payloadData)) {
-          await OpenFile.open(payloadData);
+          if (payloadData!.contains('action')) {
+            getIt<BottomNavCubit>().setSelectedMenuIndex(3);
+          } else {
+            await OpenFile.open(payloadData);
+          }
         }
       },
     );

@@ -15,11 +15,11 @@ class _CandidateJobSlotPageState extends State<CandidateJobSlotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Choose Job Slots',
         showLeading: true,
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
       bottomNavigationBar: Container(
@@ -48,7 +48,7 @@ class _CandidateJobSlotPageState extends State<CandidateJobSlotPage> {
                     backgroundColor: AppColors.danger100,
                   ),
                   onPressed: () {},
-                  child: Text('Reject All Slots'),
+                  child: const Text('Reject All Slots'),
                 ),
               ),
             )

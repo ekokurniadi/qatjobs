@@ -1,4 +1,3 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:qatjobs/core/constant/url_constant.dart';
 import 'package:qatjobs/core/helpers/dio_helper.dart';
 import 'package:qatjobs/core/helpers/notification_helper.dart';
