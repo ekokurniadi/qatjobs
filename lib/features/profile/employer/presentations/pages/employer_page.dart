@@ -94,6 +94,17 @@ class _EmployerPageState extends State<EmployerPage> {
                               children: [
                                 ZoomTapAnimation(
                                   onTap: () async {
+                                    if (state.companyModel.user?.firstName ==
+                                            null ||
+                                        state.companyModel.user?.email ==
+                                            null ||
+                                        state.companyModel.user?.phone ==
+                                            null) {
+                                      LoadingDialog.showError(
+                                          message:
+                                              'Please complete your profile first');
+                                      return;
+                                    }
                                     final result =
                                         await showModalBottomSheet<File?>(
                                       shape: const RoundedRectangleBorder(

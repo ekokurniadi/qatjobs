@@ -32,7 +32,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await _dio.post(
         URLConstant.login,
         data: formData,
-        
       );
 
       if (response.isOk) {

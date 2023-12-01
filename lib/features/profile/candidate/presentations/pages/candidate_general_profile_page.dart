@@ -71,7 +71,7 @@ class _CandidateGeneralProfilePageState
   @override
   void initState() {
     context.read<ProfileCandidateBloc>().add(
-          const ProfileCandidateEvent.getGeneralProfile(),
+          ProfileCandidateEvent.getGeneralProfile(),
         );
     super.initState();
   }
@@ -133,7 +133,8 @@ class _CandidateGeneralProfilePageState
               (profileState.generalProfile.expectedSalary ?? 0)
                   .toStringAsFixed(0);
           selectedCurrency.value =
-              int.tryParse(profileState.generalProfile.salaryCurrency) ?? 0;
+              int.tryParse(profileState.generalProfile.salaryCurrency ?? '0') ??
+                  0;
           facebookController.text =
               profileState.generalProfile.user?.facebookUrl ?? '';
           twitterController.text =
@@ -152,7 +153,7 @@ class _CandidateGeneralProfilePageState
           Future.delayed(const Duration(milliseconds: 500), () {
             context
                 .read<ProfileCandidateBloc>()
-                .add(const ProfileCandidateEvent.getGeneralProfile());
+                .add(ProfileCandidateEvent.getGeneralProfile());
             Navigator.pop(context);
           });
         } else if (profileState.status == ProfileCandidateStatus.failure) {

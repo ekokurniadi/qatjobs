@@ -1,6 +1,7 @@
 import "package:dartz/dartz.dart";
 import "package:injectable/injectable.dart";
 import "package:qatjobs/core/error/failures.dart";
+import "package:qatjobs/features/slots/data/models/candidate_slot_model.dart";
 import "package:qatjobs/features/slots/domain/repositories/slots_repository.dart";
 import "package:qatjobs/features/slots/data/datasources/remote/slots_remote_datasource.dart";
 import "package:qatjobs/features/slots/data/models/slots_model.codegen.dart";
@@ -21,7 +22,8 @@ class SlotsRepositoryImpl implements SlotsRepository {
   }
 
   @override
-  Future<Either<Failures, bool>> createSlot(SlotRequestParams params) async {
+  Future<Either<Failures, bool>> createSlot(
+      List<SlotRequestParams> params) async {
     return await _slotsRemoteDataSource.createSlot(params);
   }
 
@@ -29,5 +31,10 @@ class SlotsRepositoryImpl implements SlotsRepository {
   Future<Either<Failures, bool>> cancelSlot(
       CancelSlotRequestParams params) async {
     return await _slotsRemoteDataSource.cancelSlot(params);
+  }
+
+  @override
+  Future<Either<Failures, CandidateSlots>> getCandidateSlots(int params) async {
+    return await _slotsRemoteDataSource.getCandidateSlots(params);
   }
 }

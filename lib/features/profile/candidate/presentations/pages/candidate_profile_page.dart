@@ -44,7 +44,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   void initState() {
     context
         .read<ProfileCandidateBloc>()
-        .add(const ProfileCandidateEvent.getGeneralProfile());
+        .add(ProfileCandidateEvent.getGeneralProfile());
     super.initState();
   }
 
@@ -61,7 +61,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             message: state.message,
           );
           context.read<ProfileCandidateBloc>().add(
-                const ProfileCandidateEvent.getGeneralProfile(),
+                ProfileCandidateEvent.getGeneralProfile(),
               );
         } else if (state.status == ProfileCandidateStatus.failure) {
           LoadingDialog.dismiss();
@@ -82,7 +82,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           onRefresh: () async {
             context
                 .read<ProfileCandidateBloc>()
-                .add(const ProfileCandidateEvent.getGeneralProfile());
+                .add(ProfileCandidateEvent.getGeneralProfile());
           },
           child: Container(
             width: MediaQuery.sizeOf(context).width,
@@ -109,6 +109,21 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                               children: [
                                 ZoomTapAnimation(
                                   onTap: () async {
+                                    if (userState.generalProfile.user?.phone == null ||
+                                        userState.generalProfile.user?.email ==
+                                            null ||
+                                        userState.generalProfile.user
+                                                ?.firstName ==
+                                            null ||
+                                        userState.generalProfile.user
+                                                ?.lastName ==
+                                            null) {
+                                      LoadingDialog.showError(
+                                        message:
+                                            'Please complete your general profile first',
+                                      );
+                                      return;
+                                    }
                                     final result =
                                         await showModalBottomSheet<File?>(
                                       shape: const RoundedRectangleBorder(

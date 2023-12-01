@@ -11,6 +11,8 @@ import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
 import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/auth/domain/usecases/login_usecase.dart';
+import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
+import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 import 'package:qatjobs/injector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,8 +78,8 @@ class _LoginPageState extends State<LoginPage> {
             LoadingDialog.showError(message: state.message);
           } else if (state.status == AuthStatus.success) {
             context.read<UserBloc>().add(const UserEvent.getLogedinUser());
+            AutoRouter.of(context).replaceAll([const LayoutsRoute()]);
             LoadingDialog.showSuccess(message: state.message);
-            Navigator.pop(context);
           }
         },
         child: SafeArea(

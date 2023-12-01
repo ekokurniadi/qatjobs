@@ -30,13 +30,11 @@ class CvPdfGenerator {
     );
     doc.addPage(
       Page(
-        pageFormat: PdfPageFormat.undefined.copyWith(
+        pageFormat: PdfPageFormat.a4.copyWith(
           marginRight: 16,
           marginLeft: 16,
           marginTop: 0,
           marginBottom: 0,
-          width: m.MediaQuery.of(parentcontext).size.width,
-          height: m.MediaQuery.of(parentcontext).size.height,
         ),
         build: (Context context) {
           return Container(
@@ -81,8 +79,8 @@ class CvPdfGenerator {
                             child: ClipOval(
                               child: Image(
                                 MemoryImage(img),
-                                width: 60.w,
-                                height: 60.w,
+                                width: 90.w,
+                                height: 90.w,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -174,37 +172,44 @@ class CvPdfGenerator {
                       ),
                       Divider(),
                       if (data.candidateSkill.isNotEmpty)
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.start,
                             alignment: WrapAlignment.start,
-                            spacing: 4.w,
                             children: List.generate(
                               data.candidateSkill.length,
-                              (index) {
-                                return Container(
-                                  width: 150.w,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        const IconData(0xef4a),
-                                        color: PdfColors.amber,
-                                        size: 12.sp,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Text(
-                                        data.candidateSkill[index].name,
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.normal,
+                              (index) => SizedBox(
+                                width: m.MediaQuery.sizeOf(parentcontext).width,
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 8.h),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          const IconData(0xef4a),
+                                          color: PdfColors.amber,
+                                          size: 12.sp,
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(width: 8.w),
+                                        Expanded(
+                                          child: Text(
+                                            data.candidateSkill[index].name,
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                );
-                              },
-                            ).toList(),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                     ],
@@ -358,6 +363,28 @@ class CvPdfGenerator {
                     ],
                   ),
                 ),
+              ],
+            ),
+          ); // Center
+        },
+      ),
+    );
+
+    doc.addPage(
+      Page(
+        pageFormat: PdfPageFormat.a4.copyWith(
+          marginRight: 16,
+          marginLeft: 16,
+          marginTop: 0,
+          marginBottom: 0,
+        ),
+        build: (Context context) {
+          return Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(height: 16.h),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16.w),

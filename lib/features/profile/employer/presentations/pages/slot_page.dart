@@ -10,6 +10,7 @@ import 'package:qatjobs/core/styles/text_name_style.dart';
 import 'package:qatjobs/core/widget/custom_appbar_widget.dart';
 import 'package:qatjobs/core/widget/custom_text_field.dart';
 import 'package:qatjobs/core/widget/loading_dialog_widget.dart';
+import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 
 import 'package:qatjobs/features/job_stages/data/models/job_stages_model.codegen.dart';
@@ -34,7 +35,11 @@ class _JobSlotsState extends State<JobSlots> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
+  final TextEditingController dateController2 = TextEditingController();
+  final TextEditingController timeController2 = TextEditingController();
+  final TextEditingController notesController2 = TextEditingController();
   final TextEditingController employerNotesController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   @override
   void initState() {
@@ -64,98 +69,178 @@ class _JobSlotsState extends State<JobSlots> {
                       builder: (context) {
                         return Container(
                           padding: defaultPadding,
+                          height: MediaQuery.sizeOf(context).height,
                           decoration: BoxDecoration(
                             color: AppColors.bg200,
                             boxShadow: AppColors.defaultShadow,
                             borderRadius: defaultRadius,
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(Icons.arrow_back),
-                                  ),
-                                  IText.set(text: 'Back'),
-                                ],
-                              ),
-                              const SpaceWidget(),
-                              CustomTextField(
-                                isAlwaysShowLabel: true,
-                                placeholder: 'Date',
-                                label: 'Date',
-                                isCalendarPicker: true,
-                                isReadOnly: true,
-                                isRequired: true,
-                                onTap: () async {
-                                  final result = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime.now().add(
-                                      const Duration(days: 365),
-                                    ),
-                                  );
-                                  if (result != null) {
-                                    dateController.text =
-                                        DateHelper.getOnlyDate(
-                                      result.toString(),
-                                    );
-                                  }
-                                },
-                                controller: dateController,
-                              ),
-                              CustomTextField(
-                                isAlwaysShowLabel: true,
-                                label: 'Time',
-                                placeholder: 'Time',
-                                isCalendarPicker: true,
-                                isReadOnly: true,
-                                isRequired: true,
-                                onTap: () async {
-                                  final result = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  );
-                                  if (result != null) {
-                                    timeController.text =
-                                        '${result.hour}:${result.minute}';
-                                  }
-                                },
-                                controller: timeController,
-                              ),
-                              CustomTextField(
-                                label: 'Notes',
-                                isAlwaysShowLabel: true,
-                                placeholder: 'Notes',
-                                maxLines: 8,
-                                controller: notesController,
-                              ),
-                              const Spacer(),
-                              SizedBox(
-                                height: 50,
+                          child: Form(
+                            key: _formKey,
+                            child: SingleChildScrollView(
+                              child: SizedBox(
                                 width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    context.read<SlotsCubit>().createSlot(
-                                          SlotRequestParams(
-                                            applicationsId: widget.applicantId,
-                                            date: dateController.text,
-                                            time: timeController.text,
-                                            notes: notesController.text,
+                                height: MediaQuery.sizeOf(context).height,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(Icons.arrow_back),
+                                        ),
+                                        IText.set(text: 'Back'),
+                                      ],
+                                    ),
+                                    const SpaceWidget(),
+                                    const SectionTitleWidget(title: 'Slots 1'),
+                                    const SpaceWidget(),
+                                    CustomTextField(
+                                      isAlwaysShowLabel: true,
+                                      placeholder: 'Date',
+                                      label: 'Date',
+                                      isCalendarPicker: true,
+                                      isReadOnly: true,
+                                      isRequired: true,
+                                      onTap: () async {
+                                        final result = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now().add(
+                                            const Duration(days: 365),
                                           ),
                                         );
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Save'),
+                                        if (result != null) {
+                                          dateController.text =
+                                              DateHelper.getOnlyDate(
+                                            result.toString(),
+                                          );
+                                        }
+                                      },
+                                      controller: dateController,
+                                    ),
+                                    CustomTextField(
+                                      isAlwaysShowLabel: true,
+                                      label: 'Time',
+                                      placeholder: 'Time',
+                                      isCalendarPicker: true,
+                                      isReadOnly: true,
+                                      isRequired: true,
+                                      onTap: () async {
+                                        final result = await showTimePicker(
+                                          context: context,
+                                          initialTime: TimeOfDay.now(),
+                                        );
+                                        if (result != null) {
+                                          timeController.text =
+                                              '${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}:00';
+                                        }
+                                      },
+                                      controller: timeController,
+                                    ),
+                                    CustomTextField(
+                                      label: 'Notes',
+                                      isAlwaysShowLabel: true,
+                                      placeholder: 'Notes',
+                                      maxLines: 8,
+                                      controller: notesController,
+                                    ),
+                                    const Divider(),
+                                    const SpaceWidget(),
+                                    const SectionTitleWidget(title: 'Slots 2'),
+                                    const SpaceWidget(),
+                                    CustomTextField(
+                                      isAlwaysShowLabel: true,
+                                      placeholder: 'Date',
+                                      label: 'Date',
+                                      isCalendarPicker: true,
+                                      isReadOnly: true,
+                                      isRequired: true,
+                                      onTap: () async {
+                                        final result = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now().add(
+                                            const Duration(days: 365),
+                                          ),
+                                        );
+                                        if (result != null) {
+                                          dateController2.text =
+                                              DateHelper.getOnlyDate(
+                                            result.toString(),
+                                          );
+                                        }
+                                      },
+                                      controller: dateController2,
+                                    ),
+                                    CustomTextField(
+                                      isAlwaysShowLabel: true,
+                                      label: 'Time',
+                                      placeholder: 'Time',
+                                      isCalendarPicker: true,
+                                      isReadOnly: true,
+                                      isRequired: true,
+                                      onTap: () async {
+                                        final result = await showTimePicker(
+                                          context: context,
+                                          initialTime: TimeOfDay.now(),
+                                        );
+                                        if (result != null) {
+                                          timeController2.text =
+                                              '${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}:00';
+                                        }
+                                      },
+                                      controller: timeController2,
+                                    ),
+                                    CustomTextField(
+                                      label: 'Notes',
+                                      isAlwaysShowLabel: true,
+                                      placeholder: 'Notes',
+                                      maxLines: 8,
+                                      controller: notesController2,
+                                    ),
+                                    SizedBox(
+                                      height: 50,
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (!_formKey.currentState!
+                                              .validate()) {
+                                            return;
+                                          }
+                                          context.read<SlotsCubit>().createSlot(
+                                            [
+                                              SlotRequestParams(
+                                                applicationsId:
+                                                    widget.applicantId,
+                                                date: dateController.text,
+                                                time: timeController.text,
+                                                notes: notesController.text,
+                                              ),
+                                              SlotRequestParams(
+                                                applicationsId:
+                                                    widget.applicantId,
+                                                date: dateController2.text,
+                                                time: timeController2.text,
+                                                notes: notesController2.text,
+                                              ),
+                                            ],
+                                          );
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         );
                       },

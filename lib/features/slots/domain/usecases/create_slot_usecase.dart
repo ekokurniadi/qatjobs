@@ -6,7 +6,7 @@ import "package:qatjobs/core/usecases/usecases.dart";
 import "package:qatjobs/features/slots/domain/repositories/slots_repository.dart";
 
 @injectable
-class CreateSlotsUseCase implements UseCase<bool, SlotRequestParams> {
+class CreateSlotsUseCase implements UseCase<bool, List<SlotRequestParams>> {
   final SlotsRepository _slotsRepository;
 
   CreateSlotsUseCase({
@@ -14,7 +14,7 @@ class CreateSlotsUseCase implements UseCase<bool, SlotRequestParams> {
   }) : _slotsRepository = slotsRepository;
 
   @override
-  Future<Either<Failures, bool>> call(SlotRequestParams params) async {
+  Future<Either<Failures, bool>> call(List<SlotRequestParams> params) async {
     return await _slotsRepository.createSlot(params);
   }
 }

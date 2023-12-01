@@ -124,7 +124,10 @@ class AppliedJobsPage extends StatelessWidget {
                                           await showDialog(
                                             context: context,
                                             builder: (context) {
-                                              return const CandidateJobSlotPage();
+                                              return CandidateJobSlotPage(
+                                                jobApplicationId:
+                                                    state.appliedJobs[index].id,
+                                              );
                                             },
                                           );
                                         }

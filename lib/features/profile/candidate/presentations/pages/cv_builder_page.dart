@@ -151,6 +151,7 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                           child: ClipOval(
                                             child: CustomImageNetwork(
                                               width: 90.w,
+                                              height: 90.w,
                                               fit: BoxFit.cover,
                                               imageUrl:
                                                   data.candidate.user?.avatar ??
@@ -233,36 +234,51 @@ class _CvBuilderPageState extends State<CvBuilderPage> {
                                       ),
                                     if (!GlobalHelper.isEmptyList(
                                         data.candidateSkill))
-                                      ListView.builder(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: data.candidateSkill.length,
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 8.h),
-                                            child: SizedBox(
-                                              width: double.infinity,
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.circle,
-                                                    color: AppColors.warning,
-                                                    size: 12.sp,
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.start,
+                                          alignment: WrapAlignment.start,
+                                          children: List.generate(
+                                            data.candidateSkill.length,
+                                            (index) => SizedBox(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width /
+                                                  2.5,
+                                              child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    bottom: 8.h),
+                                                child: SizedBox(
+                                                  width: double.infinity,
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            AppColors.warning,
+                                                        size: 12.sp,
+                                                      ),
+                                                      SizedBox(width: 8.w),
+                                                      Expanded(
+                                                        child: IText.set(
+                                                          text: data
+                                                              .candidateSkill[
+                                                                  index]
+                                                              .name,
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
-                                                  SizedBox(width: 8.w),
-                                                  IText.set(
-                                                    text: data
-                                                        .candidateSkill[index]
-                                                        .name,
-                                                  )
-                                                ],
+                                                ),
                                               ),
                                             ),
-                                          );
-                                        },
-                                      )
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),

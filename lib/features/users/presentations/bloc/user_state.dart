@@ -7,6 +7,7 @@ class UserState with _$UserState {
   factory UserState({
     required UserBlocStatus status,
     required String message,
+    required bool isProfileComplete,
     UserEntity? user,
   }) = _UserState;
 
@@ -14,5 +15,6 @@ class UserState with _$UserState {
         status: UserBlocStatus.initial,
         message: '',
         user: null,
+        isProfileComplete: false,
       );
 }

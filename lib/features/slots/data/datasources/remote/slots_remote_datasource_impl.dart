@@ -5,6 +5,7 @@ import "package:qatjobs/core/constant/url_constant.dart";
 import "package:qatjobs/core/error/failures.dart";
 import "package:qatjobs/core/extensions/dio_response_extension.dart";
 import "package:qatjobs/core/helpers/dio_helper.dart";
+import "package:qatjobs/features/slots/data/models/candidate_slot_model.dart";
 import "package:qatjobs/features/slots/domain/usecases/cancel_slot_usecase.dart";
 import "package:qatjobs/features/slots/domain/usecases/create_slot_usecase.dart";
 import "slots_remote_datasource.dart";
@@ -43,11 +44,16 @@ class SlotsRemoteDataSourceImpl implements SlotsRemoteDataSource {
   }
 
   @override
-  Future<Either<Failures, bool>> createSlot(SlotRequestParams params) async {
+  Future<Either<Failures, bool>> createSlot(
+      List<SlotRequestParams> params) async {
     try {
       final response = await _dio.post(
-        URLConstant.employerJobSlots(params.applicationsId),
-        data: params.toJson(),
+        URLConstant.employerJobSlots(params.first.applicationsId),
+        data: List<Map<String, dynamic>>.from(
+          params.map(
+            (e) => e.toJson(),
+          ),
+        ),
       );
       if (response.isOk) {
         return right(true);
@@ -86,6 +92,34 @@ class SlotsRemoteDataSourceImpl implements SlotsRemoteDataSource {
       );
       if (response.isOk) {
         return right(true);
+      }
+      return left(
+        ServerFailure(
+          errorMessage: response.data['message'],
+        ),
+      );
+    } on DioError catch (e) {
+      final message = DioHelper.formatException(e);
+      return left(
+        ServerFailure(
+          errorMessage: message,
+        ),
+      );
+    } catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failures, CandidateSlots>> getCandidateSlots(int params) async {
+    try {
+      final response = await _dio.get(URLConstant.candidateJobSlots(params));
+      if (response.isOk) {
+        return right(CandidateSlots.fromMap(response.data['data']));
       }
       return left(
         ServerFailure(

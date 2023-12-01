@@ -92,8 +92,7 @@ class ProfileCandidateBloc
     on<_GetCVBuilderEvent>(_onGetCVBuilder);
   }
 
-
-   FutureOr<void> _onGetCVBuilder(
+  FutureOr<void> _onGetCVBuilder(
     _GetCVBuilderEvent event,
     Emitter<ProfileCandidateState> emit,
   ) async {

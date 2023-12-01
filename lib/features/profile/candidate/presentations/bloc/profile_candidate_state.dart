@@ -33,6 +33,7 @@ class ProfileCandidateState with _$ProfileCandidateState {
     required List<CandidateEducationEntity> educations,
     required String message,
     required Option<Either<Failures, CvBuilderResponseModels>> cvBuilder,
+    required bool isProfileComplete,
   }) = _ProfileCandidateState;
 
   factory ProfileCandidateState.initial() => ProfileCandidateState(
@@ -43,5 +44,6 @@ class ProfileCandidateState with _$ProfileCandidateState {
         experiences: [],
         educations: [],
         cvBuilder: none(),
+        isProfileComplete: false,
       );
 }

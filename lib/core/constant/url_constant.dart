@@ -48,6 +48,8 @@ abstract class URLConstant {
   static const String candidateFavoriteCompany =
       '/candidate/favourite-companies';
   static const String candidateCVBuilder = '/candidate/profiles/cv-data';
+  static String candidateJobSlots(int id) =>
+      '/candidate/jobs/applied/$id/slots';
 
   // EMPLOYER
   static const String employerFollowers = '/employer/followers';
