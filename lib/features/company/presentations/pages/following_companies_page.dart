@@ -60,7 +60,7 @@ class _FollowingCompanyPageState extends State<FollowingCompanyPage> {
                               const SpaceWidget(),
                               IText.set(
                                 text: 'No Following Company found',
-                                textAlign: TextAlign.left,
+                                textAlign: TextAlign.center,
                                 styleName: TextStyleName.medium,
                                 typeName: TextTypeName.large,
                                 color: AppColors.textPrimary,
@@ -199,7 +199,7 @@ class _FollowingCompanyPageState extends State<FollowingCompanyPage> {
                                               ),
                                               WidgetChip(
                                                 content:
-                                                    '${data.jobs?.length ?? 0} Open Position',
+                                                    '${data.jobsCount ?? 0} Open Position',
                                               ),
                                             ],
                                           ),

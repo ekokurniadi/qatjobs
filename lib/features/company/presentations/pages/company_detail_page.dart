@@ -118,23 +118,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                               }
                             },
                             builder: (context, state) {
-                              return Row(
-                                children: [
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: Row(
-                                      children: [
-                                        IText.set(
-                                          text: 'Report to admin',
-                                          styleName: TextStyleName.bold,
-                                          typeName: TextTypeName.caption1,
-                                          color: AppColors.warning,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
+                              return const SizedBox();
                             },
                           ),
                         ],

@@ -1,4 +1,3 @@
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +11,7 @@ import 'package:qatjobs/core/auto_route/auto_route.gr.dart';
 import 'package:qatjobs/core/logger/bloc_event_logger.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
+import 'package:qatjobs/features/auth/bloc/auth_bloc.dart';
 import 'package:qatjobs/features/company/presentations/bloc/company_bloc.dart';
 import 'package:qatjobs/features/connectivity/presentations/bloc/connectivity_bloc.dart';
 import 'package:qatjobs/features/home/presentations/bloc/home_bloc.dart';
@@ -99,6 +99,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (context) => getIt<SlotsCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<AuthBloc>(),
         ),
       ],
       child: BlocListener<ConnectivityBloc, ConnectivityState>(

@@ -26,6 +26,7 @@ abstract class URLConstant {
   static const String jobShift = '/jobs/job-shifts';
   static const String jobSalaryPeriod = '/jobs/salaries/periods';
   static const String jobTags = '/jobs/tags';
+  static const String forgotPassword = '/password/email';
 
   /// CANDIDATE URL
   static const String candidateProfile = '/candidate/profiles';

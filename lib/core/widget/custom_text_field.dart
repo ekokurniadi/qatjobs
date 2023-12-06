@@ -75,7 +75,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 borderRadius: BorderRadius.circular(
                   8.r,
                 ),
-                boxShadow: AppColors.defaultShadow,
+                // boxShadow: AppColors.defaultShadow,
               ),
               width: double.infinity,
               child: TextFormField(

@@ -51,33 +51,43 @@ class ConfirmDialogBottomSheet extends StatelessWidget {
               color: AppColors.textPrimary100,
               textAlign: TextAlign.center),
           SpaceWidget(space: 32.h),
-          SizedBox(
-            width: double.infinity,
-            height: 60.h,
-            child: ElevatedButton(
-              onPressed: onTapContinue,
-              child: IText.set(
-                text: 'CONTINUE',
-                styleName: TextStyleName.semiBold,
-                color: AppColors.bg100,
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 50.h,
+                  child: ElevatedButton(
+                    onPressed: onTapContinue,
+                    child: IText.set(
+                      text: 'YES',
+                      styleName: TextStyleName.semiBold,
+                      color: AppColors.bg100,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              SizedBox(
+                width: 16.w,
+              ),
+              Expanded(
+                child: SizedBox(
+                  height: 50.h,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                    ),
+                    onPressed: onTapCancel,
+                    child: IText.set(
+                      text: 'NO',
+                      styleName: TextStyleName.semiBold,
+                      color: AppColors.textPrimary100,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SpaceWidget(),
-          SizedBox(
-              width: double.infinity,
-              height: 60.h,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                ),
-                onPressed: onTapCancel,
-                child: IText.set(
-                  text: 'UNDO CHANGES',
-                  styleName: TextStyleName.semiBold,
-                  color: AppColors.textPrimary100,
-                ),
-              )),
         ],
       ),
     );

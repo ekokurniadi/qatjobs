@@ -16,9 +16,7 @@ import 'package:qatjobs/features/job/presentations/pages/jobs_page.dart';
 import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.dart';
 import 'package:qatjobs/features/notification/presentations/cubit/notification_cubit.dart';
 import 'package:qatjobs/features/notification/presentations/pages/notification_page.dart';
-import 'package:qatjobs/features/profile/candidate/presentations/bloc/profile_candidate_bloc.dart';
 import 'package:qatjobs/features/profile/candidate/presentations/pages/candidate_profile_page.dart';
-import 'package:qatjobs/features/profile/employer/presentations/cubit/employer_cubit.dart';
 import 'package:qatjobs/features/profile/employer/presentations/pages/employer_page.dart';
 import 'package:qatjobs/features/users/presentations/bloc/user_bloc.dart';
 

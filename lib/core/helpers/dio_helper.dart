@@ -43,10 +43,15 @@ class DioHelper {
   }
 
   static String _handleError(int? statusCode, Response? error) {
-    if (error?.data.containsKey("email")) {
-      return error?.data['email'][0].toString() ?? 'Something when wrong';
+    if (error?.data is! String) {
+      if (error?.data.containsKey("email")) {
+        return error?.data['email'][0].toString() ?? 'Something when wrong';
+      } else if (error?.data.containsKey("message")) {
+        return error?.data['message'] ?? 'Something when wrong';
+      }
+      return error?.data['message'] ?? 'Something when wrong';
     }
-    return error?.data['message'] ?? 'Something when wrong';
+    return error?.data ?? '';
   }
 
   static String formatException(DioError dioError) {

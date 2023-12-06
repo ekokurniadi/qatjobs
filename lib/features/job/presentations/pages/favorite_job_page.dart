@@ -32,6 +32,7 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
   void initState() {
     super.initState();
     context.read<JobsBloc>().add(const JobsEvent.getFavoriteJob());
+    context.read<JobsBloc>().add(const JobsEvent.getAppliedJob());
     context
         .read<ProfileCandidateBloc>()
         .add(const ProfileCandidateEvent.getResume());
@@ -165,9 +166,9 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                           itemBuilder: (context) {
                                             return [
                                               PopupMenuItem(
-                                                value: 'apply',
+                                                value: 'view',
                                                 child: IText.set(
-                                                  text: 'Apply',
+                                                  text: 'View',
                                                   textAlign: TextAlign.left,
                                                   styleName:
                                                       TextStyleName.semiBold,
@@ -177,6 +178,23 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                                       AppColors.textPrimary100,
                                                 ),
                                               ),
+                                              if (!state.appliedJobs.any(
+                                                  (element) =>
+                                                      element.job?.id ==
+                                                      data.id))
+                                                PopupMenuItem(
+                                                  value: 'apply',
+                                                  child: IText.set(
+                                                    text: 'Apply',
+                                                    textAlign: TextAlign.left,
+                                                    styleName:
+                                                        TextStyleName.semiBold,
+                                                    typeName:
+                                                        TextTypeName.headline3,
+                                                    color: AppColors
+                                                        .textPrimary100,
+                                                  ),
+                                                ),
                                               PopupMenuItem(
                                                 value: 'delete',
                                                 child: IText.set(
@@ -190,28 +208,36 @@ class _FavoriteJobPageState extends State<FavoriteJobPage> {
                                                       AppColors.textPrimary100,
                                                 ),
                                               ),
-                                              PopupMenuItem(
-                                                value: 'email',
-                                                child: Row(
-                                                  children: [
-                                                    IText.set(
-                                                      text: 'Email to friends',
-                                                      textAlign: TextAlign.left,
-                                                      styleName: TextStyleName
-                                                          .semiBold,
-                                                      typeName: TextTypeName
-                                                          .headline3,
-                                                      color: AppColors
-                                                          .textPrimary100,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                              // TODO: implement email to friend when api is ready
+                                              // PopupMenuItem(
+                                              //   value: 'email',
+                                              //   child: Row(
+                                              //     children: [
+                                              //       IText.set(
+                                              //         text: 'Email to friends',
+                                              //         textAlign: TextAlign.left,
+                                              //         styleName: TextStyleName
+                                              //             .semiBold,
+                                              //         typeName: TextTypeName
+                                              //             .headline3,
+                                              //         color: AppColors
+                                              //             .textPrimary100,
+                                              //       ),
+                                              //     ],
+                                              //   ),
+                                              // ),
                                             ];
                                           },
                                           icon: const Icon(Icons.more_vert),
                                           onSelected: (value) async {
                                             switch (value) {
+                                              case 'view':
+                                                AutoRouter.of(context).push(
+                                                  JobDetailRoute(
+                                                    jobModel: data,
+                                                  ),
+                                                );
+                                                break;
                                               case 'apply':
                                                 if (profileState
                                                     .resumes.isEmpty) {

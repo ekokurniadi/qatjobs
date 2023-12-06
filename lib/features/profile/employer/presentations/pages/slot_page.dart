@@ -14,6 +14,7 @@ import 'package:qatjobs/core/widget/section_title_widget.dart';
 import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 
 import 'package:qatjobs/features/job_stages/data/models/job_stages_model.codegen.dart';
+import 'package:qatjobs/features/slots/domain/usecases/cancel_slot_usecase.dart';
 import 'package:qatjobs/features/slots/domain/usecases/create_slot_usecase.dart';
 import 'package:qatjobs/features/slots/presentations/cubit/slots_cubit.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -402,7 +403,17 @@ class _JobSlotsState extends State<JobSlots> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.danger100,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      context.read<SlotsCubit>().cancelSLot(
+                                            CancelSlotRequestParams(
+                                              applicationsId:
+                                                  widget.applicantId,
+                                              slotId: r.jobSchedules[index].id,
+                                              notes:
+                                                  employerNotesController.text,
+                                            ),
+                                          );
+                                    },
                                     child: const Text('Cancel'),
                                   )
                                 ]

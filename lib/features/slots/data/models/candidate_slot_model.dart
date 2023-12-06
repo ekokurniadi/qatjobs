@@ -4,7 +4,7 @@ class CandidateSlots {
   List<History> histories;
   bool rejectedSlot;
   List<Slot> slots;
-  Map<String, dynamic> selectSlot;
+  List<dynamic>? selectSlot;
   String employerCancelNote;
   String employerFullName;
   String companyFullName;
@@ -27,7 +27,7 @@ class CandidateSlots {
     List<History>? histories,
     bool? rejectedSlot,
     List<Slot>? slots,
-    Map<String, dynamic>? selectSlot,
+    dynamic selectSlot,
     String? employerCancelNote,
     String? employerFullName,
     String? companyFullName,
@@ -58,7 +58,9 @@ class CandidateSlots {
         slots: json["slots"] != null
             ? List<Slot>.from(json["slots"].map((x) => Slot.fromMap(x)))
             : [],
-        selectSlot: json['selectSlot'],
+        selectSlot: (json['selectSlot'] is Map<String, dynamic>)
+            ? List.from(json['selectSlot'].map((e) => e))
+            : json['selectSlot'],
         employerCancelNote: json["employer_cancel_note"],
         employerFullName: json["employer_fullName"],
         companyFullName: json["company_fullName"],
@@ -122,14 +124,14 @@ class Slot {
   String notes;
   String scheduleDate;
   String scheduleTime;
-  int jobScheduleId;
+  int slotId;
   bool isAllRejected;
 
   Slot({
     required this.notes,
     required this.scheduleDate,
     required this.scheduleTime,
-    required this.jobScheduleId,
+    required this.slotId,
     required this.isAllRejected,
   });
 
@@ -137,14 +139,14 @@ class Slot {
     String? notes,
     String? scheduleDate,
     String? scheduleTime,
-    int? jobScheduleId,
+    int? slotId,
     bool? isAllRejected,
   }) =>
       Slot(
         notes: notes ?? this.notes,
         scheduleDate: scheduleDate ?? this.scheduleDate,
         scheduleTime: scheduleTime ?? this.scheduleTime,
-        jobScheduleId: jobScheduleId ?? this.jobScheduleId,
+        slotId: slotId ?? this.slotId,
         isAllRejected: isAllRejected ?? this.isAllRejected,
       );
 
@@ -156,7 +158,7 @@ class Slot {
         notes: json["notes"],
         scheduleDate: json["schedule_date"],
         scheduleTime: json["schedule_time"],
-        jobScheduleId: json["job_Schedule_Id"],
+        slotId: json["slot_id"],
         isAllRejected: json["isAllRejected"],
       );
 
@@ -164,7 +166,7 @@ class Slot {
         "notes": notes,
         "schedule_date": scheduleDate,
         "schedule_time": scheduleTime,
-        "job_Schedule_Id": jobScheduleId,
+        "slot_id": slotId,
         "isAllRejected": isAllRejected,
       };
 }

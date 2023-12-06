@@ -87,7 +87,7 @@ class SlotsRemoteDataSourceImpl implements SlotsRemoteDataSource {
       req['cancelSlotNote'] = [params.notes];
 
       final response = await _dio.post(
-        '${URLConstant.employerJobSlots(params.applicationsId)}/${params.slotId}/cancel',
+        '/employer/jobs/applications/slots/${params.slotId}/cancel',
         data: req,
       );
       if (response.isOk) {

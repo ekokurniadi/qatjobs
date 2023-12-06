@@ -21,19 +21,25 @@ class NotificationPage extends StatelessWidget {
       appBar: CustomAppBar(
         title: 'Notification',
         actionWidget: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: TextButton(
-              onPressed: () {
-                context.read<NotificationCubit>().readAll();
-              },
-              child: IText.set(
-                text: 'Read All',
-                styleName: TextStyleName.bold,
-                typeName: TextTypeName.headline3,
-                color: AppColors.warning,
-              ),
-            ),
+          BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              return state.notifications.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: TextButton(
+                        onPressed: () {
+                          context.read<NotificationCubit>().readAll();
+                        },
+                        child: IText.set(
+                          text: 'Read All',
+                          styleName: TextStyleName.bold,
+                          typeName: TextTypeName.headline3,
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    )
+                  : const SizedBox();
+            },
           )
         ],
       ),

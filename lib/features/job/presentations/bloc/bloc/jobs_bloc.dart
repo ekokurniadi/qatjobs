@@ -250,7 +250,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     emit(state.copyWith(status: JobStatus.loading));
     final result = await _getAJobUseCase(event.filter);
     if (event.isFiltered) {
-      state.jobs.clear();
+      emit(state.copyWith(jobs: []));
     }
     result.fold(
       (l) => emit(
@@ -281,10 +281,7 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
           : emit(
               state.copyWith(
                 status: JobStatus.success,
-                jobs: [
-                  ...state.jobs,
-                  ...r,
-                ].toList(),
+                jobs: (state.jobs + r).toSet().toList(),
                 currentPage: event.filter.page ?? 1,
                 jobFilter: event.filter,
                 isFilterActive: event.isFiltered,

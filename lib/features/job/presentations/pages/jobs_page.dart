@@ -158,382 +158,441 @@ class _JobsPageState extends State<JobsPage> {
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: state.jobs.length,
+                                  itemCount: state.jobs.toSet().toList().length,
                                   itemBuilder: (context, index) {
                                     final data = state.jobs[index];
                                     final isAlreadyApplied = state.appliedJobs
                                         .any((element) =>
                                             element.job?.id == data.id);
-                                    return ZoomTapAnimation(
-                                      onTap: () {
-                                        AutoRouter.of(context).push(
-                                            JobDetailRoute(jobModel: data));
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: defaultPadding,
-                                        margin: EdgeInsets.only(bottom: 16.h),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                          color: AppColors.bg200,
-                                          boxShadow: AppColors.defaultShadow,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(
+                                    return state.status == JobStatus.loading
+                                        ? Container(
+                                            width: double.infinity,
+                                            padding: defaultPadding,
+                                            margin:
+                                                EdgeInsets.only(bottom: 16.h),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                              color: AppColors.bg200,
+                                              boxShadow:
+                                                  AppColors.defaultShadow,
+                                            ),
+                                            child: ShimmerBoxWidget(
                                               width: double.infinity,
-                                              child: Row(
+                                              height: 200.h,
+                                            ),
+                                          )
+                                        : ZoomTapAnimation(
+                                            onTap: () {
+                                              AutoRouter.of(context).push(
+                                                  JobDetailRoute(
+                                                      jobModel: data));
+                                            },
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: defaultPadding,
+                                              margin:
+                                                  EdgeInsets.only(bottom: 16.h),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.r),
+                                                color: AppColors.bg200,
+                                                boxShadow:
+                                                    AppColors.defaultShadow,
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
-                                                    width: 80.w,
-                                                    height: 80.w,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                            shape: BoxShape
-                                                                .circle),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          defaultRadius,
-                                                      child: CustomImageNetwork(
-                                                        width: 80.w,
-                                                        imageUrl: data.company
-                                                                ?.companyUrl ??
-                                                            '',
-                                                        customErrorWidget:
-                                                            SvgPicture.asset(
-                                                          AssetsConstant
-                                                              .svgAssetsPicture,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SpaceWidget(
-                                                      direction:
-                                                          Direction.horizontal),
-                                                  Expanded(
+                                                  SizedBox(
+                                                    width: double.infinity,
                                                     child: Row(
                                                       children: [
-                                                        Expanded(
-                                                          flex: 2,
-                                                          child: IText.set(
-                                                            text: data
-                                                                    .company
-                                                                    ?.user
-                                                                    ?.firstName ??
-                                                                '',
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            styleName:
-                                                                TextStyleName
-                                                                    .bold,
-                                                            typeName:
-                                                                TextTypeName
-                                                                    .headline2,
-                                                            color: AppColors
-                                                                .textPrimary100,
+                                                        Container(
+                                                          width: 80.w,
+                                                          height: 80.w,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                                  shape: BoxShape
+                                                                      .circle),
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                defaultRadius,
+                                                            child:
+                                                                CustomImageNetwork(
+                                                              width: 80.w,
+                                                              imageUrl: data
+                                                                      .company
+                                                                      ?.companyUrl ??
+                                                                  '',
+                                                              customErrorWidget:
+                                                                  SvgPicture
+                                                                      .asset(
+                                                                AssetsConstant
+                                                                    .svgAssetsPicture,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                        SpaceWidget(
-                                                          direction: Direction
-                                                              .horizontal,
-                                                          space: 8.w,
+                                                        const SpaceWidget(
+                                                            direction: Direction
+                                                                .horizontal),
+                                                        Expanded(
+                                                          child: Row(
+                                                            children: [
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                    IText.set(
+                                                                  text: data
+                                                                          .company
+                                                                          ?.user
+                                                                          ?.firstName ??
+                                                                      '',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .left,
+                                                                  styleName:
+                                                                      TextStyleName
+                                                                          .bold,
+                                                                  typeName:
+                                                                      TextTypeName
+                                                                          .headline2,
+                                                                  color: AppColors
+                                                                      .textPrimary100,
+                                                                ),
+                                                              ),
+                                                              SpaceWidget(
+                                                                direction: Direction
+                                                                    .horizontal,
+                                                                space: 8.w,
+                                                              ),
+                                                              if (!GlobalHelper
+                                                                  .isEmpty(
+                                                                data.jobShift,
+                                                              ))
+                                                                Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(8),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            8.r),
+                                                                    color: AppColors
+                                                                        .danger50,
+                                                                  ),
+                                                                  child:
+                                                                      IText.set(
+                                                                    text: data
+                                                                            .jobShift
+                                                                            ?.shift ??
+                                                                        '',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .left,
+                                                                    styleName:
+                                                                        TextStyleName
+                                                                            .bold,
+                                                                    typeName:
+                                                                        TextTypeName
+                                                                            .caption2,
+                                                                    color: AppColors
+                                                                        .danger100,
+                                                                  ),
+                                                                ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                        if (!GlobalHelper
-                                                            .isEmpty(
-                                                          data.jobShift,
-                                                        ))
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SpaceWidget(),
+                                                  SizedBox(
+                                                    width: double.infinity,
+                                                    child: IText.set(
+                                                      text: state.jobs[index]
+                                                              .jobTitle ??
+                                                          '-',
+                                                      textAlign: TextAlign.left,
+                                                      styleName: TextStyleName
+                                                          .semiBold,
+                                                      typeName: TextTypeName
+                                                          .headline3,
+                                                      color: AppColors
+                                                          .textPrimary100,
+                                                    ),
+                                                  ),
+                                                  if (!GlobalHelper.isEmpty(data
+                                                      .company?.location)) ...[
+                                                    SpaceWidget(
+                                                      space: 8.h,
+                                                    ),
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      child: IText.set(
+                                                        text:
+                                                            '${data.company?.location ?? ''} ${data.company?.location2 ?? ''}',
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        styleName: TextStyleName
+                                                            .regular,
+                                                        typeName: TextTypeName
+                                                            .caption1,
+                                                        color: AppColors
+                                                            .textPrimary100,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  if (!GlobalHelper.isEmptyList(
+                                                      data.jobsTag)) ...[
+                                                    SpaceWidget(
+                                                      space: 8.h,
+                                                    ),
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      child: Wrap(
+                                                        children: List.generate(
+                                                          data.jobsTag!.length >
+                                                                  2
+                                                              ? 3
+                                                              : data.jobsTag!
+                                                                  .length,
+                                                          (i) => Container(
                                                             decoration:
                                                                 BoxDecoration(
+                                                              color: AppColors
+                                                                  .bg300,
+                                                              boxShadow: AppColors
+                                                                  .defaultShadow,
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          8.r),
-                                                              color: AppColors
-                                                                  .danger50,
+                                                                8.r,
+                                                              ),
                                                             ),
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    right: 8.w,
+                                                                    bottom:
+                                                                        8.w),
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8),
                                                             child: IText.set(
                                                               text: data
-                                                                      .jobShift
-                                                                      ?.shift ??
-                                                                  '',
+                                                                  .jobsTag![i]
+                                                                  .name,
                                                               textAlign:
                                                                   TextAlign
                                                                       .left,
                                                               styleName:
                                                                   TextStyleName
-                                                                      .bold,
+                                                                      .regular,
                                                               typeName:
                                                                   TextTypeName
                                                                       .caption2,
                                                               color: AppColors
-                                                                  .danger100,
+                                                                  .textPrimary,
                                                             ),
                                                           ),
+                                                        ).toList(),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  if (!(data.hideSalary ??
+                                                      true)) ...[
+                                                    SpaceWidget(
+                                                      space: 8.h,
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        IText.set(
+                                                          text: data.currency
+                                                                  ?.currencyIcon ??
+                                                              '',
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName
+                                                                  .regular,
+                                                          typeName: TextTypeName
+                                                              .caption1,
+                                                          color: AppColors
+                                                              .textPrimary,
+                                                        ),
+                                                        SpaceWidget(
+                                                          direction: Direction
+                                                              .horizontal,
+                                                          space: 4.w,
+                                                        ),
+                                                        IText.set(
+                                                          text:
+                                                              (data.salaryFrom ??
+                                                                      0)
+                                                                  .toString(),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName
+                                                                  .regular,
+                                                          typeName: TextTypeName
+                                                              .caption1,
+                                                          color: AppColors
+                                                              .textPrimary,
+                                                        ),
+                                                        IText.set(
+                                                          text: '-',
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName
+                                                                  .regular,
+                                                          typeName: TextTypeName
+                                                              .caption1,
+                                                          color: AppColors
+                                                              .textPrimary,
+                                                        ),
+                                                        IText.set(
+                                                          text:
+                                                              (data.salaryTo ??
+                                                                      0)
+                                                                  .toString(),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          styleName:
+                                                              TextStyleName
+                                                                  .regular,
+                                                          typeName: TextTypeName
+                                                              .caption1,
+                                                          color: AppColors
+                                                              .textPrimary,
+                                                        )
                                                       ],
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SpaceWidget(),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: IText.set(
-                                                text: state
-                                                        .jobs[index].jobTitle ??
-                                                    '-',
-                                                textAlign: TextAlign.left,
-                                                styleName:
-                                                    TextStyleName.semiBold,
-                                                typeName:
-                                                    TextTypeName.headline3,
-                                                color: AppColors.textPrimary100,
-                                              ),
-                                            ),
-                                            if (!GlobalHelper.isEmpty(
-                                                data.company?.location)) ...[
-                                              SpaceWidget(
-                                                space: 8.h,
-                                              ),
-                                              SizedBox(
-                                                width: double.infinity,
-                                                child: IText.set(
-                                                  text:
-                                                      '${data.company?.location ?? ''} ${data.company?.location2 ?? ''}',
-                                                  textAlign: TextAlign.left,
-                                                  styleName:
-                                                      TextStyleName.regular,
-                                                  typeName:
-                                                      TextTypeName.caption1,
-                                                  color:
-                                                      AppColors.textPrimary100,
-                                                ),
-                                              ),
-                                            ],
-                                            if (!GlobalHelper.isEmptyList(
-                                                data.jobsTag)) ...[
-                                              SpaceWidget(
-                                                space: 8.h,
-                                              ),
-                                              SizedBox(
-                                                width: double.infinity,
-                                                child: Wrap(
-                                                  children: List.generate(
-                                                    data.jobsTag!.length > 2
-                                                        ? 3
-                                                        : data.jobsTag!.length,
-                                                    (i) => Container(
-                                                      decoration: BoxDecoration(
-                                                        color: AppColors.bg300,
-                                                        boxShadow: AppColors
-                                                            .defaultShadow,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          8.r,
-                                                        ),
+                                                  ],
+                                                  if (isAlreadyApplied) ...[
+                                                    const SpaceWidget(),
+                                                    const WidgetChip(
+                                                      content:
+                                                          'Already Applied',
+                                                      backgroundColor:
+                                                          AppColors.secondary,
+                                                      textColor: AppColors
+                                                          .textPrimary100,
+                                                    ),
+                                                  ],
+                                                  const SpaceWidget(),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.history,
+                                                        size: 18.sp,
+                                                        color:
+                                                            AppColors.neutral50,
                                                       ),
-                                                      margin: EdgeInsets.only(
-                                                          right: 8.w,
-                                                          bottom: 8.w),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8),
-                                                      child: IText.set(
-                                                        text: data
-                                                            .jobsTag![i].name,
+                                                      SpaceWidget(
+                                                        direction: Direction
+                                                            .horizontal,
+                                                        space: 4.w,
+                                                      ),
+                                                      IText.set(
+                                                        text: timeago.format(
+                                                          DateTime.parse(
+                                                            data.createdAt!,
+                                                          ),
+                                                        ),
                                                         textAlign:
                                                             TextAlign.left,
                                                         styleName: TextStyleName
                                                             .regular,
                                                         typeName: TextTypeName
                                                             .caption2,
-                                                        color: AppColors
-                                                            .textPrimary,
+                                                        color:
+                                                            AppColors.neutral50,
                                                       ),
-                                                    ),
-                                                  ).toList(),
-                                                ),
-                                              ),
-                                            ],
-                                            if (!(data.hideSalary ?? true)) ...[
-                                              SpaceWidget(
-                                                space: 8.h,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  IText.set(
-                                                    text: data.currency
-                                                            ?.currencyIcon ??
-                                                        '',
-                                                    textAlign: TextAlign.left,
-                                                    styleName:
-                                                        TextStyleName.regular,
-                                                    typeName:
-                                                        TextTypeName.caption1,
-                                                    color:
-                                                        AppColors.textPrimary,
+                                                      const Spacer(),
+                                                      BlocBuilder<UserBloc,
+                                                          UserState>(
+                                                        builder:
+                                                            (context, state) {
+                                                          return
+                                                              //TODO : implement email to friend
+                                                              //state.user != null
+                                                              // ? Row(
+                                                              //     mainAxisAlignment:
+                                                              //         MainAxisAlignment
+                                                              //             .end,
+                                                              //     children: [
+                                                              //       BlocBuilder<
+                                                              //           ProfileCandidateBloc,
+                                                              //           ProfileCandidateState>(
+                                                              //         builder: (context,
+                                                              //             profileState) {
+                                                              //           return PopupMenuButton(
+                                                              //             itemBuilder:
+                                                              //                 (context) {
+                                                              //               return [
+                                                              //                 PopupMenuItem(
+                                                              //                   value:
+                                                              //                       'email',
+                                                              //                   child:
+                                                              //                       Row(
+                                                              //                     children: [
+                                                              //                       IText.set(
+                                                              //                         text: 'Email to friends',
+                                                              //                         textAlign: TextAlign.left,
+                                                              //                         styleName: TextStyleName.semiBold,
+                                                              //                         typeName: TextTypeName.headline3,
+                                                              //                         color: AppColors.textPrimary100,
+                                                              //                       ),
+                                                              //                     ],
+                                                              //                   ),
+                                                              //                 ),
+                                                              //               ];
+                                                              //             },
+                                                              //             icon: SvgPicture
+                                                              //                 .asset(
+                                                              //               AssetsConstant
+                                                              //                   .svgAssetsForward,
+                                                              //               color: AppColors
+                                                              //                   .textPrimary100,
+                                                              //             ),
+                                                              //             onSelected:
+                                                              //                 (value) async {
+                                                              //               switch (
+                                                              //                   value) {
+                                                              //                 default:
+                                                              //                   await showDialog(
+                                                              //                     context:
+                                                              //                         context,
+                                                              //                     builder:
+                                                              //                         (context) {
+                                                              //                       return EmailToFriendDialogBottomSheet(
+                                                              //                         title: 'Email to Friend',
+                                                              //                         caption: 'Send this job to your friend',
+                                                              //                         jobId: data.id ?? 0,
+                                                              //                       );
+                                                              //                     },
+                                                              //                   );
+                                                              //               }
+                                                              //             },
+                                                              //           );
+                                                              //         },
+                                                              //       ),
+                                                              //     ],
+                                                              //   )
+                                                              // :
+                                                              const SizedBox();
+                                                        },
+                                                      ),
+                                                    ],
                                                   ),
-                                                  SpaceWidget(
-                                                    direction:
-                                                        Direction.horizontal,
-                                                    space: 4.w,
-                                                  ),
-                                                  IText.set(
-                                                    text: (data.salaryFrom ?? 0)
-                                                        .toString(),
-                                                    textAlign: TextAlign.left,
-                                                    styleName:
-                                                        TextStyleName.regular,
-                                                    typeName:
-                                                        TextTypeName.caption1,
-                                                    color:
-                                                        AppColors.textPrimary,
-                                                  ),
-                                                  IText.set(
-                                                    text: '-',
-                                                    textAlign: TextAlign.left,
-                                                    styleName:
-                                                        TextStyleName.regular,
-                                                    typeName:
-                                                        TextTypeName.caption1,
-                                                    color:
-                                                        AppColors.textPrimary,
-                                                  ),
-                                                  IText.set(
-                                                    text: (data.salaryTo ?? 0)
-                                                        .toString(),
-                                                    textAlign: TextAlign.left,
-                                                    styleName:
-                                                        TextStyleName.regular,
-                                                    typeName:
-                                                        TextTypeName.caption1,
-                                                    color:
-                                                        AppColors.textPrimary,
-                                                  )
                                                 ],
                                               ),
-                                            ],
-                                            if (isAlreadyApplied) ...[
-                                              const SpaceWidget(),
-                                              const WidgetChip(
-                                                content: 'Already Applied',
-                                                backgroundColor:
-                                                    AppColors.secondary,
-                                                textColor:
-                                                    AppColors.textPrimary100,
-                                              ),
-                                            ],
-                                            const SpaceWidget(),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.history,
-                                                  size: 18.sp,
-                                                  color: AppColors.neutral50,
-                                                ),
-                                                SpaceWidget(
-                                                  direction:
-                                                      Direction.horizontal,
-                                                  space: 4.w,
-                                                ),
-                                                IText.set(
-                                                  text: timeago.format(
-                                                    DateTime.parse(
-                                                      data.createdAt!,
-                                                    ),
-                                                  ),
-                                                  textAlign: TextAlign.left,
-                                                  styleName:
-                                                      TextStyleName.regular,
-                                                  typeName:
-                                                      TextTypeName.caption2,
-                                                  color: AppColors.neutral50,
-                                                ),
-                                                const Spacer(),
-                                                BlocBuilder<UserBloc,
-                                                    UserState>(
-                                                  builder: (context, state) {
-                                                    return state.user != null
-                                                        ? Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              BlocBuilder<
-                                                                  ProfileCandidateBloc,
-                                                                  ProfileCandidateState>(
-                                                                builder: (context,
-                                                                    profileState) {
-                                                                  return PopupMenuButton(
-                                                                    itemBuilder:
-                                                                        (context) {
-                                                                      return [
-                                                                        PopupMenuItem(
-                                                                          value:
-                                                                              'email',
-                                                                          child:
-                                                                              Row(
-                                                                            children: [
-                                                                              IText.set(
-                                                                                text: 'Email to friends',
-                                                                                textAlign: TextAlign.left,
-                                                                                styleName: TextStyleName.semiBold,
-                                                                                typeName: TextTypeName.headline3,
-                                                                                color: AppColors.textPrimary100,
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ];
-                                                                    },
-                                                                    icon: SvgPicture
-                                                                        .asset(
-                                                                      AssetsConstant
-                                                                          .svgAssetsForward,
-                                                                      color: AppColors
-                                                                          .textPrimary100,
-                                                                    ),
-                                                                    onSelected:
-                                                                        (value) async {
-                                                                      switch (
-                                                                          value) {
-                                                                        default:
-                                                                          await showDialog(
-                                                                            context:
-                                                                                context,
-                                                                            builder:
-                                                                                (context) {
-                                                                              return EmailToFriendDialogBottomSheet(
-                                                                                title: 'Email to Friend',
-                                                                                caption: 'Send this job to your friend',
-                                                                                jobId: data.id ?? 0,
-                                                                              );
-                                                                            },
-                                                                          );
-                                                                      }
-                                                                    },
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          )
-                                                        : const SizedBox();
-                                                  },
-                                                ),
-                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
+                                          );
                                   },
                                 ),
                               ),
