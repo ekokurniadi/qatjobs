@@ -122,7 +122,7 @@ class _ArticleCardItemState extends State<ArticleCardItem> {
               SizedBox(
                 width: double.infinity,
                 child: IText.set(
-                  text: _createReadMore('hallo'),
+                  text: _createReadMore(widget.articleModel?.description),
                   styleName: TextStyleName.regular,
                   typeName: TextTypeName.caption1,
                   color: AppColors.textPrimary100,
