@@ -19,27 +19,37 @@ class FileDownloaderHelper {
         await Permission.storage.request();
       }
 
+      var notif = await Permission.notification.status;
+      if (!notif.isGranted) {
+        await Permission.notification.request();
+      }
+
       final basePath = await getDownloadPath();
       String savePath = join(basePath ?? '', name);
       File file = File(savePath);
 
-      NotificationService().showNotification(
-        id: 1,
-        title: 'Download file $name',
-        payLoad: file.path,
-      );
-
-      final response = await DioHelper.dio!.get(
+      await DioHelper.dio!.download(
         url,
+        savePath,
         options: Options(
           responseType: ResponseType.bytes,
           followRedirects: false,
         ),
+        onReceiveProgress: (count, total) async {
+          await Future.delayed(const Duration(seconds: 1), () async {
+            NotificationService().showNotification(
+              id: 1,
+              title: ((count / total) * 100).toInt() >= 100
+                  ? 'Download file $name complete'
+                  : 'Download file $name',
+              payLoad: file.path,
+              count: 100,
+              isOnlyOnce: true,
+              progress: ((count / total) * 100).toInt(),
+            );
+          });
+        },
       );
-
-      var raw = file.openSync(mode: FileMode.write);
-      raw.writeFromSync(response.data);
-      await raw.close();
 
       return file;
     } catch (e) {

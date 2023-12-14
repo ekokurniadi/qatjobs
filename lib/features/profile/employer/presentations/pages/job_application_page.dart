@@ -642,20 +642,10 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                   .split('/')
                                   .last;
 
-                              final result =
-                                  await FileDownloaderHelper.downloadTask(
+                              await FileDownloaderHelper.downloadTask(
                                 state.jobApplicants[index].resumeUrl,
                                 filename,
                               );
-
-                              if (result != null) {
-                                NotificationService().showNotification(
-                                  id: 1,
-                                  title: 'Download Complete',
-                                  body: 'Show Files on Directory',
-                                  payLoad: result.path,
-                                );
-                              }
                             },
                             child: const WidgetChip(
                               content: 'Download Resume',

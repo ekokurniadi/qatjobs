@@ -1,4 +1,3 @@
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file/open_file.dart';
 import 'package:qatjobs/core/helpers/global_helper.dart';
@@ -6,10 +5,14 @@ import 'package:qatjobs/features/layouts/presentations/cubit/bottom_nav_cubit.da
 import 'package:qatjobs/injector.dart';
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin notificationsPlugin =
+  FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> initNotification() async {
+    await notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
 
@@ -44,27 +47,42 @@ class NotificationService {
     );
   }
 
-  _notificationDetails() {
-    return const NotificationDetails(
+  _notificationDetails(int count, int progress, bool isOnlyOnce) {
+    return NotificationDetails(
       android: AndroidNotificationDetails(
         'download_channel_id',
         'download_channel_name',
+        channelDescription: 'channel_download',
+        channelShowBadge: true,
+        priority: Priority.high,
         importance: Importance.max,
         playSound: true,
+        onlyAlertOnce: isOnlyOnce,
         tag: 'download_tag',
+        maxProgress: count,
+        progress: progress,
+        showProgress: count > 0,
       ),
-      iOS: DarwinNotificationDetails(),
+      iOS: const DarwinNotificationDetails(),
     );
   }
 
   Future<void> showNotification({
     int id = 0,
+    int? count,
+    int? progress,
     String? title,
     String? body,
     String? payLoad,
+    bool? isOnlyOnce,
   }) async {
-    return notificationsPlugin.show(id, title, body, _notificationDetails(),
-        payload: payLoad);
+    return notificationsPlugin.show(
+      id,
+      title,
+      body,
+      _notificationDetails((count ?? 0), (progress ?? 0), isOnlyOnce ?? false),
+      payload: payLoad,
+    );
   }
 
   Future<void> closeNotification({

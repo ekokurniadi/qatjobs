@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qatjobs/core/helpers/date_helper.dart';
+import 'package:qatjobs/core/helpers/global_helper.dart';
 import 'package:qatjobs/core/helpers/html_parse_helper.dart';
 import 'package:qatjobs/core/styles/color_name_style.dart';
 import 'package:qatjobs/core/styles/resolution_style.dart';
@@ -11,7 +12,7 @@ import 'package:qatjobs/core/widget/vertical_space_widget.dart';
 import 'package:qatjobs/features/article/data/models/article_model.codegen.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class ArticleCardItem extends StatelessWidget {
+class ArticleCardItem extends StatefulWidget {
   const ArticleCardItem({
     super.key,
     this.articleModel,
@@ -23,9 +24,29 @@ class ArticleCardItem extends StatelessWidget {
   final bool isLoading;
 
   @override
+  State<ArticleCardItem> createState() => _ArticleCardItemState();
+}
+
+class _ArticleCardItemState extends State<ArticleCardItem> {
+
+  String _createReadMore(String? text){
+    if(GlobalHelper.isEmpty(text)){
+      return '';
+    }
+
+    final word = HtmlParseHelper.stripHtmlIfNeeded(text!);
+    if(word.length > 100){
+      return '${word.substring(0,100)}...';
+    }else{
+      return word;
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return ZoomTapAnimation(
-      onTap: isLoading ? null : onTap,
+      onTap: widget.isLoading ? null : widget.onTap,
       child: Container(
         padding: defaultPadding,
         margin: EdgeInsets.only(bottom: 16.h),
@@ -47,7 +68,7 @@ class ArticleCardItem extends StatelessWidget {
         ),
         child: Column(
           children: [
-            if (isLoading) ...[
+            if (widget.isLoading) ...[
               const ShimmerBoxWidget(
                 width: double.infinity,
                 height: 200,
@@ -85,27 +106,28 @@ class ArticleCardItem extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: defaultRadius,
                   child: CustomImageNetwork(
-                    imageUrl: articleModel?.blogImageUrl ?? '',
+                    imageUrl: widget.articleModel?.blogImageUrl ?? '',
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
               const SpaceWidget(),
               IText.set(
-                  text: articleModel?.title ?? '',
+                  text: widget.articleModel?.title ?? '',
                   styleName: TextStyleName.bold,
                   typeName: TextTypeName.headline2,
                   color: AppColors.textPrimary,
                   textAlign: TextAlign.center),
               const SpaceWidget(),
-              IText.set(
-                text: '${HtmlParseHelper.stripHtmlIfNeeded(
-                  articleModel?.description ?? '',
-                ).substring(0, 100)}...',
-                styleName: TextStyleName.regular,
-                typeName: TextTypeName.caption1,
-                color: AppColors.textPrimary100,
-                textAlign: TextAlign.justify,
+              SizedBox(
+                width: double.infinity,
+                child: IText.set(
+                  text: _createReadMore('hallo'),
+                  styleName: TextStyleName.regular,
+                  typeName: TextTypeName.caption1,
+                  color: AppColors.textPrimary100,
+                  textAlign: TextAlign.justify,
+                ),
               ),
               const SpaceWidget(),
               Row(
@@ -113,14 +135,14 @@ class ArticleCardItem extends StatelessWidget {
                 children: [
                   IText.set(
                     text: DateHelper.formatdMy(
-                      articleModel?.createdAt,
+                      widget.articleModel?.createdAt,
                     ),
                     styleName: TextStyleName.regular,
                     typeName: TextTypeName.caption1,
                     color: AppColors.textPrimary,
                   ),
                   IText.set(
-                    text: '${articleModel?.commentsCount ?? 0} Comment',
+                    text: '${widget.articleModel?.commentsCount ?? 0} Comment',
                     styleName: TextStyleName.regular,
                     typeName: TextTypeName.caption1,
                     color: AppColors.textPrimary,
@@ -131,7 +153,7 @@ class ArticleCardItem extends StatelessWidget {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: onTap,
+                    onPressed: widget.onTap,
                     child: const Text('Read More'),
                   ),
                 ],

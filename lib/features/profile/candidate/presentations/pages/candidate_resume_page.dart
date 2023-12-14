@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -229,21 +231,10 @@ class _CandidateResumePageState extends State<CandidateResumePage> {
                                           '.' +
                                           ext.split('.').last;
 
-                                      final result = await FileDownloaderHelper
-                                          .downloadTask(
+                                      await FileDownloaderHelper.downloadTask(
                                         state.resumes[index].originalUrl,
                                         fileName,
                                       );
-
-                                      if (result != null) {
-                                        await NotificationService()
-                                            .showNotification(
-                                          id: 1,
-                                          title: 'Download Complete',
-                                          body: 'Show Files on Directory',
-                                          payLoad: result.path,
-                                        );
-                                      }
                                     },
                                     child: Row(
                                       children: [
